@@ -5,7 +5,7 @@
 **Build Ref**: `docs/plans/builds/cycle-2/cycle-plan.md` — CYCLE-2 (Workshop Day 4: Playwright journey "student reads and practises")
 **Wave**: 9
 **Requires**: [4.2, 4.3]
-**Enables**: []
+**Enables**: [6.1, 6.2, 8.1, 8.2]
 **Files Touched**:
   - tests/e2e/test_student_learning.py
 **Roles Ref**: docs/requirements.md#roles--permissions-matrix — single-actor — no role variation in *this story's code* (test-only; the journeys exercise the Student behaviour delivered by Stories 4.2–4.3)

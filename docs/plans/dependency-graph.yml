@@ -1,7 +1,7 @@
 version: 1
 generated_by: AIRE_PRODUCT_OWNER
 generated_at: 2026-10-19
-scope: CYCLE-1 (Epics 1–2, waves 1–5) + CYCLE-2 (Epics 3–5, waves 6–9). CYCLE-3 is appended by a later session.
+scope: CYCLE-1 (Epics 1–2, waves 1–5) + CYCLE-2 (Epics 3–5, waves 6–9) + CYCLE-3 (Epics 5–8, waves 10–13).
 
 team_size: 3  # CYCLE-2 onwards. CYCLE-1 waves (1–5) were distributed for team_size 2 and keep those assignments.
 
@@ -32,6 +32,9 @@ shared_files:
   - docs/architecture/design/00-system-architecture-greenfield.md  # route catalogue
   # CYCLE-2 additions (created by the named story in an earlier wave; only modified afterwards)
   - src/infrastructure/web/content/urls.py          # created by 3.4 (wave 7); 3.5–3.8 append routes
+  # CYCLE-3 additions
+  - src/infrastructure/web/progress/urls.py         # created by 7.1 (wave 11); 7.2–7.4 append routes
+  - src/infrastructure/web/common/errors.py         # exists (1.1); 6.4 and 8.4 register ERROR_MESSAGES entries
 
 stories:
   - id: "1.0"
@@ -535,7 +538,7 @@ stories:
     azure_devops: null
     wave: 9
     requires: ["3.5", "3.6", "3.7", "3.8", "5.1"]
-    enables: []
+    enables: ["6.1", "6.2", "8.1", "8.2"]
     files_touched:
       - tests/e2e/test_teacher_authoring.py
       - tests/e2e/test_pilot_readiness.py
@@ -607,7 +610,7 @@ stories:
     azure_devops: null
     wave: 9
     requires: ["4.2", "4.3"]
-    enables: []
+    enables: ["6.1", "6.2", "8.1", "8.2"]
     files_touched:
       - tests/e2e/test_student_learning.py
 
@@ -630,6 +633,323 @@ stories:
       - tests/integration/web/test_role_access_matrix.py
       - docs/architecture/design/00-system-architecture-greenfield.md
       - tests/integration/web/reporting/**
+
+  # ───────────────────────── CYCLE-3 ─────────────────────────
+  - id: "6.1"
+    title: "Assessment domain rules (AnswerChecker per kind, compute_score max(1, Σ), ScoringLockPolicy, assessment ports)"
+    epic: 6
+    github: null
+    azure_devops: null
+    wave: 10
+    requires: ["3.9", "4.4"]
+    enables: ["6.3", "6.5"]
+    files_touched:
+      - src/domain/assessment/**
+      - src/domain/content/scoring_lock.py
+      - src/application/assessment/__init__.py
+      - tests/unit/domain/assessment/**
+      - tests/unit/domain/content/test_scoring_lock.py
+
+  - id: "6.2"
+    title: "Assessment data model (TestAttempt, AttemptAnswer, single-attempt + score constraints, factories)"
+    epic: 6
+    github: null
+    azure_devops: null
+    wave: 10
+    requires: ["3.9", "4.4"]
+    enables: ["5.2", "6.3", "6.5", "7.1"]
+    files_touched:
+      - src/infrastructure/persistence/assessment/__init__.py
+      - src/infrastructure/persistence/assessment/apps.py
+      - src/infrastructure/persistence/assessment/models.py
+      - src/infrastructure/persistence/assessment/migrations/**
+      - src/config/settings/base.py
+      - tests/factories/assessment.py
+      - tests/integration/persistence/assessment/test_models.py
+
+  - id: "6.3"
+    title: "Test submission (SubmitTest use case, one attempt per student, AlreadySubmitted 409, audit, repositories)"
+    epic: 6
+    github: null
+    azure_devops: null
+    wave: 11
+    requires: ["6.1", "6.2"]
+    enables: ["6.4"]
+    files_touched:
+      - src/application/assessment/submit_test.py
+      - src/infrastructure/persistence/assessment/repositories.py
+      - src/infrastructure/container.py
+      - tests/unit/application/assessment/**
+      - tests/integration/persistence/assessment/test_submit_repository.py
+
+  - id: "6.4"
+    title: "Student test page & result (PUBLISHED+ACTIVE tests, confirm unanswered, final score only)"
+    epic: 6
+    github: null
+    azure_devops: null
+    wave: 12
+    requires: ["6.3"]
+    enables: ["6.6", "7.5"]
+    files_touched:
+      - src/infrastructure/persistence/content/queries/test_taking.py
+      - src/infrastructure/web/assessment/**
+      - src/infrastructure/web/templates/assessment/**
+      - src/infrastructure/web/static/css/assessment.css
+      - src/infrastructure/web/templates/lessons/lesson.html
+      - src/infrastructure/web/lessons/views.py
+      - src/infrastructure/web/templatetags/ui.py
+      - src/infrastructure/web/templates/components/confirm_dialog.html
+      - src/infrastructure/web/common/errors.py
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/assessment/**
+
+  - id: "6.5"
+    title: "Scoring lock in the test editor (answer keys, points, kinds and question set frozen after first attempt)"
+    epic: 6
+    github: null
+    azure_devops: null
+    wave: 11
+    requires: ["6.1", "6.2"]
+    enables: ["6.6"]
+    files_touched:
+      - src/domain/content/ports.py
+      - src/application/content/save_chapter_test.py
+      - src/infrastructure/persistence/content/repositories/chapter_tests.py
+      - src/infrastructure/web/content/forms/question.py
+      - src/infrastructure/web/templates/content/chapter_test/**
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/unit/application/content/test_save_chapter_test.py
+      - tests/integration/web/content/chapter_test/test_scoring_lock.py
+
+  - id: "6.6"
+    title: "Test-taking E2E journeys (one attempt, score 1–100, numeric equivalence, scoring lock)"
+    epic: 6
+    github: null
+    azure_devops: null
+    wave: 13
+    requires: ["6.4", "6.5"]
+    enables: []
+    files_touched:
+      - tests/e2e/test_student_test_taking.py
+
+  - id: "7.1"
+    title: "Progress read models & web scaffold (per-chapter progress, scores, linked children; RecordAccessPolicy scoping)"
+    epic: 7
+    github: null
+    azure_devops: null
+    wave: 11
+    requires: ["6.2"]
+    enables: ["7.2", "7.3", "7.4"]
+    files_touched:
+      - src/infrastructure/persistence/progress/queries.py
+      - src/infrastructure/web/progress/__init__.py
+      - src/infrastructure/web/progress/urls.py
+      - src/infrastructure/web/progress/views/__init__.py
+      - src/infrastructure/web/static/css/progress.css
+      - src/infrastructure/web/templates/progress/_chapter_progress.html
+      - src/config/urls.py
+      - tests/integration/persistence/progress/test_progress_queries.py
+
+  - id: "7.2"
+    title: "My progress (student own progress per chapter: lesson read, exercises n/visible, test score)"
+    epic: 7
+    github: null
+    azure_devops: null
+    wave: 12
+    requires: ["7.1"]
+    enables: ["7.5"]
+    files_touched:
+      - src/infrastructure/web/progress/views/me.py
+      - src/infrastructure/web/templates/progress/me/**
+      - src/infrastructure/web/progress/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/progress/me/**
+
+  - id: "7.3"
+    title: "Parent children pages (linked children list + child progress & scores; unlinked → 404)"
+    epic: 7
+    github: null
+    azure_devops: null
+    wave: 12
+    requires: ["7.1"]
+    enables: ["7.5"]
+    files_touched:
+      - src/infrastructure/web/progress/views/children.py
+      - src/infrastructure/web/templates/progress/children/**
+      - src/infrastructure/web/progress/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/progress/children/**
+
+  - id: "7.4"
+    title: "Scores list (Teacher and Admin: all pilot students' chapter-test scores with filters)"
+    epic: 7
+    github: null
+    azure_devops: null
+    wave: 12
+    requires: ["7.1"]
+    enables: ["7.5"]
+    files_touched:
+      - src/infrastructure/web/progress/views/scores.py
+      - src/infrastructure/web/templates/progress/scores/**
+      - src/infrastructure/web/progress/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/progress/scores/**
+
+  - id: "7.5"
+    title: "Visibility E2E journeys (student, parent, teacher, admin; IDOR; blocked-test scores stay visible; pilot metrics)"
+    epic: 7
+    github: null
+    azure_devops: null
+    wave: 13
+    requires: ["5.2", "6.4", "7.2", "7.3", "7.4"]
+    enables: []
+    files_touched:
+      - tests/e2e/test_progress_visibility.py
+      - tests/e2e/test_pilot_metrics.py
+
+  - id: "8.1"
+    title: "Moderation domain rules (state machine table, InvalidModerationTransition, block-notice recipients, ports)"
+    epic: 8
+    github: null
+    azure_devops: null
+    wave: 10
+    requires: ["3.9", "4.4"]
+    enables: ["8.3"]
+    files_touched:
+      - src/domain/moderation/state_machine.py
+      - src/domain/moderation/notifications.py
+      - src/domain/moderation/ports.py
+      - src/application/moderation/__init__.py
+      - tests/unit/domain/moderation/test_state_machine.py
+      - tests/unit/domain/moderation/test_notifications.py
+
+  - id: "8.2"
+    title: "Moderation & notification data (ModerationEvent, Notification models, factories)"
+    epic: 8
+    github: null
+    azure_devops: null
+    wave: 10
+    requires: ["3.9", "4.4"]
+    enables: ["8.3"]
+    files_touched:
+      - src/infrastructure/persistence/moderation/**
+      - src/infrastructure/persistence/notifications/**
+      - src/config/settings/base.py
+      - tests/factories/moderation.py
+      - tests/integration/persistence/moderation/**
+
+  - id: "8.3"
+    title: "Moderation use cases (Flag, Approve, Block, Resubmit, ClearBlock; events, notifications, audit in one UoW)"
+    epic: 8
+    github: null
+    azure_devops: null
+    wave: 11
+    requires: ["8.1", "8.2"]
+    enables: ["8.4", "8.5"]
+    files_touched:
+      - src/application/moderation/transition.py
+      - src/application/moderation/flag_content.py
+      - src/application/moderation/approve_content.py
+      - src/application/moderation/block_content.py
+      - src/application/moderation/resubmit_content.py
+      - src/application/moderation/clear_block.py
+      - src/infrastructure/persistence/moderation/repositories.py
+      - src/infrastructure/persistence/notifications/repositories.py
+      - src/infrastructure/container.py
+      - tests/unit/application/moderation/**
+      - tests/integration/persistence/moderation/test_moderation_repositories.py
+
+  - id: "8.4"
+    title: "Admin moderation queue & actions (/manage/moderation/: flag, approve, block with reason, clear)"
+    epic: 8
+    github: null
+    azure_devops: null
+    wave: 12
+    requires: ["8.3"]
+    enables: ["8.6"]
+    files_touched:
+      - src/infrastructure/persistence/moderation/queries.py
+      - src/infrastructure/web/moderation/**
+      - src/infrastructure/web/templates/moderation/**
+      - src/infrastructure/web/static/css/moderation.css
+      - src/infrastructure/web/common/errors.py
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/moderation/**
+
+  - id: "8.5"
+    title: "Teacher notifications & resubmit (in-app notices, unread badge, block reasons on dashboard, resubmit)"
+    epic: 8
+    github: null
+    azure_devops: null
+    wave: 12
+    requires: ["8.3"]
+    enables: ["8.6"]
+    files_touched:
+      - src/application/notifications/**
+      - src/infrastructure/persistence/notifications/queries.py
+      - src/infrastructure/persistence/notifications/repositories.py
+      - src/infrastructure/container.py
+      - src/infrastructure/web/notifications/**
+      - src/infrastructure/web/templates/notifications/**
+      - src/infrastructure/web/templates/layouts/_top_bar.html
+      - src/infrastructure/web/templatetags/notifications.py
+      - src/infrastructure/web/content/views/resubmit.py
+      - src/infrastructure/web/content/urls.py
+      - src/infrastructure/persistence/content/queries/teacher.py
+      - src/infrastructure/web/templates/content/dashboard/**
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/unit/application/notifications/**
+      - tests/integration/web/notifications/**
+
+  - id: "8.6"
+    title: "Moderation E2E journeys (flag → hidden → block with reason → notice → resubmit → clear)"
+    epic: 8
+    github: null
+    azure_devops: null
+    wave: 13
+    requires: ["8.4", "8.5"]
+    enables: []
+    files_touched:
+      - tests/e2e/test_moderation_flow.py
+
+  - id: "5.2"
+    title: "Pilot onboarding & completion metrics (SC-1 accounts by role, SC-3 students with ≥1 chapter test)"
+    epic: 5
+    github: null
+    azure_devops: null
+    wave: 11
+    requires: ["6.2"]
+    enables: ["7.5"]
+    files_touched:
+      - src/infrastructure/persistence/reporting/queries.py
+      - src/infrastructure/web/reporting/views.py
+      - src/infrastructure/web/reporting/messages.py
+      - src/infrastructure/web/templates/reporting/**
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/reporting/test_pilot_metrics.py
 
 waves:
   - wave: 1
@@ -704,3 +1024,40 @@ waves:
         stories: ["4.4"]
       - dev: 3
         stories: []          # idle — E2E journeys need the wave-8 features merged
+  # ───────── CYCLE-3 (team_size 3) ─────────
+  - wave: 10
+    stories: ["6.1", "6.2", "8.1", "8.2"]
+    assignments:
+      - dev: 1
+        stories: ["6.2", "8.2"]
+      - dev: 2
+        stories: ["6.1"]
+      - dev: 3
+        stories: ["8.1"]
+  - wave: 11
+    stories: ["5.2", "6.3", "6.5", "7.1", "8.3"]
+    assignments:
+      - dev: 1
+        stories: ["6.3", "6.5"]
+      - dev: 2
+        stories: ["7.1", "5.2"]
+      - dev: 3
+        stories: ["8.3"]
+  - wave: 12
+    stories: ["6.4", "7.2", "7.3", "7.4", "8.4", "8.5"]
+    assignments:
+      - dev: 1
+        stories: ["6.4", "7.4"]
+      - dev: 2
+        stories: ["7.2", "8.4"]
+      - dev: 3
+        stories: ["7.3", "8.5"]
+  - wave: 13
+    stories: ["6.6", "7.5", "8.6"]
+    assignments:
+      - dev: 1
+        stories: ["6.6"]
+      - dev: 2
+        stories: ["7.5"]
+      - dev: 3
+        stories: ["8.6"]

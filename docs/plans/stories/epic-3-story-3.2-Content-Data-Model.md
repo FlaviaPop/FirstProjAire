@@ -123,7 +123,7 @@ Choices are **literal strings** equal to the domain enums of Story 3.1 (same wav
 7. `INSTALLED_APPS` gains `"infrastructure.persistence.content"`; migration `0001_initial` depends on `catalogue 0002` and `accounts 0002`; `makemigrations --check` clean; `migrate content zero` round-trips.
 8. Deleting a `SubjectModel` that has chapters raises `ProtectedError` (the catalogue reverse migration stays safe). Deleting a chapter cascades to its lesson, exercises, test and questions. Deleting a teacher sets `created_by`/`updated_by` to NULL and keeps the content.
 9. `tests/factories/content.py`:
-   - `ChapterFactory` (grade-2 MEM subject via `SubjectFactory`, number sequence 1–3), `LessonFactory`, `ExerciseFactory` (valid MCQ by default; traits `true_false`, `numeric`), `ChapterTestFactory` (DRAFT), `TestQuestionFactory`
+   - `ChapterFactory` (grade-2 MEM subject via `SubjectFactory`, number sequence 1–3), `LessonFactory`, `ExerciseFactory` (valid MCQ by default; traits `true_false`, `numeric`), `ChapterTestFactory` (DRAFT), `TestQuestionFactory` (default: `TRUE_FALSE`, `answer_key={"value": True}`, `points=10`, bilingual prompts; later cycles' tests rely on these defaults)
    - `published_test(chapter, points=(10,)*10)` → PUBLISHED test with 10 valid questions
    - `complete_chapter(subject, number)` → chapter + lesson + 5 exercises + published test
 

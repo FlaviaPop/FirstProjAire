@@ -1,8 +1,8 @@
 # Romanian Curriculum Learning Platform (Working Title) - Implementation Plan
 
 **Project**: Romanian Curriculum Learning Platform | **Version**: 1.0 | **Created**: 2026-10-19
-**Author**: PRODUCT_OWNER | **Status**: CYCLE-1 APPROVED (2026-10-19) · CYCLE-2 APPROVED (2026-10-19)
-**Scope of this plan version**: CYCLE-1 (Epics 1–2, waves 1–5) and CYCLE-2 (Epics 3–5, waves 6–9). CYCLE-3 (Epics 5–8) is appended by a later `aire-greenfield-plan` session — see `docs/plans/build-cycles.md`.
+**Author**: PRODUCT_OWNER | **Status**: CYCLE-1 APPROVED (2026-10-19) · CYCLE-2 APPROVED (2026-10-19) · CYCLE-3 APPROVED (2026-10-19)
+**Scope of this plan version**: all three build cycles — CYCLE-1 (Epics 1–2, waves 1–5), CYCLE-2 (Epics 3–5, waves 6–9), CYCLE-3 (Epics 5–8, waves 10–13). See `docs/plans/build-cycles.md`.
 
 ---
 
@@ -145,6 +145,77 @@ graph TD
 | 8 | 6 | 2 each | Dev-1: [3.5, 3.8] / Dev-2: [3.6, 4.2] / Dev-3: [3.7, 4.3] | ✅ All devs active |
 | 9 | 2 | 1 / 1 / 0 | Dev-1: [3.9] / Dev-2: [4.4] / Dev-3: — | ⚠️ 1 dev idles (E2E must follow features) |
 
+### CYCLE-3 (waves 10–13, team_size 3)
+
+```mermaid
+graph TD
+  C2["3.9 + 4.4 CYCLE-2 complete"]
+  S61["6.1 Assessment rules"]
+  S62["6.2 Attempt data"]
+  S81["8.1 Moderation rules"]
+  S82["8.2 Moderation & notification data"]
+  S63["6.3 Test submission"]
+  S65["6.5 Scoring lock"]
+  S71["7.1 Progress queries"]
+  S83["8.3 Moderation actions"]
+  S52["5.2 Pilot metrics"]
+  S64["6.4 Test page & result"]
+  S72["7.2 My progress"]
+  S73["7.3 Children pages"]
+  S74["7.4 Scores list"]
+  S84["8.4 Admin moderation queue"]
+  S85["8.5 Teacher notifications & resubmit"]
+  S66["6.6 Test-taking E2E"]
+  S75["7.5 Visibility E2E"]
+  S86["8.6 Moderation E2E"]
+
+  C2 --> S61 & S62 & S81 & S82
+  S61 --> S63
+  S62 --> S63
+  S61 --> S65
+  S62 --> S65
+  S62 --> S71
+  S62 --> S52
+  S81 --> S83
+  S82 --> S83
+  S63 --> S64
+  S71 --> S72 & S73 & S74
+  S83 --> S84 & S85
+  S64 --> S66
+  S65 --> S66
+  S52 & S64 & S72 & S73 & S74 --> S75
+  S84 & S85 --> S86
+
+  classDef done fill:#F3F4F6,stroke:#6B7280,color:#1F2937
+  classDef w10 fill:#FEF3C7,stroke:#B45309,color:#1F2937
+  classDef w11 fill:#CFFAFE,stroke:#0E7490,color:#1F2937
+  classDef w12 fill:#DCFCE7,stroke:#15803D,color:#1F2937
+  classDef w13 fill:#FEE2E2,stroke:#B91C1C,color:#1F2937
+  class C2 done
+  class S61,S62,S81,S82 w10
+  class S63,S65,S71,S83,S52 w11
+  class S64,S72,S73,S74,S84,S85 w12
+  class S66,S75,S86 w13
+```
+
+| Wave | Stories | Notes |
+|------|---------|-------|
+| 10 | 6.1, 6.2, 8.1, 8.2 | Need only CYCLE-2 complete; separate packages |
+| 11 | 5.2, 6.3, 6.5, 7.1, 8.3 | Overlap only on shared files; 7.1 creates `web/progress/urls.py` |
+| 12 | 6.4, 7.2, 7.3, 7.4, 8.4, 8.5 | One view/template folder per feature |
+| 13 | 6.6, 7.5, 8.6 | Separate E2E files |
+
+📊 **Wave Workload Distribution (team_size: 3)**
+
+| Wave | Stories | Per Dev | Dev Assignments | Notes |
+|------|---------|---------|-----------------|-------|
+| 10 | 4 | 2 / 1 / 1 | Dev-1: [6.2, 8.2] / Dev-2: [6.1] / Dev-3: [8.1] | ✅ All devs active |
+| 11 | 5 | 2 / 2 / 1 | Dev-1: [6.3, 6.5] / Dev-2: [7.1, 5.2] / Dev-3: [8.3] | ✅ All devs active |
+| 12 | 6 | 2 each | Dev-1: [6.4, 7.4] / Dev-2: [7.2, 8.4] / Dev-3: [7.3, 8.5] | ✅ All devs active |
+| 13 | 3 | 1 each | Dev-1: [6.6] / Dev-2: [7.5] / Dev-3: [8.6] | ✅ All devs active |
+
+> ⚠️ CYCLE-3 carries 18 stories in ~7 working days. If it slips, scope moves to the launch buffer for fixes only (never new features); Story 5.2 is the most deferrable (SC-1/SC-3 can be counted manually for the pilot).
+
 ---
 
 ## 1. Overview
@@ -265,11 +336,75 @@ graph TD
 - `docs/requirements.md` — SC-1…SC-3, FC-1
 - `docs/architecture/design/00-system-architecture-greenfield.md` — `reporting` module, `/manage/pilot/`, Observability "Pilot metrics"
 
-**Prerequisites**: Story 3.2 | **Completion**: readiness section matches the content state for all 9 chapters.
+**Prerequisites**: Story 3.2 (5.1); Story 6.2 (5.2) | **Completion**: readiness section matches the content state for all 9 chapters; onboarding and completion counts match the database.
 
 | Story | Title | BUILDID | Wave | One-line objective |
 |-------|-------|---------|------|--------------------|
 | 5.1 | Pilot readiness dashboard | CYCLE-2 | 7 | Admin-only page listing the 9 pilot chapters with lesson present, exercise count (5–10) and published 10-question test, and an overall ready/not-ready verdict |
+| 5.2 | Pilot onboarding & completion metrics | CYCLE-3 | 11 | Adds SC-1 (accounts onboarded by role vs. 10 students / 2 teachers) and SC-3 (students with ≥ 1 chapter test submitted vs. 8 of 10) to the Pilot page |
+
+---
+
+## EPIC 6: CHAPTER TESTS & SCORING
+
+**Owner**: DEV | **Goal**: Students take each published chapter test exactly once and see only their final score (1–100); answers are checked per kind (numeric by value), attempts are stored, and test scoring is frozen once anyone has attempted it.
+
+**Must Read References**:
+- `docs/requirements.md` — Feature "Chapter tests" (one attempt, final score only, weights total 100, score 1–100 with all-incorrect = 1, numeric equivalence)
+- `docs/architecture/design/00-system-architecture-greenfield.md` — Key Domain Logic (AnswerChecker, TestScorer), ADR-009, `POST /tests/<id>/submit/` contract, Scoring lock rule
+- `docs/plans/builds/cycle-3/cycle-plan.md`
+
+**Prerequisites**: CYCLE-2 complete (3.9, 4.4) | **Completion**: CYCLE-3 assessment acceptance criteria pass; Story 6.6 journeys green.
+
+| Story | Title | BUILDID | Wave | One-line objective |
+|-------|-------|---------|------|--------------------|
+| 6.1 | Assessment domain rules | CYCLE-3 | 10 | Pure answer checking per question kind (numeric by value via `parse_numeric`), `compute_score = max(1, Σ correct points)`, and the scoring-lock policy |
+| 6.2 | Assessment data model | CYCLE-3 | 10 | TestAttempt and AttemptAnswer tables with one-attempt-per-student and score-range constraints, plus factories |
+| 6.3 | Test submission | CYCLE-3 | 11 | `SubmitTest` use case: one transaction, single attempt (409 on repeat or race), per-question answers stored, audit entry |
+| 6.4 | Student test page & result | CYCLE-3 | 12 | Students open a published, active chapter test, confirm unanswered questions, submit once, and see only their final score |
+| 6.5 | Scoring lock in the test editor | CYCLE-3 | 11 | After the first attempt, answer keys, points, kinds and the question set can't change; wording fixes still save |
+| 6.6 | Test-taking E2E journeys | CYCLE-3 | 13 | Playwright: one attempt, score bounds, numeric equivalence, scoring lock |
+
+---
+
+## EPIC 7: PROGRESS & SCORE VISIBILITY
+
+**Owner**: DEV | **Goal**: Students see their own progress, parents see only their admin-linked children, and teachers/admins see all pilot students' scores — with strict record scoping (FC-2).
+
+**Must Read References**:
+- `docs/requirements.md` — Feature "Accounts, roles, and progress visibility"; Roles & Permissions Matrix (`scores:view-own`, `child-progress:view`, `child-scores:view`, `scores:view-all`)
+- `docs/architecture/design/00-system-architecture-greenfield.md` — Progress read model, `RecordAccessPolicy`, routes `/me/progress/`, `/children/…`, `/scores/`; "scores of a blocked test remain visible"
+
+**Prerequisites**: Story 6.2 | **Completion**: CYCLE-3 visibility acceptance criteria pass; Story 7.5 journeys green.
+
+| Story | Title | BUILDID | Wave | One-line objective |
+|-------|-------|---------|------|--------------------|
+| 7.1 | Progress read models & web scaffold | CYCLE-3 | 11 | Per-chapter progress, score lists and linked-children queries, scoped through `RecordAccessPolicy`, plus the progress URL scaffold |
+| 7.2 | My progress | CYCLE-3 | 12 | A student's own page: lesson read, exercises finished out of visible, test score per chapter |
+| 7.3 | Parent children pages | CYCLE-3 | 12 | Parents list their linked children and open each child's progress and scores; unlinked children → 404 |
+| 7.4 | Scores list | CYCLE-3 | 12 | Teachers and admins see every pilot student's chapter-test scores with subject/chapter filters |
+| 7.5 | Visibility E2E journeys | CYCLE-3 | 13 | Playwright: each role sees exactly its records; IDOR attempts fail; blocked-test scores stay visible; pilot metrics shown |
+
+---
+
+## EPIC 8: CONTENT MODERATION & NOTIFICATIONS
+
+**Owner**: DEV | **Goal**: Admins flag, approve, block (with reason) and clear content; hidden content disappears for students and parents immediately; teachers are notified in-app and can resubmit; every transition is recorded.
+
+**Must Read References**:
+- `docs/requirements.md` — Feature "Teacher-managed content and admin moderation"
+- `docs/architecture/design/00-system-architecture-greenfield.md` — Moderation state machine, notification rule, ADR-008, routes `/manage/moderation/…`, `/teach/notifications/`, `/teach/content/<type>/<id>/resubmit/`
+
+**Prerequisites**: CYCLE-2 complete | **Completion**: CYCLE-3 moderation acceptance criteria pass; Story 8.6 journeys green.
+
+| Story | Title | BUILDID | Wave | One-line objective |
+|-------|-------|---------|------|--------------------|
+| 8.1 | Moderation domain rules | CYCLE-3 | 10 | Table-driven state machine (ACTIVE ⇄ FLAGGED → BLOCKED → RESUBMITTED → ACTIVE/BLOCKED), illegal-transition error, notice-recipient rule |
+| 8.2 | Moderation & notification data | CYCLE-3 | 10 | ModerationEvent and Notification tables with factories |
+| 8.3 | Moderation use cases | CYCLE-3 | 11 | Flag, Approve, Block, Resubmit and ClearBlock — each writes the status, an event, notifications (on block) and an audit entry in one transaction |
+| 8.4 | Admin moderation queue & actions | CYCLE-3 | 12 | Admin queue of flagged/resubmitted items plus all content, with confirm dialogs and a required block reason |
+| 8.5 | Teacher notifications & resubmit | CYCLE-3 | 12 | In-app block notices with an unread badge, block reasons on the dashboard, and a resubmit action |
+| 8.6 | Moderation E2E journeys | CYCLE-3 | 13 | Playwright: flag hides content, block notifies, resubmit stays hidden, clear restores |
 
 ---
 
@@ -330,3 +465,23 @@ With content authored (Group 2 of Epic 3), QA signs in as a Student: the subject
 
 **Group 1** — Stories: 5.1
 As Admin, QA opens "Pilot" from the menu: all 9 pilot chapters are listed (3 subjects × chapters 1–3) with lesson ✓/✗, exercise count against the 5–10 range and test status. The overall verdict says "Not ready" until every chapter is complete. Authoring a full chapter (Epic 3 Group 2) turns that row green. Teachers, Students and Parents get 403.
+
+### Epic 5: Pilot Reporting (CYCLE-3 addition)
+
+**Group 2** — Stories: 5.2
+On the Pilot page, QA checks the new "Onboarding" section counts active Student and Teacher accounts against the targets (10 / 2) and linked parents, and the "Test completion" section counts students with at least one submitted chapter test against 8 of 10. Creating accounts and submitting tests (Epic 6) moves the numbers.
+
+### Epic 6: Chapter Tests & Scoring
+
+**Group 1** — Stories: 6.1 `[backend]`, 6.2 `[backend]`, 6.3 `[backend]`, 6.4, 6.5, 6.6
+With a published test (Epic 3), QA signs in as a Student, opens the chapter test, leaves one question empty (confirm dialog lists it), submits and sees only the final score. All-incorrect gives 1, all-correct 100, a numeric "2,0" for key "2" counts as correct. Reopening the test shows the result, not the form; a second submit (back button / second tab) is refused with "already submitted". As Teacher, QA tries to change a points value or answer key on that test (refused: scoring locked) and fixes a typo in a prompt (saved).
+
+### Epic 7: Progress & Score Visibility
+
+**Group 1** — Stories: 7.1 `[backend]`, 7.2, 7.3, 7.4, 7.5
+QA checks My progress as a Student (only own data), the children list and child page as a linked Parent (and 404 for an unlinked child id typed in the URL), and the Scores list as Teacher and Admin. After the Admin blocks a test that students already took (Epic 8), their scores remain visible in all three views.
+
+### Epic 8: Content Moderation & Notifications
+
+**Group 1** — Stories: 8.1 `[backend]`, 8.2 `[backend]`, 8.3 `[backend]`, 8.4, 8.5, 8.6
+As Admin, QA flags a lesson (students immediately get 404), approves it (visible again), blocks an exercise with a reason (hidden; the teacher sees a notification badge and the reason on the dashboard), the teacher edits and resubmits (still hidden), and the Admin clears it (visible). Illegal actions (e.g. clear on an ACTIVE item) are refused. The audit log shows each transition.

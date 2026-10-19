@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-19 18:44
+**Last Updated**: 2026-10-19 19:23
 **Updated By**: PRODUCT_OWNER
 **Overall Status**: 🟡 IN PROGRESS
 
@@ -25,12 +25,15 @@
 | Patterns | ✅ Done | AIRE_ARCHITECT | 2026-10-19 | `docs/architecture/design/01-patterns-and-standards-greenfield.md` | 2026-10-19 14:34 |
 | UI/UX Design | ✅ Done | AIRE_UI_UX_DESIGNER | 2026-10-19 | `docs/ui-ux/ui-ux-spec.md` | 2026-10-19 14:56 |
 | Build Cycles | ✅ Done | AIRE_BUILD_CYCLE_PLANNER | 2026-10-19 | `docs/plans/builds/` · `docs/plans/build-cycles.md` | 2026-10-19 14:45 |
-| Implementation Plan | 🟡 In Progress | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — CYCLE-1 (13) + CYCLE-2 (14) planned; CYCLE-3 to be planned | 2026-10-19 18:44 |
+| Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
 | Epic 1: Foundation | ⏸️ Not Started | — | — | 0/11 stories done | 2026-10-19 16:35 |
 | Epic 2: Grade & Subject Catalogue | ⏸️ Not Started | — | — | 0/2 stories done | 2026-10-19 16:35 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
-| Epic 5: Pilot Reporting | ⏸️ Not Started | — | — | 0/1 stories done (part 1; part 2 in CYCLE-3) | 2026-10-19 18:44 |
+| Epic 5: Pilot Reporting | ⏸️ Not Started | — | — | 0/2 stories done (5.1 CYCLE-2, 5.2 CYCLE-3) | 2026-10-19 19:23 |
+| Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
+| Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
+| Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Review | ⏸️ Not Started | AIRE_REVIEWER | — | `docs/reviews/` | 2026-10-19 11:09 |
 | QA | ⏸️ Not Started | AIRE_QA | — | `docs/testing/` | 2026-10-19 11:09 |
 
@@ -47,7 +50,7 @@
 ### Implementation Plan
 
 **Owner**: AIRE_PRODUCT_OWNER
-**Status**: 🟡 In Progress
+**Status**: ✅ Done
 **Started**: 2026-10-19
 
 **Progress**:
@@ -59,9 +62,9 @@
 - [x] All 13 CYCLE-1 story files written and validated (headers mirror the graph) ✅
 - [ ] Tracker export decision (keep Local / GitHub Projects / Azure DevOps)
 - [x] CYCLE-2 planned: numbering Epic 3 / Story 3.1, team_size 3, waves 6–9 confirmed, index approved, 14 story files written and validated ✅
-- [ ] CYCLE-3 stories (Epics 5–8) — plan before 2026-11-06
+- [x] CYCLE-3 planned: Epics 6–8 + Story 5.2, team_size 3, waves 10–13 confirmed, index approved, 18 story files written and validated ✅
 
-**Epics & story counts**: CYCLE-1 — Epic 1 Foundation 11 (1.0–1.10) · Epic 2 Catalogue 2 (2.1–2.2) · CYCLE-2 — Epic 3 Teacher Content Authoring 9 (3.1–3.9) · Epic 4 Student Lessons & Practice 4 (4.1–4.4) · Epic 5 Pilot Reporting 1 (5.1)
+**Epics & story counts**: CYCLE-1 — Epic 1 Foundation 11 (1.0–1.10) · Epic 2 Catalogue 2 (2.1–2.2) · CYCLE-2 — Epic 3 Teacher Content Authoring 9 (3.1–3.9) · Epic 4 Student Lessons & Practice 4 (4.1–4.4) · Epic 5 Pilot Reporting 1 (5.1) · CYCLE-3 — Epic 6 Chapter Tests & Scoring 6 (6.1–6.6) · Epic 7 Progress & Score Visibility 5 (7.1–7.5) · Epic 8 Moderation & Notifications 6 (8.1–8.6) · Epic 5 part 2: 5.2
 
 ---
 
@@ -71,7 +74,7 @@
 |-------|---------|-------|---------|--------|-------|-----|----------|
 | Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 0/13 | ⏸️ Not Started | — | — | 2026-10-19 16:35 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
-| Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/0 | ⏸️ Not Started | — | — | 2026-10-19 14:45 |
+| Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
 _Stories `X/N` column is advisory after parallel merges; compute from Story Tracker._
 
@@ -108,6 +111,24 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-2 | 4.3 | Exercise Practice | — | — | 2026-10-19 18:44 |
 | CYCLE-2 | 4.4 | Learning E2E Journeys | — | — | 2026-10-19 18:44 |
 | CYCLE-2 | 5.1 | Pilot Readiness Dashboard | — | — | 2026-10-19 18:44 |
+| CYCLE-3 | 5.2 | Pilot Onboarding & Completion Metrics | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 6.1 | Assessment Domain Rules | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 6.2 | Assessment Data Model | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 6.3 | Test Submission | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 6.4 | Student Test Page & Result | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 6.5 | Scoring Lock in the Test Editor | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 6.6 | Test-Taking E2E Journeys | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 7.1 | Progress Read Models & Web Scaffold | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 7.2 | My Progress | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 7.3 | Parent Children Pages | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 7.4 | Scores List | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 7.5 | Visibility E2E Journeys | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 8.1 | Moderation Domain Rules | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 8.2 | Moderation & Notification Data | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 8.3 | Moderation Use Cases | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 8.4 | Admin Moderation Queue & Actions | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 8.5 | Teacher Notifications & Resubmit | — | — | 2026-10-19 19:23 |
+| CYCLE-3 | 8.6 | Moderation E2E Journeys | — | — | 2026-10-19 19:23 |
 
 ---
 
@@ -117,8 +138,8 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | —% | ⏸️ | 2026-10-19 16:35 |
 | Integration Tests | 100% pass | — | ⏸️ | 2026-10-19 16:35 |
-| Code Review | All stories | 0/27 | ⏸️ | 2026-10-19 18:44 |
-| Documentation | All stories | 0/27 | ⏸️ | 2026-10-19 18:44 |
+| Code Review | All stories | 0/45 | ⏸️ | 2026-10-19 19:23 |
+| Documentation | All stories | 0/45 | ⏸️ | 2026-10-19 19:23 |
 
 ---
 
@@ -138,6 +159,8 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/plans/implementation-plan.md`, `docs/plans/dependency-graph.yml`, `docs/plans/stories/` (13 files)
 - [x] **Implementation Plan — CYCLE-2 (14 stories)**: Done — 2026-10-19
   - Evidence: `docs/plans/implementation-plan.md` (Epics 3–5, waves 6–9), `docs/plans/dependency-graph.yml`, `docs/plans/stories/` (14 files)
+- [x] **Implementation Plan — CYCLE-3 (18 stories)**: Done — 2026-10-19
+  - Evidence: `docs/plans/implementation-plan.md` (Epics 5–8, waves 10–13), `docs/plans/dependency-graph.yml`, `docs/plans/stories/` (18 files)
 
 ---
 
@@ -145,7 +168,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 1. **Tracker export decision** for the 13 CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
 2. **aire-dev-implement 1.0** — Root Tooling Seed (wave 1, Dev-1)
-3. **aire-greenfield-plan** for CYCLE-3 before 2026-11-06
+3. All three cycles are planned — no further planning needed before launch
 
 ---
 
@@ -157,4 +180,4 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | ARCHITECT | Patterns & standards complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:34 |
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
-| PRODUCT_OWNER | CYCLE-2 plan + 14 stories written | Idle | 2026-10-19 | 2026-10-19 18:44 |
+| PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |

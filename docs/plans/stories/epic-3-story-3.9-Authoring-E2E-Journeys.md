@@ -5,7 +5,7 @@
 **Build Ref**: `docs/plans/builds/cycle-2/cycle-plan.md` — CYCLE-2 (Workshop Day 4: Playwright journey "teacher authors and publishes a chapter")
 **Wave**: 9
 **Requires**: [3.5, 3.6, 3.7, 3.8, 5.1]
-**Enables**: []
+**Enables**: [6.1, 6.2, 8.1, 8.2]
 **Files Touched**:
   - tests/e2e/test_teacher_authoring.py
   - tests/e2e/test_pilot_readiness.py
