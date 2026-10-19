@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-19 11:24
-**Updated By**: ANALYST_PM_GREENFIELD
+**Last Updated**: 2026-10-19 14:10
+**Updated By**: ARCHITECT
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -21,7 +21,7 @@
 | Step | Status | Owner | Updated | Evidence | Recorded |
 |------|--------|-------|---------|----------|----------|
 | Requirements | ✅ Done | AIRE_ANALYST_PM_GREENFIELD | 2026-10-19 | `docs/requirements.md` | 2026-10-19 11:24 |
-| Architecture | ⏸️ Not Started | AIRE_ARCHITECT | — | `docs/architecture/design/00-system-architecture-greenfield.md` | 2026-10-19 11:09 |
+| Architecture | ✅ Done | AIRE_ARCHITECT | 2026-10-19 | `docs/architecture/design/00-system-architecture-greenfield.md` | 2026-10-19 14:10 |
 | Patterns | ⏸️ Not Started | AIRE_ARCHITECT | — | `docs/architecture/design/01-patterns-and-standards-greenfield.md` | 2026-10-19 11:09 |
 | Implementation Plan | ⏸️ Not Started | AIRE_PRODUCT_OWNER | — | `docs/plans/implementation-plan.md` | 2026-10-19 11:09 |
 | Review | ⏸️ Not Started | AIRE_REVIEWER | — | `docs/reviews/` | 2026-10-19 11:09 |
@@ -37,18 +37,19 @@
 
 ## Current Step Details
 
-### Requirements
+### Architecture
 
-**Owner**: AIRE_ANALYST_PM_GREENFIELD
+**Owner**: AIRE_ARCHITECT
 **Status**: ✅ Done
 **Started**: 2026-10-19
 
 **Progress**:
-- [x] Check references and synced Helix context
-- [x] Gather project vision, users, objectives, constraints, and scope
-- [x] Define measurable success/failure criteria and quality gates
-- [x] Define Roles & Permissions Matrix and confirm requirements
-- [x] Create approved requirements document
+- [x] Check references and synced Helix context ✅
+- [x] Technology selection confirmed (Django 5.2 LTS, templates + HTMX, SQLite, hosting deferred to DevOps) ✅
+- [x] System context, component, data model, API contracts, security design ✅
+- [x] Error handling, observability, decision records (ADR-001…011) ✅
+- [x] Diagram preview generated: `docs/architecture-diagrams/00-system-architecture-diagrams-greenfield.md` ✅
+- [x] User approval received ✅
 
 ---
 
@@ -56,12 +57,14 @@
 
 - [x] **Requirements**: Done — 2026-10-19
   - Evidence: `docs/requirements.md`
+- [x] **Architecture**: Done — 2026-10-19
+  - Evidence: `docs/architecture/design/00-system-architecture-greenfield.md`
 
 ---
 
 ## Upcoming
 
-1. **aire-greenfield-architecture** — design system architecture
+1. **aire-greenfield-patterns** — define coding patterns and standards
 
 ---
 
@@ -70,3 +73,4 @@
 | Agent | Last Action | Status | Updated | Recorded |
 |-------|------------|--------|---------|----------|
 | ANALYST_PM_GREENFIELD | Requirements complete | Idle | 2026-10-19 | 2026-10-19 11:24 |
+| ARCHITECT | Architecture complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:10 |
