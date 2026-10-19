@@ -1,8 +1,8 @@
 # Romanian Curriculum Learning Platform (Working Title) - Implementation Plan
 
 **Project**: Romanian Curriculum Learning Platform | **Version**: 1.0 | **Created**: 2026-10-19
-**Author**: PRODUCT_OWNER | **Status**: APPROVED (index, 2026-10-19)
-**Scope of this plan version**: CYCLE-1 (Epics 1–2). CYCLE-2 (Epics 3–5) and CYCLE-3 (Epics 5–8) are appended by later `aire-greenfield-plan` sessions — see `docs/plans/build-cycles.md`.
+**Author**: PRODUCT_OWNER | **Status**: CYCLE-1 APPROVED (2026-10-19) · CYCLE-2 APPROVED (2026-10-19)
+**Scope of this plan version**: CYCLE-1 (Epics 1–2, waves 1–5) and CYCLE-2 (Epics 3–5, waves 6–9). CYCLE-3 (Epics 5–8) is appended by a later `aire-greenfield-plan` session — see `docs/plans/build-cycles.md`.
 
 ---
 
@@ -73,6 +73,78 @@ graph TD
 | 4 | 2 | 1 each | Dev-1: [1.7] / Dev-2: [2.2] | ✅ All devs active |
 | 5 | 1 | 1 / 0 | Dev-1: [1.10] / Dev-2: — | ⚠️ 1 dev idles (integration must follow features) |
 
+### CYCLE-2 (waves 6–9, team_size 3)
+
+```mermaid
+graph TD
+  S110["1.10 CYCLE-1 complete"]
+  S31["3.1 Content domain rules"]
+  S32["3.2 Content data model"]
+  S33["3.3 Markdown rendering"]
+  S34["3.4 Authoring web kit"]
+  S41["4.1 Progress data & use cases"]
+  S51["5.1 Pilot readiness dashboard"]
+  S35["3.5 Teacher dashboard & chapters"]
+  S36["3.6 Lesson editor"]
+  S37["3.7 Exercise editor"]
+  S38["3.8 Test editor & publishing"]
+  S42["4.2 Chapter list & lesson reading"]
+  S43["4.3 Exercise practice"]
+  S39["3.9 Authoring E2E"]
+  S44["4.4 Learning E2E"]
+
+  S110 --> S31 & S32 & S33
+  S31 --> S34
+  S31 --> S41
+  S32 --> S41
+  S32 --> S51
+  S31 --> S35
+  S32 --> S35
+  S34 --> S35
+  S32 --> S36
+  S33 --> S36
+  S34 --> S36
+  S31 --> S37
+  S32 --> S37
+  S34 --> S37
+  S31 --> S38
+  S32 --> S38
+  S34 --> S38
+  S33 --> S42
+  S41 --> S42
+  S31 --> S43
+  S41 --> S43
+  S35 & S36 & S37 & S38 & S51 --> S39
+  S42 & S43 --> S44
+
+  classDef done fill:#F3F4F6,stroke:#6B7280,color:#1F2937
+  classDef w6 fill:#FEF3C7,stroke:#B45309,color:#1F2937
+  classDef w7 fill:#CFFAFE,stroke:#0E7490,color:#1F2937
+  classDef w8 fill:#DCFCE7,stroke:#15803D,color:#1F2937
+  classDef w9 fill:#FEE2E2,stroke:#B91C1C,color:#1F2937
+  class S110 done
+  class S31,S32,S33 w6
+  class S34,S41,S51 w7
+  class S35,S36,S37,S38,S42,S43 w8
+  class S39,S44 w9
+```
+
+| Wave | Stories | Notes |
+|------|---------|-------|
+| 6 | 3.1, 3.2, 3.3 | Need only CYCLE-1 complete (1.10); separate packages (domain / persistence / rendering) |
+| 7 | 3.4, 4.1, 5.1 | Separate packages; 3.4 creates `web/content/urls.py` (shared from wave 8) |
+| 8 | 3.5, 3.6, 3.7, 3.8, 4.2, 4.3 | One file per feature; overlap only on shared files |
+| 9 | 3.9, 4.4 | Separate E2E files |
+
+📊 **Wave Workload Distribution (team_size: 3)**
+
+| Wave | Stories | Per Dev | Dev Assignments | Notes |
+|------|---------|---------|-----------------|-------|
+| 6 | 3 | 1 each | Dev-1: [3.1] / Dev-2: [3.2] / Dev-3: [3.3] | ✅ All devs active |
+| 7 | 3 | 1 each | Dev-1: [3.4] / Dev-2: [4.1] / Dev-3: [5.1] | ✅ All devs active |
+| 8 | 6 | 2 each | Dev-1: [3.5, 3.8] / Dev-2: [3.6, 4.2] / Dev-3: [3.7, 4.3] | ✅ All devs active |
+| 9 | 2 | 1 / 1 / 0 | Dev-1: [3.9] / Dev-2: [4.4] / Dev-3: — | ⚠️ 1 dev idles (E2E must follow features) |
+
 ---
 
 ## 1. Overview
@@ -138,6 +210,69 @@ graph TD
 
 ---
 
+## EPIC 3: TEACHER CONTENT AUTHORING
+
+**Owner**: DEV | **Goal**: A Teacher authors a complete chapter in RO and EN (lesson, 5–10 exercises, a 10-question test whose points total 100) and publishes the test; content is live for students immediately and carries moderation fields for CYCLE-3.
+
+**Must Read References**:
+- `docs/requirements.md` — Features "Course lessons and practice", "Chapter tests", "Teacher-managed content and admin moderation"
+- `docs/architecture/design/00-system-architecture-greenfield.md` — `content` module, Data Model, answer-key formats, route catalogue (`/teach/…`), ADR-006/008/010
+- `docs/architecture/design/01-patterns-and-standards-greenfield.md` — use cases, repositories, forms, HTMX, primitives
+- `docs/ui-ux/ui-ux-spec.md` — `editors: ro_en_side_by_side`, confirm before publish
+- `docs/plans/builds/cycle-2/cycle-plan.md`
+
+**Prerequisites**: CYCLE-1 complete (Story 1.10) | **Completion**: CYCLE-2 authoring acceptance criteria pass; Story 3.9 journeys green.
+
+| Story | Title | BUILDID | Wave | One-line objective |
+|-------|-------|---------|------|--------------------|
+| 3.1 | Content domain rules | CYCLE-2 | 6 | Pure rules for question kinds, answer-key validation, numeric parsing, test publication (10 questions, points ≥1, Σ = 100, bilingual), chapter numbering, and the moderation status enum |
+| 3.2 | Content data model | CYCLE-2 | 6 | Chapter, Lesson, Exercise, ChapterTest and TestQuestion tables with DB constraints and moderation fields (default ACTIVE), plus test factories |
+| 3.3 | Markdown rendering | CYCLE-2 | 6 | Safe Markdown → HTML (nh3 allowlist) with a `render_markdown` tag and a guard test that forbids unsafe HTML anywhere else |
+| 3.4 | Authoring web kit | CYCLE-2 | 7 | Shared teacher-area URL scaffold, RO\|EN bilingual form mixin, reusable question-fields form (MCQ/TF/numeric) and editor styles |
+| 3.5 | Teacher dashboard & chapters | CYCLE-2 | 8 | Teacher dashboard showing each pilot chapter's completeness and item status; create/edit up to 3 chapters per active subject |
+| 3.6 | Lesson editor | CYCLE-2 | 8 | Side-by-side RO\|EN Markdown lesson editor with live preview; saved lessons are visible to students immediately |
+| 3.7 | Exercise editor | CYCLE-2 | 8 | Create, edit and remove bilingual exercises (MCQ, true/false, numeric) with explanations; at most 10 per chapter |
+| 3.8 | Test editor & publishing | CYCLE-2 | 8 | Edit the 10-question chapter test with per-question points and a live total; publishing is allowed only when every rule passes |
+| 3.9 | Authoring E2E journeys | CYCLE-2 | 9 | Playwright: a teacher authors and publishes a full chapter; the admin readiness page marks it complete |
+
+---
+
+## EPIC 4: STUDENT LESSONS & PRACTICE
+
+**Owner**: DEV | **Goal**: A Student opens an active subject, reads each chapter's lesson in the active language and practises its exercises, seeing the correct answers and explanations after "Finish exercise"; lesson views and exercise completions are recorded for progress (CYCLE-3).
+
+**Must Read References**:
+- `docs/requirements.md` — Feature "Course lessons and practice"
+- `docs/architecture/design/00-system-architecture-greenfield.md` — `progress` module, route catalogue (`/chapters/<id>/lesson/`, `/chapters/<id>/exercises/`, `/exercises/<id>/finish/`), moderation visibility rule
+- `docs/ui-ux/ui-ux-spec.md` — student theme, `success_feedback: in_place`, `loading: button_spinner_disable`
+
+**Prerequisites**: Stories 3.1–3.3 | **Completion**: CYCLE-2 learner acceptance criteria pass; Story 4.4 journeys green.
+
+| Story | Title | BUILDID | Wave | One-line objective |
+|-------|-------|---------|------|--------------------|
+| 4.1 | Progress data & use cases | CYCLE-2 | 7 | LessonView and ExerciseCompletion records with idempotent RecordLessonView and FinishExercise use cases |
+| 4.2 | Chapter list & lesson reading | CYCLE-2 | 8 | Subject page lists visible chapters; lesson page renders the ACTIVE lesson in the current language and records the first view |
+| 4.3 | Exercise practice | CYCLE-2 | 8 | Exercise list with completion marks; "Finish exercise" reveals the student's answer, the correct answer and the explanation in place (unscored) |
+| 4.4 | Learning E2E journeys | CYCLE-2 | 9 | Playwright: a student reads a lesson and finishes exercises; non-ACTIVE content never appears |
+
+---
+
+## EPIC 5: PILOT REPORTING
+
+**Owner**: DEV | **Goal**: The Admin sees, per pilot chapter, whether content is launch-ready (SC-2 / FC-1); CYCLE-3 adds onboarding and completion counts (SC-1 / SC-3).
+
+**Must Read References**:
+- `docs/requirements.md` — SC-1…SC-3, FC-1
+- `docs/architecture/design/00-system-architecture-greenfield.md` — `reporting` module, `/manage/pilot/`, Observability "Pilot metrics"
+
+**Prerequisites**: Story 3.2 | **Completion**: readiness section matches the content state for all 9 chapters.
+
+| Story | Title | BUILDID | Wave | One-line objective |
+|-------|-------|---------|------|--------------------|
+| 5.1 | Pilot readiness dashboard | CYCLE-2 | 7 | Admin-only page listing the 9 pilot chapters with lesson present, exercise count (5–10) and published 10-question test, and an overall ready/not-ready verdict |
+
+---
+
 ## Quality Gates
 
 **Per Story**: patterns followed, tests written first and passing, ruff/mypy/import-linter clean, coverage ≥85% overall (domain 100%, application ≥95%), AC met, DoD Gates 1–3 evidence in `docs/stories-implemented/story-N.M-review.md`
@@ -177,3 +312,21 @@ End-to-end: the Admin creates a Teacher, a Student and a Parent in the admin are
 
 **Group 1** — Stories: 2.1 `[backend]`, 2.2
 After migrations, QA opens the catalogue as each role: grades K–8 appear with their subject categories; only grade 2 CLR, MEM and EN are clickable cards; every other grade/subject is a visibly unavailable tile with no link, and typing its URL directly returns 404; opening an active subject shows its chapter-list shell (empty until CYCLE-2 content exists, with an empty-state message). Data survives an app restart.
+
+### Epic 3: Teacher Content Authoring
+
+**Group 1** — Stories: 3.1 `[backend]`, 3.2 `[backend]`, 3.3 `[backend]`, 3.4, 3.5
+The domain rules, tables and Markdown renderer provide the base; the web kit and dashboard make it testable. QA signs in as a Teacher, opens the Dashboard from the menu, and sees the three pilot subjects with their chapter slots. QA creates chapters 1–3 for MEM (titles in RO and EN), confirms a 4th chapter is refused, confirms an empty RO or EN title is refused with field errors, and edits a title. Each chapter row shows lesson/exercises/test completeness and status pills. Students, Parents and Admins get 403 on every `/teach/` page.
+
+**Group 2** — Stories: 3.6, 3.7, 3.8, 3.9
+QA writes a lesson in both languages (with headings, a list and a link) and checks the live preview. A `<script>` pasted into the Markdown never runs and doesn't appear in the preview. QA adds 5 exercises (one of each kind), confirms the 11th is refused, edits and removes one. In the test editor, QA fills 10 questions, watches the points total update, tries to publish at 95 points (refused, with the reason listed), fixes it to 100, publishes after the confirmation dialog, and sees the PUBLISHED pill. The Story 3.9 Playwright journey repeats this end to end.
+
+### Epic 4: Student Lessons & Practice
+
+**Group 1** — Stories: 4.1 `[backend]`, 4.2, 4.3, 4.4
+With content authored (Group 2 of Epic 3), QA signs in as a Student: the subject page lists the chapters; the lesson opens in the current language and switching RO↔EN shows the other version. The exercise list shows each exercise. "Finish exercise" reveals the student's answer, the correct answer and the explanation in place with no score; reopening the list shows a completion mark. QA then sets a lesson to a non-ACTIVE status in the DB (moderation UI arrives in CYCLE-3) and confirms students get "Page not found" for it. The lesson view and completion rows exist once per student and item, even after repeats.
+
+### Epic 5: Pilot Reporting
+
+**Group 1** — Stories: 5.1
+As Admin, QA opens "Pilot" from the menu: all 9 pilot chapters are listed (3 subjects × chapters 1–3) with lesson ✓/✗, exercise count against the 5–10 range and test status. The overall verdict says "Not ready" until every chapter is complete. Authoring a full chapter (Epic 3 Group 2) turns that row green. Teachers, Students and Parents get 403.

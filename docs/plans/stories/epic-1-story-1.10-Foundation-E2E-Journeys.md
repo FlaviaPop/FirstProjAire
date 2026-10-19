@@ -5,7 +5,7 @@
 **Build Ref**: `docs/plans/builds/cycle-1/cycle-plan.md` — CYCLE-1 Foundation & Access (Workshop Day 4: Playwright smoke per role; demo and sign-off)
 **Wave**: 5
 **Requires**: [1.1, 1.7, 1.9, 2.2]
-**Enables**: []
+**Enables**: [3.1, 3.2, 3.3]
 **Files Touched**:
   - tests/e2e/**
   - README.md

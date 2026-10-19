@@ -1,9 +1,9 @@
 version: 1
 generated_by: AIRE_PRODUCT_OWNER
 generated_at: 2026-10-19
-scope: CYCLE-1  # Epics 1–2. CYCLE-2/3 stories are appended by later aire-greenfield-plan sessions.
+scope: CYCLE-1 (Epics 1–2, waves 1–5) + CYCLE-2 (Epics 3–5, waves 6–9). CYCLE-3 is appended by a later session.
 
-team_size: 2
+team_size: 3  # CYCLE-2 onwards. CYCLE-1 waves (1–5) were distributed for team_size 2 and keep those assignments.
 
 shared_files:
   # Created by the seed story 1.0 (R1) and only MODIFIED by later stories.
@@ -30,6 +30,8 @@ shared_files:
   - tests/factories/accounts.py
   - tests/integration/web/test_role_access_matrix.py
   - docs/architecture/design/00-system-architecture-greenfield.md  # route catalogue
+  # CYCLE-2 additions (created by the named story in an earlier wave; only modified afterwards)
+  - src/infrastructure/web/content/urls.py          # created by 3.4 (wave 7); 3.5–3.8 append routes
 
 stories:
   - id: "1.0"
@@ -314,7 +316,7 @@ stories:
     azure_devops: null
     wave: 5
     requires: ["1.1", "1.7", "1.9", "2.2"]
-    enables: []
+    enables: ["3.1", "3.2", "3.3"]
     files_touched:
       - tests/e2e/**
       - README.md
@@ -352,6 +354,283 @@ stories:
       - tests/integration/web/test_role_access_matrix.py
       - tests/integration/web/catalogue/**
 
+  # ───────────────────────── CYCLE-2 ─────────────────────────
+  - id: "3.1"
+    title: Content domain rules (QuestionKind, answer-key validation, numeric parsing, TestPublicationPolicy, chapter rules, ModerationStatus, content ports)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 6
+    requires: ["1.10"]
+    enables: ["3.4", "3.5", "3.7", "3.8", "4.1", "4.3"]
+    files_touched:
+      - src/domain/common/numbers.py
+      - src/domain/content/**
+      - src/domain/moderation/**
+      - src/application/content/__init__.py
+      - tests/unit/domain/common/test_numbers.py
+      - tests/unit/domain/content/**
+      - tests/unit/domain/moderation/**
+
+  - id: "3.2"
+    title: Content data model (Chapter, Lesson, Exercise, ChapterTest, TestQuestion, ModeratedModel, constraints, factories)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 6
+    requires: ["1.10"]
+    enables: ["3.5", "3.6", "3.7", "3.8", "4.1", "5.1"]
+    files_touched:
+      - src/infrastructure/persistence/common/managers.py
+      - src/infrastructure/persistence/content/__init__.py
+      - src/infrastructure/persistence/content/apps.py
+      - src/infrastructure/persistence/content/models.py
+      - src/infrastructure/persistence/content/migrations/**
+      - src/infrastructure/persistence/content/repositories/__init__.py
+      - src/infrastructure/persistence/content/queries/__init__.py
+      - src/config/settings/base.py
+      - tests/factories/content.py
+      - tests/integration/persistence/content/**
+
+  - id: "3.3"
+    title: Markdown rendering (Markdown + nh3 allowlist renderer, render_markdown tag, no-unsafe-HTML guard test)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 6
+    requires: ["1.10"]
+    enables: ["3.6", "4.2"]
+    files_touched:
+      - src/infrastructure/rendering/**
+      - src/infrastructure/web/templatetags/markdown.py
+      - tests/unit/infrastructure/test_markdown.py
+      - tests/integration/web/test_no_unsafe_html.py
+
+  - id: "3.4"
+    title: Authoring web kit (content URL scaffold, bilingual form mixin, question-fields form kit, editor styles)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 7
+    requires: ["3.1"]
+    enables: ["3.5", "3.6", "3.7", "3.8"]
+    files_touched:
+      - src/infrastructure/web/content/__init__.py
+      - src/infrastructure/web/content/urls.py
+      - src/infrastructure/web/content/views/__init__.py
+      - src/infrastructure/web/content/forms/__init__.py
+      - src/infrastructure/web/content/forms/bilingual.py
+      - src/infrastructure/web/content/forms/question.py
+      - src/infrastructure/web/templates/content/_question_fields.html
+      - src/infrastructure/web/static/css/content/editor.css
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/content/test_form_kit.py
+
+  - id: "3.5"
+    title: Teacher dashboard & chapters (SaveChapter, dashboard completeness per chapter, chapter create/edit)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 8
+    requires: ["3.1", "3.2", "3.4"]
+    enables: ["3.9"]
+    files_touched:
+      - src/application/content/save_chapter.py
+      - src/infrastructure/persistence/content/repositories/chapters.py
+      - src/infrastructure/persistence/content/queries/teacher.py
+      - src/infrastructure/web/content/views/dashboard.py
+      - src/infrastructure/web/content/views/chapters.py
+      - src/infrastructure/web/content/forms/chapter.py
+      - src/infrastructure/web/templates/content/dashboard/**
+      - src/infrastructure/web/templates/content/chapter/**
+      - src/infrastructure/web/static/css/content/dashboard.css
+      - src/infrastructure/web/content/urls.py
+      - src/infrastructure/container.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/unit/application/content/test_save_chapter.py
+      - tests/integration/web/content/dashboard/**
+
+  - id: "3.6"
+    title: Lesson editor (SaveLesson, RO|EN Markdown editor, HTMX preview)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 8
+    requires: ["3.2", "3.3", "3.4"]
+    enables: ["3.9"]
+    files_touched:
+      - src/application/content/save_lesson.py
+      - src/infrastructure/persistence/content/repositories/lessons.py
+      - src/infrastructure/web/content/views/lessons.py
+      - src/infrastructure/web/content/forms/lesson.py
+      - src/infrastructure/web/templates/content/lesson/**
+      - src/infrastructure/web/content/urls.py
+      - src/infrastructure/container.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/unit/application/content/test_save_lesson.py
+      - tests/integration/web/content/lesson/**
+
+  - id: "3.7"
+    title: Exercise editor (SaveExercise, RemoveExercise, MCQ/TF/numeric bilingual editor, max 10 per chapter)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 8
+    requires: ["3.1", "3.2", "3.4"]
+    enables: ["3.9"]
+    files_touched:
+      - src/application/content/save_exercise.py
+      - src/application/content/remove_exercise.py
+      - src/infrastructure/persistence/content/repositories/exercises.py
+      - src/infrastructure/web/content/views/exercises.py
+      - src/infrastructure/web/content/forms/exercise.py
+      - src/infrastructure/web/templates/content/exercises/**
+      - src/infrastructure/web/content/urls.py
+      - src/infrastructure/container.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/unit/application/content/test_save_exercise.py
+      - tests/unit/application/content/test_remove_exercise.py
+      - tests/integration/web/content/exercises/**
+
+  - id: "3.8"
+    title: Test editor & publishing (SaveChapterTest, PublishChapterTest, 10 questions, live points total, publish only at 100)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 8
+    requires: ["3.1", "3.2", "3.4"]
+    enables: ["3.9"]
+    files_touched:
+      - src/application/content/save_chapter_test.py
+      - src/application/content/publish_chapter_test.py
+      - src/infrastructure/persistence/content/repositories/chapter_tests.py
+      - src/infrastructure/web/content/views/chapter_tests.py
+      - src/infrastructure/web/content/forms/chapter_test.py
+      - src/infrastructure/web/templates/content/chapter_test/**
+      - src/infrastructure/web/content/urls.py
+      - src/infrastructure/container.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/unit/application/content/test_save_chapter_test.py
+      - tests/unit/application/content/test_publish_chapter_test.py
+      - tests/integration/web/content/chapter_test/**
+
+  - id: "3.9"
+    title: Authoring E2E journeys (teacher authors and publishes a full chapter; admin readiness reflects it)
+    epic: 3
+    github: null
+    azure_devops: null
+    wave: 9
+    requires: ["3.5", "3.6", "3.7", "3.8", "5.1"]
+    enables: []
+    files_touched:
+      - tests/e2e/test_teacher_authoring.py
+      - tests/e2e/test_pilot_readiness.py
+
+  - id: "4.1"
+    title: Progress data & use cases (LessonView, ExerciseCompletion, RecordLessonView, FinishExercise)
+    epic: 4
+    github: null
+    azure_devops: null
+    wave: 7
+    requires: ["3.1", "3.2"]
+    enables: ["4.2", "4.3"]
+    files_touched:
+      - src/domain/progress/**
+      - src/application/progress/**
+      - src/infrastructure/persistence/progress/**
+      - src/config/settings/base.py
+      - src/infrastructure/container.py
+      - tests/factories/progress.py
+      - tests/unit/application/progress/**
+      - tests/integration/persistence/progress/**
+
+  - id: "4.2"
+    title: Chapter list & lesson reading (subject page chapters, lesson page in active language, lesson view recorded)
+    epic: 4
+    github: null
+    azure_devops: null
+    wave: 8
+    requires: ["3.3", "4.1"]
+    enables: ["4.4"]
+    files_touched:
+      - src/infrastructure/persistence/content/queries/learner.py
+      - src/infrastructure/web/catalogue/views.py
+      - src/infrastructure/web/templates/catalogue/subject.html
+      - src/infrastructure/web/lessons/**
+      - src/infrastructure/web/templates/lessons/**
+      - src/infrastructure/web/static/css/lessons.css
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/lessons/**
+
+  - id: "4.3"
+    title: Exercise practice (exercise list with completion marks, "Finish exercise" HTMX reveal of answers and explanations)
+    epic: 4
+    github: null
+    azure_devops: null
+    wave: 8
+    requires: ["3.1", "4.1"]
+    enables: ["4.4"]
+    files_touched:
+      - src/infrastructure/persistence/content/queries/practice.py
+      - src/infrastructure/web/practice/**
+      - src/infrastructure/web/templates/practice/**
+      - src/infrastructure/web/static/css/practice.css
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/practice/**
+
+  - id: "4.4"
+    title: Learning E2E journeys (student reads a lesson and finishes exercises; hidden content never shown)
+    epic: 4
+    github: null
+    azure_devops: null
+    wave: 9
+    requires: ["4.2", "4.3"]
+    enables: []
+    files_touched:
+      - tests/e2e/test_student_learning.py
+
+  - id: "5.1"
+    title: Pilot readiness dashboard (per-chapter completeness of the 9 pilot chapters — SC-2 / FC-1)
+    epic: 5
+    github: null
+    azure_devops: null
+    wave: 7
+    requires: ["3.2"]
+    enables: ["3.9"]
+    files_touched:
+      - src/infrastructure/persistence/reporting/**
+      - src/infrastructure/web/reporting/**
+      - src/infrastructure/web/templates/reporting/**
+      - src/infrastructure/web/static/css/reporting.css
+      - src/config/urls.py
+      - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
+      - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/integration/web/test_role_access_matrix.py
+      - docs/architecture/design/00-system-architecture-greenfield.md
+      - tests/integration/web/reporting/**
+
 waves:
   - wave: 1
     stories: ["1.0"]
@@ -388,3 +667,40 @@ waves:
         stories: ["1.10"]
       - dev: 2
         stories: []          # idle — E2E journeys need every Cycle-1 feature merged
+  # ───────── CYCLE-2 (team_size 3) ─────────
+  - wave: 6
+    stories: ["3.1", "3.2", "3.3"]
+    assignments:
+      - dev: 1
+        stories: ["3.1"]
+      - dev: 2
+        stories: ["3.2"]
+      - dev: 3
+        stories: ["3.3"]
+  - wave: 7
+    stories: ["3.4", "4.1", "5.1"]
+    assignments:
+      - dev: 1
+        stories: ["3.4"]
+      - dev: 2
+        stories: ["4.1"]
+      - dev: 3
+        stories: ["5.1"]
+  - wave: 8
+    stories: ["3.5", "3.6", "3.7", "3.8", "4.2", "4.3"]
+    assignments:
+      - dev: 1
+        stories: ["3.5", "3.8"]
+      - dev: 2
+        stories: ["3.6", "4.2"]
+      - dev: 3
+        stories: ["3.7", "4.3"]
+  - wave: 9
+    stories: ["3.9", "4.4"]
+    assignments:
+      - dev: 1
+        stories: ["3.9"]
+      - dev: 2
+        stories: ["4.4"]
+      - dev: 3
+        stories: []          # idle — E2E journeys need the wave-8 features merged
