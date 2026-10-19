@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-19 14:10
+**Last Updated**: 2026-10-19 14:34
 **Updated By**: ARCHITECT
 **Overall Status**: 🟡 IN PROGRESS
 
@@ -22,7 +22,7 @@
 |------|--------|-------|---------|----------|----------|
 | Requirements | ✅ Done | AIRE_ANALYST_PM_GREENFIELD | 2026-10-19 | `docs/requirements.md` | 2026-10-19 11:24 |
 | Architecture | ✅ Done | AIRE_ARCHITECT | 2026-10-19 | `docs/architecture/design/00-system-architecture-greenfield.md` | 2026-10-19 14:10 |
-| Patterns | ⏸️ Not Started | AIRE_ARCHITECT | — | `docs/architecture/design/01-patterns-and-standards-greenfield.md` | 2026-10-19 11:09 |
+| Patterns | ✅ Done | AIRE_ARCHITECT | 2026-10-19 | `docs/architecture/design/01-patterns-and-standards-greenfield.md` | 2026-10-19 14:34 |
 | Implementation Plan | ⏸️ Not Started | AIRE_PRODUCT_OWNER | — | `docs/plans/implementation-plan.md` | 2026-10-19 11:09 |
 | Review | ⏸️ Not Started | AIRE_REVIEWER | — | `docs/reviews/` | 2026-10-19 11:09 |
 | QA | ⏸️ Not Started | AIRE_QA | — | `docs/testing/` | 2026-10-19 11:09 |
@@ -37,18 +37,18 @@
 
 ## Current Step Details
 
-### Architecture
+### Patterns
 
 **Owner**: AIRE_ARCHITECT
 **Status**: ✅ Done
 **Started**: 2026-10-19
 
 **Progress**:
-- [x] Check references and synced Helix context ✅
-- [x] Technology selection confirmed (Django 5.2 LTS, templates + HTMX, SQLite, hosting deferred to DevOps) ✅
-- [x] System context, component, data model, API contracts, security design ✅
-- [x] Error handling, observability, decision records (ADR-001…011) ✅
-- [x] Diagram preview generated: `docs/architecture-diagrams/00-system-architecture-diagrams-greenfield.md` ✅
+- [x] Project structure, naming, dependency management (uv), code structure & formatting ✅
+- [x] UI Primitive Catalogue + `/_styleguide/` verification page ✅
+- [x] Coding patterns: layering, domain, use cases, DB access, web/HTMX, error handling, logging, configuration ✅
+- [x] Testing patterns: unit, integration, E2E, coverage (≥85% overall, 100% domain, ≥95% application) ✅
+- [x] Documentation standards + File/Module Boundary Map with `shared_files` ✅
 - [x] User approval received ✅
 
 ---
@@ -59,12 +59,15 @@
   - Evidence: `docs/requirements.md`
 - [x] **Architecture**: Done — 2026-10-19
   - Evidence: `docs/architecture/design/00-system-architecture-greenfield.md`
+- [x] **Patterns**: Done — 2026-10-19
+  - Evidence: `docs/architecture/design/01-patterns-and-standards-greenfield.md`
 
 ---
 
 ## Upcoming
 
-1. **aire-greenfield-patterns** — define coding patterns and standards
+1. **aire-build-cycles** *(optional)* — break requirements into incremental build cycles
+2. **aire-greenfield-plan** — implementation plan (epics & stories)
 
 ---
 
@@ -73,4 +76,4 @@
 | Agent | Last Action | Status | Updated | Recorded |
 |-------|------------|--------|---------|----------|
 | ANALYST_PM_GREENFIELD | Requirements complete | Idle | 2026-10-19 | 2026-10-19 11:24 |
-| ARCHITECT | Architecture complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:10 |
+| ARCHITECT | Patterns & standards complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:34 |
