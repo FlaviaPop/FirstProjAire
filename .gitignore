@@ -10,3 +10,6 @@ SPEC/workflows/
 .claude/skills/
 .claude/claude.md
 # === end AIRE SDLC Agentic Framework ===
+
+# AIRE parallel-implementation runtime state
+docs/plans/.parallel/
