@@ -59,6 +59,7 @@ stories:
       - src/config/wsgi.py
       - src/domain/__init__.py
       - src/application/__init__.py
+      - src/application/accounts/__init__.py
       - src/infrastructure/__init__.py
       - src/infrastructure/container.py
       - src/infrastructure/persistence/__init__.py
@@ -94,6 +95,7 @@ stories:
       - src/infrastructure/system_clock.py
       - src/infrastructure/web/common/middleware.py
       - src/infrastructure/web/common/errors.py
+      - src/infrastructure/web/common/htmx.py
       - src/infrastructure/web/templates/errors/**
       - src/infrastructure/logging/**
       - src/config/settings/base.py
@@ -149,6 +151,10 @@ stories:
     requires: ["1.0"]
     enables: ["1.7"]
     files_touched:
+      - src/application/accounts/update_preferred_language.py
+      - src/infrastructure/persistence/accounts/repositories.py
+      - src/infrastructure/container.py
+      - src/infrastructure/web/common/decorators.py
       - src/infrastructure/web/common/i18n.py
       - src/infrastructure/web/i18n_views.py
       - src/infrastructure/web/templatetags/i18n_content.py
@@ -158,7 +164,10 @@ stories:
       - src/config/urls.py
       - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
       - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - .gitignore
+      - README.md
       - tests/unit/infrastructure/test_i18n_helpers.py
+      - tests/unit/application/accounts/test_update_preferred_language.py
       - tests/integration/web/i18n/**
 
   - id: "1.5"
@@ -220,7 +229,7 @@ stories:
       - src/infrastructure/web/static/css/components/page_header.css
       - src/infrastructure/web/static/css/components/confirm_dialog.css
       - src/infrastructure/web/static/css/components/table.css
-      - src/infrastructure/web/static/js/confirm_dialog.js
+      - src/infrastructure/web/static/js/ui.js
       - src/infrastructure/web/templatetags/ui.py
       - src/infrastructure/web/styleguide/**
       - src/infrastructure/web/templates/styleguide/**
@@ -239,9 +248,11 @@ stories:
     files_touched:
       - src/infrastructure/web/templates/layouts/base.html
       - src/infrastructure/web/templates/layouts/_top_bar.html
+      - src/infrastructure/web/templates/layouts/_nav.html
+      - src/infrastructure/web/templates/layouts/_messages.html
       - src/infrastructure/web/static/css/layout.css
       - src/infrastructure/web/static/js/htmx.min.js
-      - src/infrastructure/web/common/htmx.py
+      - src/infrastructure/web/templatetags/navigation.py
       - src/infrastructure/web/home/**
       - src/infrastructure/web/templates/home/**
       - src/config/urls.py
@@ -290,6 +301,7 @@ stories:
       - src/config/urls.py
       - src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po
       - src/infrastructure/i18n/locale/en/LC_MESSAGES/django.po
+      - tests/conftest.py
       - tests/factories/accounts.py
       - tests/unit/application/accounts/test_link_parent.py
       - tests/integration/persistence/accounts/test_parent_child_link.py
@@ -305,7 +317,6 @@ stories:
     enables: []
     files_touched:
       - tests/e2e/**
-      - pyproject.toml
       - README.md
 
   - id: "2.1"

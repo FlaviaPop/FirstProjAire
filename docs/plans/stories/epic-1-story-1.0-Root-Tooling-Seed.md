@@ -25,6 +25,7 @@
   - src/config/wsgi.py
   - src/domain/__init__.py
   - src/application/__init__.py
+  - src/application/accounts/__init__.py
   - src/infrastructure/__init__.py
   - src/infrastructure/container.py
   - src/infrastructure/persistence/__init__.py
@@ -246,7 +247,7 @@ No role-differentiated access — single actor.
    ```
    import-linter needs `src` on the path. Document running it as `PYTHONPATH=src uv run lint-imports` in the README.
 
-2. **Create the package skeleton.** Add `__init__.py` files for `src/config`, `src/config/settings`, `src/domain`, `src/application`, `src/infrastructure`, `src/infrastructure/persistence`, `src/infrastructure/web`, `src/infrastructure/web/common`, `src/infrastructure/web/templatetags`, `tests/factories`. `manage.py` and `wsgi.py` put `src/` on `sys.path`:
+2. **Create the package skeleton.** Add `__init__.py` files for `src/config`, `src/config/settings`, `src/domain`, `src/application`, `src/application/accounts` (Stories 1.4 and 1.8 both add modules here in wave 2, so it's created now to avoid a create/create conflict), `src/infrastructure`, `src/infrastructure/persistence`, `src/infrastructure/web`, `src/infrastructure/web/common`, `src/infrastructure/web/templatetags`, `tests/factories`. `manage.py` and `wsgi.py` put `src/` on `sys.path`:
    ```python
    # manage.py
    import os
@@ -268,7 +269,7 @@ No role-differentiated access — single actor.
 
 3. **Environment helper** `src/config/settings/env.py`: exactly the `env_str` / `env_list` / `env_path` helpers from patterns §10. A missing required variable raises `ImproperlyConfigured` naming the variable.
 
-4. **Settings.** In `base.py`: `BASE_DIR = Path(__file__).resolve().parents[3]` (repo root). `INSTALLED_APPS` = Django contrib (`admin`, `auth`, `contenttypes`, `sessions`, `messages`, `staticfiles`) + `"infrastructure.persistence.accounts"`. Use the standard middleware stack. Templates: `DIRS = [BASE_DIR / "src/infrastructure/web/templates"]`, `APP_DIRS = True`, `builtins` none. `LANGUAGE_CODE = "ro"`, `LANGUAGES = [("ro", "Română"), ("en", "English")]`, `LOCALE_PATHS = [BASE_DIR / "src/infrastructure/i18n/locale"]`, `USE_I18N = USE_TZ = True`, `TIME_ZONE = "Europe/Bucharest"`. `STATIC_URL = "static/"`, `STATICFILES_DIRS = [BASE_DIR / "src/infrastructure/web/static"]`, `STATIC_ROOT = BASE_DIR / "staticfiles"`. `AUTH_USER_MODEL = "accounts.UserModel"`, `DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"`. `DATABASES` exactly per patterns §6.1, with `ATOMIC_REQUESTS = False`. `ROOT_URLCONF = "config.urls"`, `WSGI_APPLICATION = "config.wsgi.application"`. `LOGGING` writes plain console output for now; JSON comes in 1.1.
+4. **Settings.** In `base.py`: `BASE_DIR = Path(__file__).resolve().parents[3]` (repo root). `INSTALLED_APPS` = Django contrib (`admin`, `auth`, `contenttypes`, `sessions`, `messages`, `staticfiles`) + `"infrastructure.web"` (registers the shared `templatetags/` package so `{% load ui %}` resolves) + `"infrastructure.persistence.accounts"`. Use the standard middleware stack. Templates: `DIRS = [BASE_DIR / "src/infrastructure/web/templates"]`, `APP_DIRS = True`, `builtins` none. `LANGUAGE_CODE = "ro"`, `LANGUAGES = [("ro", "Română"), ("en", "English")]`, `LOCALE_PATHS = [BASE_DIR / "src/infrastructure/i18n/locale"]`, `USE_I18N = USE_TZ = True`, `TIME_ZONE = "Europe/Bucharest"`. `STATIC_URL = "static/"`, `STATICFILES_DIRS = [BASE_DIR / "src/infrastructure/web/static"]`, `STATIC_ROOT = BASE_DIR / "staticfiles"`. `AUTH_USER_MODEL = "accounts.UserModel"`, `DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"`. `DATABASES` exactly per patterns §6.1, with `ATOMIC_REQUESTS = False`. `ROOT_URLCONF = "config.urls"`, `WSGI_APPLICATION = "config.wsgi.application"`. `LOGGING` writes plain console output for now; JSON comes in 1.1.
    ```python
    # src/config/settings/dev.py
    from config.settings.base import *  # noqa: F403
