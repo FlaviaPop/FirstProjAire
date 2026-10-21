@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-21 16:47
+**Last Updated**: 2026-10-21 16:50
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: DEV
+**Updated By**: QA
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -36,7 +36,7 @@
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-21 | `docs/reviews/` — 2/45 stories reviewed (1.0, 1.3) | 2026-10-21 16:35 |
-| QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/` — all triaged bugs resolved (BUG-001/002/003); regression pending | 2026-10-21 16:47 |
+| QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 
 ---
 
@@ -72,6 +72,7 @@
 - [x] Remediation from `story-1.3-code-review-v1.md`: 4 issues fixed (1 🟡, 3 🟢), 1 🟢 deferred (ISS-004 → Story 1.6); 598/598 tests
 - [x] Bug triage #2: BUG-002 🟡 P2 (`/healthz` 500 with session cookie when DB unusable), BUG-003 🟡 P2 (CSRF failures show Django's default page), BUG-001 🟢 P3 still open; all reproduced by QA; 0 blockers (`docs/testing/bug-triage-2026-10-21-2.md`)
 - [x] Remediation from `bug-triage-2026-10-21-2.md` + Story 1.0 review ISS-005: BUG-002, BUG-003, BUG-001, ISS-005 fixed (+ test language-leak isolation fix); 605/605 tests; verified on a real server
+- [x] QA regression vs Story 1.0 baseline: 🟢 NO REGRESSIONS — 605/605 ×4 runs (incl. reverse order), 30/30 surviving baseline cases, 15/15 manual scenarios (`docs/testing/regression-report-2026-10-21.md`)
 - [ ] Dev 2 → 1.4 next (wave 2 completes after it); 1.4 wires `DjangoUnitOfWork` into `update_preferred_language()` (hand-off from 1.8)
 
 ### Implementation Plan
@@ -209,12 +210,14 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.3-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 598/598 tests, coverage 100%, all gates clean; ISS-004 deferred to Story 1.6
 - [x] **Remediation — bug triage #2 + 1.0 ISS-005**: ✅ Resolved — 2026-10-21
   - Evidence: `docs/testing/bug-triage-2026-10-21-2.md` (banner, per-bug resolutions, Remediation Section with real-server re-run), `docs/reviews/story-1.0-code-review-v1.md` (second pass) — 605/605 tests, coverage 100%, all gates clean
+- [x] **QA Regression — wave-2 integration vs Story 1.0 baseline**: 🟢 NO REGRESSIONS — 2026-10-21
+  - Evidence: `docs/testing/regression-report-2026-10-21.md` — clean env, 605/605 in 4 runs, coverage 100%, gates clean; expected changes: Argon2 hashes, localized CSRF 403 page, BUG-001 fixed
 ---
 
 ## Upcoming
 
 1. **aire-dev-implement (Dev 2)**: 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages). Branch from `feature/wave-2-dev-1` (or `main` after it is merged)
-2. **aire-qa-regression** against `validation-report-story-1.0-2026-10-21.md` (after the P2 fixes)
+2. **aire-review-code** for the remaining wave-2 stories (1.2, 1.8, 1.1, 1.5, 2.1); then merge `feature/wave-2-dev-1` to `main`
 3. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3, 1.8; then merge `feature/wave-2-dev-1` to `main`
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 5. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
@@ -232,4 +235,4 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated bug-triage-2026-10-21-2 (BUG-001/002/003) + 1.0 ISS-005 | Active | 2026-10-21 | 2026-10-21 16:47 |
 | REVIEWER | Reviewed story 1.3 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 16:35 |
-| QA | Bug triage complete — 3 bugs, 0 blockers | Active | 2026-10-21 | 2026-10-21 16:39 |
+| QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
