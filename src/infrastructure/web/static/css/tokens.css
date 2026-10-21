@@ -1,0 +1,70 @@
+/* Design tokens — values from docs/ui-ux/ui-ux-spec.md and docs/ui-ux/08-visual-foundation.md */
+:root {
+  /* Colour (every text/UI pair verified WCAG AA) */
+  --color-primary: #0E7490;
+  --color-primary-hover: #155E75;
+  --color-accent: #FBBF24;
+  --color-focus: #C2410C;
+  --color-success: #15803D;
+  --color-error: #B91C1C;
+  --color-warning: #B45309;
+  --color-text: #1F2937;
+  --color-muted: #4B5563;
+  --color-border: #6B7280;
+  --color-bg-student: #FFF8EC;
+  --color-bg-staff: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-disabled: #F3F4F6;
+
+  /* Status pills: tinted background + dark text, always paired with a text label */
+  --pill-active-bg: #DCFCE7;      --pill-active-fg: #14532D;
+  --pill-flagged-bg: #FEF3C7;     --pill-flagged-fg: #78350F;
+  --pill-blocked-bg: #FEE2E2;     --pill-blocked-fg: #7F1D1D;
+  --pill-resubmitted-bg: #CFFAFE; --pill-resubmitted-fg: #164E63;
+  --pill-draft-bg: #F3F4F6;       --pill-draft-fg: #1F2937;
+  --pill-published-bg: #CFFAFE;   --pill-published-fg: #164E63;
+
+  /* Spacing: 4px unit; student uses 8/16/24/32/48/64, staff 4/8/12/16/24/32/48 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Typography */
+  --font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --font-size-base-student: 18px;
+  --font-size-base-staff: 16px;
+  --font-14: 14px;
+  --font-16: 16px;
+  --font-18: 18px;
+  --font-20: 20px;
+  --font-24: 24px;
+  --font-32: 32px;
+  --font-40: 40px;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --line-height-body: 1.6;
+  --line-height-heading: 1.25;
+
+  /* Shape and elevation */
+  --radius-student: 16px;
+  --radius-staff: 8px;
+  --radius-pill: 999px;
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px rgba(31, 41, 55, .08), 0 1px 3px rgba(31, 41, 55, .12);
+  --elevation-2: 0 4px 8px rgba(31, 41, 55, .12);
+  --elevation-3: 0 12px 32px rgba(31, 41, 55, .24);
+
+  /* Layout and interaction */
+  --touch-min: 32px;
+  --touch-student: 44px;
+  --content-max-student: 960px;
+  --content-max-staff: 1200px;
+  --grid-gutter: 24px;
+  --nav-height: 64px;
+}

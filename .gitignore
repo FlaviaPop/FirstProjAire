@@ -13,3 +13,18 @@ SPEC/workflows/
 
 # AIRE parallel-implementation runtime state
 docs/plans/.parallel/
+
+# Python / tooling
+.venv/
+__pycache__/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+test-results/
+
+# Local configuration and data (never committed)
+.env
+data/
+staticfiles/

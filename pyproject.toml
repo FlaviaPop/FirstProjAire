@@ -1,0 +1,93 @@
+[project]
+name = "learning-platform"
+version = "0.1.0"
+description = "Romanian curriculum learning platform (grade 2 pilot)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "django>=5.2,<5.3",
+  "argon2-cffi>=23.1",
+  "django-axes>=7.0",
+  "django-csp>=4.0",
+  "markdown>=3.7",
+  "nh3>=0.2.18",
+  "gunicorn>=23.0",
+  "whitenoise>=6.7",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-django>=4.9",
+  "pytest-cov>=6.0",
+  "factory-boy>=3.3",
+  "pytest-playwright>=0.6",
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "django-stubs[compatible-mypy]>=5.1",
+  "import-linter>=2.1",
+]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+# docs/ and SPEC/ hold Markdown whose Python snippets are illustrative, not project code.
+extend-exclude = ["src/infrastructure/persistence/*/migrations", "docs", "SPEC", ".claude"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "N", "S", "DJ", "PT", "RUF", "C90", "FIX"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 8
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "domain", "application", "infrastructure", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]  # asserts and test passwords are expected in tests
+
+[tool.mypy]
+mypy_path = "src"
+packages = ["domain", "application", "infrastructure", "config"]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"
+
+[[tool.mypy.overrides]]
+module = ["domain.*", "application.*"]
+strict = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib --strict-markers -m 'not e2e'"
+markers = [
+  "e2e: browser end-to-end tests (run with -m e2e)",
+  "slow: spawns manage.py subprocesses",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = [
+  "*/migrations/*",
+  "src/config/settings/*",
+  "src/config/wsgi.py",
+  "src/infrastructure/web/styleguide/*",
+]
+
+[tool.importlinter]
+root_packages = ["domain", "application", "infrastructure", "config"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layers point inward"
+type = "layers"
+layers = ["config", "infrastructure", "application", "domain"]
+
+[[tool.importlinter.contracts]]
+name = "Domain is framework-free"
+type = "forbidden"
+source_modules = ["domain", "application"]
+forbidden_modules = ["django", "markdown", "nh3"]
