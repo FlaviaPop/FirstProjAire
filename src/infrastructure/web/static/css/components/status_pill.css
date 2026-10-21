@@ -1,0 +1,16 @@
+/* Status pill atom — components/status_pill.html · {% ui_status_pill %}.
+   Tinted background + dark text (all pairs >= 8:1); the word is always rendered, never colour alone. */
+.pill {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-14);
+  font-weight: var(--weight-semibold);
+  line-height: var(--line-height-heading);
+}
+.pill--active { background: var(--pill-active-bg); color: var(--pill-active-fg); }
+.pill--flagged { background: var(--pill-flagged-bg); color: var(--pill-flagged-fg); }
+.pill--blocked { background: var(--pill-blocked-bg); color: var(--pill-blocked-fg); }
+.pill--resubmitted { background: var(--pill-resubmitted-bg); color: var(--pill-resubmitted-fg); }
+.pill--draft { background: var(--pill-draft-bg); color: var(--pill-draft-fg); }
+.pill--published { background: var(--pill-published-bg); color: var(--pill-published-fg); }

@@ -1,0 +1,9 @@
+/* Icon atom — components/icon.html · {% ui_icon %}. Size comes from the width/height attributes. */
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  fill: currentColor;
+}
+/* The duotone layer is styled inside sprite.svg; this rule covers an inlined copy of the sprite. */
+.icon-duotone-layer { fill: var(--color-accent); opacity: .2; }

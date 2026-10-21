@@ -1,0 +1,7 @@
+{% load i18n %}<div class="progress">
+  <label class="progress__label">
+    <span class="progress__name">{{ label }}</span>
+    <progress class="progress__bar" value="{{ done }}" max="{{ max }}" aria-valuetext="{% blocktranslate %}{{ done }} of {{ total }}{% endblocktranslate %}">{{ done }}/{{ total }}</progress>
+  </label>
+  <span class="progress__text">{{ done }}/{{ total }}</span>
+</div>

@@ -6,3 +6,163 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+# --- Story 1.5: design tokens & atom primitives ---
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "Active"
+msgstr "Active"
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "Flagged"
+msgstr "Flagged"
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "Blocked"
+msgstr "Blocked"
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "Resubmitted"
+msgstr "Resubmitted"
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "Draft"
+msgstr "Draft"
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "Published"
+msgstr "Published"
+
+#: src/infrastructure/web/templatetags/ui.py
+msgid "User"
+msgstr "User"
+
+#: src/infrastructure/web/templates/components/score.html
+#, python-format
+msgid "Score: %(value)s out of 100"
+msgstr "Score: %(value)s out of 100"
+
+#: src/infrastructure/web/templates/components/progress_meter.html
+#, python-format
+msgid "%(done)s of %(total)s"
+msgstr "%(done)s of %(total)s"
+
+#: src/infrastructure/web/styleguide/views.py
+msgid "Save"
+msgstr "Save"
+
+#: src/infrastructure/web/styleguide/views.py
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/infrastructure/web/styleguide/views.py
+msgid "Delete"
+msgstr "Delete"
+
+#: src/infrastructure/web/styleguide/views.py
+msgid "Learn more"
+msgstr "Learn more"
+
+#: src/infrastructure/web/styleguide/views.py
+msgid "unread notifications"
+msgstr "unread notifications"
+
+#: src/infrastructure/web/styleguide/views.py
+msgid "Exercises"
+msgstr "Exercises"
+
+#: src/infrastructure/web/templates/styleguide/index.html
+msgid "Styleguide"
+msgstr "Styleguide"
+
+#: src/infrastructure/web/templates/styleguide/index.html
+msgid "Development-only visual reference for the shared UI primitives."
+msgstr "Development-only visual reference for the shared UI primitives."
+
+#: src/infrastructure/web/templates/styleguide/index.html
+msgid "Student theme"
+msgstr "Student theme"
+
+#: src/infrastructure/web/templates/styleguide/index.html
+msgid "Staff theme"
+msgstr "Staff theme"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Tokens"
+msgstr "Tokens"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Colours"
+msgstr "Colours"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Spacing"
+msgstr "Spacing"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Typography"
+msgstr "Typography"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Buttons"
+msgstr "Buttons"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Normal"
+msgstr "Normal"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Disabled"
+msgstr "Disabled"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Loading"
+msgstr "Loading"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Without icon"
+msgstr "Without icon"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "With icon"
+msgstr "With icon"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Icons"
+msgstr "Icons"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Regular"
+msgstr "Regular"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Duotone"
+msgstr "Duotone"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Badge"
+msgstr "Badge"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "A zero count renders nothing."
+msgstr "A zero count renders nothing."
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Status pills"
+msgstr "Status pills"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Avatar"
+msgstr "Avatar"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Without a name"
+msgstr "Without a name"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Score"
+msgstr "Score"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html
+msgid "Progress"
+msgstr "Progress"

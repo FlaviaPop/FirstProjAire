@@ -1,0 +1,14 @@
+/* Badge atom — components/badge.html · {% ui_badge %}. White on primary: 5.36:1. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--space-6);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-size: var(--font-14);
+  font-weight: var(--weight-bold);
+  line-height: var(--space-6);
+}
