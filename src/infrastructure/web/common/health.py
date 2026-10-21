@@ -12,15 +12,17 @@ logger = logging.getLogger(__name__)
 
 
 def _database_ok() -> bool:
+    # Directory first (BUG-001): in WAL mode a read-only directory also makes the query fail,
+    # and checking it afterwards would report the symptom (DB error) instead of the cause.
+    db_dir = Path(str(settings.DATABASES["default"]["NAME"])).parent
+    if not os.access(db_dir, os.W_OK):
+        logger.error("healthz.data_dir_not_writable")
+        return False
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
     except DatabaseError as exc:
         logger.error("healthz.db_unavailable", extra={"error": type(exc).__name__})
-        return False
-    db_dir = Path(str(settings.DATABASES["default"]["NAME"])).parent
-    if not os.access(db_dir, os.W_OK):
-        logger.error("healthz.data_dir_not_writable")
         return False
     return True
 

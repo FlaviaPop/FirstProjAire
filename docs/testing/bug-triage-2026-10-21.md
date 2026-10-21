@@ -1,5 +1,11 @@
 # Bug Triage Report
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-21 by DEV Agent (with `bug-triage-2026-10-21-2.md`)
+> - **Fixed**: 1 bug — P3:1 · **Deferred**: 0
+> - **Tests**: 605/605 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: QA Triage
+
 **Date**: 2026-10-21
 **Triaged By**: QA Agent
 **Source Report(s)**: `docs/testing/validation-report-story-1.0-2026-10-21.md` (story 1.0, commit `26b4ece`)
@@ -73,6 +79,11 @@
 **Recommendation**: Fix later (non-blocking). Check directory writability **before** opening the cursor, so the cause is reported correctly. Replace the `os.access` patch in the test with a real read-only temp directory (skip when running as root). Target: Story 1.1 (wave 2, Dev 1), or `aire-dev-remediate` from this report if you want it fixed now.
 **Assigned To**: DEV
 **Target**: CYCLE-1, with Story 1.1
+
+**Resolution** (2026-10-21, DEV):
+- Fix: the health check verifies the data directory before querying (`src/infrastructure/web/common/health.py:14-27`)
+- Test evidence: `tests/integration/web/test_healthz.py:70` (real read-only directory); full evidence in `docs/testing/bug-triage-2026-10-21-2.md` → Remediation
+- Status: ✅ Resolved
 
 ---
 

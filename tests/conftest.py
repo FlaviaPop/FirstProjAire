@@ -7,6 +7,7 @@ declared in pyproject.toml ([tool.pytest.ini_options] markers, enforced by --str
 
 # --- Story 1.2: role users and logged-in clients (patterns §12.3) ---
 import pytest
+from django.utils import translation
 
 from tests.factories.accounts import (
     AdminFactory,
@@ -65,3 +66,15 @@ def parent_client(client, parent):
 @pytest.fixture
 def admin_client(client, admin_user):  # overrides pytest-django's builtin admin_client
     return _logged_in(client, admin_user)
+
+
+# --- Isolation: no test may leak its active language into the next one ---------------------
+@pytest.fixture(autouse=True)
+def _reset_active_language():
+    """Deactivate any language a test (or a request it made) left active on this thread.
+
+    Without LocaleMiddleware, `i18n_patterns` only resolves the *active* language's prefix, so
+    a leaked "en" made later `/ro/...` requests 404 depending on test order (found with BUG-003).
+    """
+    yield
+    translation.deactivate()

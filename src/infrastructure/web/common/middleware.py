@@ -7,6 +7,7 @@ import uuid
 from collections.abc import Callable
 from typing import Any
 
+from django.db import DatabaseError
 from django.http import HttpRequest, HttpResponse
 
 from domain.common.errors import ConflictError, DomainError, NotFound, PolicyViolation
@@ -64,11 +65,17 @@ class RequestIdMiddleware:
         self, request: HttpRequest, view_func: Any, view_args: Any, view_kwargs: Any
     ) -> None:
         """Runs after AuthenticationMiddleware has attached `request.user`."""
-        user = getattr(request, "user", None)
-        if user is not None and user.is_authenticated:
-            user_id_var.set(user.pk)
-            role_var.set(user.role)
-            request.log_context = (request_id_var.get(), user.pk, user.role)  # type: ignore[attr-defined]
+        try:
+            user = getattr(request, "user", None)
+            if user is None or not user.is_authenticated:
+                return
+        except DatabaseError:
+            # BUG-002: resolving the lazy user reads the session from the DB. Log context is
+            # best-effort; the view (e.g. /healthz → 503) must decide, not this middleware (→ 500).
+            return
+        user_id_var.set(user.pk)
+        role_var.set(user.role)
+        request.log_context = (request_id_var.get(), user.pk, user.role)  # type: ignore[attr-defined]
 
 
 class DomainErrorMiddleware:

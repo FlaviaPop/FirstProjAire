@@ -1,5 +1,7 @@
 """Error page rendering shared by `DomainErrorMiddleware` and Django's handler400/403/404/500."""
 
+import logging
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.functional import Promise
@@ -7,6 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 from domain.common.errors import DomainError, PolicyViolation, Violation
 from infrastructure.web.common.htmx import is_htmx
+
+logger = logging.getLogger(__name__)
 
 GENERIC_BY_STATUS: dict[int, Promise] = {
     400: _("Your request could not be processed. Please try again."),
@@ -48,6 +52,15 @@ def handle_400(request: HttpRequest, exception: Exception | None = None) -> Http
 
 def handle_403(request: HttpRequest, exception: Exception | None = None) -> HttpResponse:
     """handler403: PermissionDenied (raised by Story 1.3's decorator)."""
+    return render_error(request, 403)
+
+
+def csrf_failure(request: HttpRequest, reason: str = "") -> HttpResponse:
+    """CSRF_FAILURE_VIEW: same localized 403 page as handler403 (BUG-003).
+
+    Django's `reason` is for operators only; it's logged, never shown to the user.
+    """
+    logger.warning("csrf.failure", extra={"reason": reason})
     return render_error(request, 403)
 
 

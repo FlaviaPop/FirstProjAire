@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from pathlib import Path
+from typing import Any
 
 from csp.constants import NONE, SELF
 
@@ -88,7 +89,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 LOG_LEVEL = env_str("LOG_LEVEL", "INFO")
 # Story 1.1: JSON lines on stdout with request_id/user_id/role on every record (patterns §9).
-LOGGING = {
+LOGGING: dict[str, Any] = {  # dictConfig; dev.py adjusts the levels in place
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
@@ -156,6 +157,8 @@ SESSION_COOKIE_AGE = 8 * 60 * 60
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_HTTPONLY = True  # HTMX reads the token from the page, not the cookie (Story 1.7)
+# BUG-003: CSRF failures use Story 1.1's localized 403 page instead of Django's default.
+CSRF_FAILURE_VIEW = "infrastructure.web.common.errors.csrf_failure"
 
 LOGIN_URL = "accounts:login"
 X_FRAME_OPTIONS = "DENY"

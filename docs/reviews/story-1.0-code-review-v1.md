@@ -1,10 +1,10 @@
 # Code Review - Story 1.0: Root Tooling Seed
 
-> ## 🛠️ Remediation Status: 🟡 Partially Remediated (5/7)
+> ## 🛠️ Remediation Status: 🟡 Partially Remediated (6/7)
 > - **Remediated**: 2026-10-21 by DEV Agent
-> - **Fixed**: 5 issue(s) — 🔴 0 / 🟠 0 / 🟡 2 / 🟢 3
-> - **Deferred (with user consent)**: 2 (ISS-004 → DevOps, ISS-005 → Story 1.1). See the Remediation Section
-> - **Tests**: 30/30 passing | **Coverage**: 100% | **Linter**: clean
+> - **Fixed**: 6 issue(s) — 🔴 0 / 🟠 0 / 🟡 2 / 🟢 4
+> - **Deferred (with user consent)**: 1 (ISS-004 → DevOps). ISS-005 was resolved in the second pass (see below)
+> - **Tests**: 605/605 passing (second pass, wave-2 branch) | **Coverage**: 100% | **Linter**: clean
 > - **Scenario**: Code Review
 
 **Date**: 2026-10-21
@@ -205,6 +205,12 @@ This can wait until Story 1.1 replaces `LOGGING` with the JSON formatter. Includ
 
 **Deferral** (2026-10-21, DEV): deferred with user consent to Story 1.1, which rewrites `LOGGING`. Still open.
 
+**Resolution** (2026-10-21, DEV; second remediation pass, after Story 1.1 merged):
+- Fix: `dev.py` sets `LOG_LEVEL = env_str("LOG_LEVEL", "DEBUG")` and applies it to the stdout handler and root logger. The `django` logger stays at INFO (its DEBUG output includes SQL parameters). Prod/test stay at INFO.
+- Commit / change ref: `src/config/settings/dev.py:11-15`; `src/config/settings/base.py` `LOGGING: dict[str, Any]`
+- Test evidence: `tests/integration/config/test_log_levels.py` (dev defaults to DEBUG, which failed before the fix; env override; prod INFO); real dev server logged DEBUG lines
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-006: Subprocess helper hides stderr when a step fails 🟢 Low
@@ -393,3 +399,16 @@ Required test coverage of 85% reached. Total coverage: 100.00%
 
 - [ ] Re-request code review (`aire-review-code`). Optional here, since no 🔴 was fixed
 - [ ] Commit `feature/story-1.0-root-tooling-seed` and merge to `main` before wave 2
+
+---
+
+# 🛠️ Remediation — 2026-10-21 (second pass)
+
+**Developer**: DEV Agent · **Scope**: ISS-005 only (deferred to Story 1.1, which is now merged) · **Branch**: `feature/wave-2-dev-1`
+Done together with `docs/testing/bug-triage-2026-10-21-2.md`. Full evidence (tests, gates, real-server run) is in that report's Remediation section.
+
+| ID | Severity | File:Line | Resolution | Test Added |
+|----|----------|-----------|------------|------------|
+| ISS-005 | 🟢 Low | `src/config/settings/dev.py:11-15` | Dev `LOG_LEVEL` defaults to DEBUG; env override kept; `django` logger stays INFO | `tests/integration/config/test_log_levels.py` (3) ✅ |
+
+Still deferred: ISS-004 (HSTS subdomains/preload → `aire-devops-discover`).
