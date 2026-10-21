@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-21 16:35
+**Last Updated**: 2026-10-21 16:39
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: DEV
+**Updated By**: QA
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -36,7 +36,7 @@
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-21 | `docs/reviews/` — 2/45 stories reviewed (1.0, 1.3) | 2026-10-21 16:35 |
-| QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/validation-report-story-1.0-2026-10-21.md` — story 1.0 PASS (1 🟢 bug) | 2026-10-21 11:40 |
+| QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/bug-triage-2026-10-21-2.md` — 3 open bugs (2 🟡 P2, 1 🟢 P3), 0 blockers | 2026-10-21 16:39 |
 
 ---
 
@@ -70,6 +70,7 @@
 - [x] Story 1.3 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 4 🟢 (`docs/reviews/story-1.3-code-review-v1.md`)
 - [x] Story 1.8 merged into `feature/wave-2-dev-1` (`fb28aab`)
 - [x] Remediation from `story-1.3-code-review-v1.md`: 4 issues fixed (1 🟡, 3 🟢), 1 🟢 deferred (ISS-004 → Story 1.6); 598/598 tests
+- [x] Bug triage #2: BUG-002 🟡 P2 (`/healthz` 500 with session cookie when DB unusable), BUG-003 🟡 P2 (CSRF failures show Django's default page), BUG-001 🟢 P3 still open; all reproduced by QA; 0 blockers (`docs/testing/bug-triage-2026-10-21-2.md`)
 - [ ] Dev 2 → 1.4 next (wave 2 completes after it); 1.4 wires `DjangoUnitOfWork` into `update_preferred_language()` (hand-off from 1.8)
 
 ### Implementation Plan
@@ -210,7 +211,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 ## Upcoming
 
 1. **aire-dev-implement (Dev 2)**: 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages). Branch from `feature/wave-2-dev-1` (or `main` after it is merged)
-2. **Bugs to triage**: BUG-001 (🟢 healthz logs wrong cause, read-only dir); BUG-002 candidate: `/healthz` returns 500 (not 503) when the DB is down and the request carries a session cookie; CSRF failures render Django's default page instead of 1.1's 403 page (`CSRF_FAILURE_VIEW`)
+2. **aire-dev-remediate** from `bug-triage-2026-10-21-2.md`: BUG-002 + BUG-001 (healthz), BUG-003 (`CSRF_FAILURE_VIEW`); fold in 1.0 review ISS-005 (dev log level)
 3. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3, 1.8; then merge `feature/wave-2-dev-1` to `main`
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 5. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
@@ -228,4 +229,4 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated story 1.3 (story-1.3-code-review-v1.md) | Active | 2026-10-21 | 2026-10-21 16:35 |
 | REVIEWER | Reviewed story 1.3 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 16:35 |
-| QA | Bug triage complete — 1 bug, 0 blockers | Active | 2026-10-21 | 2026-10-21 11:45 |
+| QA | Bug triage complete — 3 bugs, 0 blockers | Active | 2026-10-21 | 2026-10-21 16:39 |
