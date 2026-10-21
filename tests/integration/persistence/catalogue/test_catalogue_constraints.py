@@ -26,7 +26,7 @@ def test_duplicate_sort_order_in_grade_is_rejected():
 
 
 def test_same_subject_code_is_allowed_in_another_grade():
-    grade = GradeModel.objects.create(code="9", sort_order=9, name_ro="Clasa a IX-a", name_en="9")
+    grade = GradeModel.objects.create(code="9", sort_order=10, name_ro="Clasa a IX-a", name_en="9")
 
     subject = SubjectModel.objects.create(
         grade=grade, code="MEM", sort_order=1, name_ro="x", name_en="x"

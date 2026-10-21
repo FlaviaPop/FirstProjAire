@@ -20,8 +20,8 @@ seed_migration = importlib.import_module(
     "infrastructure.persistence.catalogue.migrations.0002_seed_catalogue"
 )
 
-SEEDED_GRADES = 9
-SEEDED_SUBJECTS = 106
+SEEDED_GRADES = 10
+SEEDED_SUBJECTS = 111
 
 
 def _snapshot() -> list[tuple[str, str, int, str, str, bool]]:
@@ -60,7 +60,7 @@ def test_unseed_removes_every_seeded_row():
 
 
 def test_unseed_leaves_rows_added_later_by_other_means_untouched():
-    later_grade = GradeModel.objects.create(code="9", sort_order=9, name_ro="IX", name_en="9")
+    later_grade = GradeModel.objects.create(code="9", sort_order=10, name_ro="IX", name_en="9")
     SubjectModel.objects.create(
         grade=later_grade, code="MAT", sort_order=1, name_ro="Matematică", name_en="Math"
     )

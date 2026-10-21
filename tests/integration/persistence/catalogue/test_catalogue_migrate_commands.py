@@ -57,7 +57,7 @@ def test_migrate_on_empty_db_applies_schema_then_seed(tmp_path):
     assert "Applying catalogue.0001_initial... OK" in output
     assert "Applying catalogue.0002_seed_catalogue... OK" in output
     assert output.index("catalogue.0001_initial") < output.index("catalogue.0002_seed_catalogue")
-    assert _shell(db_path, COUNTS) == "9 106"
+    assert _shell(db_path, COUNTS) == "10 111"
 
 
 @pytest.mark.slow
@@ -84,7 +84,7 @@ def test_migrate_catalogue_zero_then_migrate_round_trips(tmp_path):
         "Unapplying catalogue.0001_initial... OK"
     )
     assert tables_after_reverse == "[]"
-    assert _shell(db_path, COUNTS) == "9 106"
+    assert _shell(db_path, COUNTS) == "10 111"
 
 
 @pytest.mark.slow

@@ -11,7 +11,7 @@ class GradeFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("code",)
 
     code = "2"
-    sort_order = 2
+    sort_order = 3
     name_ro = "Clasa a II-a"
     name_en = "Grade 2"
 

@@ -1,4 +1,4 @@
-"""Seed the K-8 grade and subject catalogue (Story 2.1, patterns §6.4).
+"""Seed the kindergarten-to-grade-8 catalogue (Story 2.1, patterns §6.4).
 
 The data is inlined on purpose: a migration must keep producing the same rows even if the
 application code changes later, so it never imports from `models.py` or any app module and
@@ -11,9 +11,10 @@ seeded row (a later subject in a seeded grade, or CYCLE-2 content pointing at a 
 through a PROTECT foreign key), Django raises ProtectedError and the migration aborts instead
 of orphaning data.
 
-The subject lists for grades other than 2, and K = "Clasa pregătitoare", are a proposal based
-on the Romanian national curriculum framework, pending the project owner's confirmation.
-Changes after merge go in a follow-up data migration (0003_...), never in this file.
+Content confirmed by the project owner on 2026-10-21 (story AC 10): 10 levels in display order
+K = Grădiniță (the 5 experiential domains), P = Clasa pregătitoare, then grades 1-8 with the
+proposed subject lists. Only grade 2 CLR, MEM and EN are active. Changes after merge go in a
+follow-up data migration (0003_...), never in this file.
 """
 
 from typing import ClassVar
@@ -23,18 +24,24 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from django.db.migrations.state import StateApps
 
 GRADES = [  # (code, sort_order, name_ro, name_en)
-    ("K", 0, "Clasa pregătitoare", "Preparatory grade"),
-    ("1", 1, "Clasa I", "Grade 1"),
-    ("2", 2, "Clasa a II-a", "Grade 2"),
-    ("3", 3, "Clasa a III-a", "Grade 3"),
-    ("4", 4, "Clasa a IV-a", "Grade 4"),
-    ("5", 5, "Clasa a V-a", "Grade 5"),
-    ("6", 6, "Clasa a VI-a", "Grade 6"),
-    ("7", 7, "Clasa a VII-a", "Grade 7"),
-    ("8", 8, "Clasa a VIII-a", "Grade 8"),
+    ("K", 0, "Grădiniță", "Kindergarten"),
+    ("P", 1, "Clasa pregătitoare", "Preparatory grade"),
+    ("1", 2, "Clasa I", "Grade 1"),
+    ("2", 3, "Clasa a II-a", "Grade 2"),
+    ("3", 4, "Clasa a III-a", "Grade 3"),
+    ("4", 5, "Clasa a IV-a", "Grade 4"),
+    ("5", 6, "Clasa a V-a", "Grade 5"),
+    ("6", 7, "Clasa a VI-a", "Grade 6"),
+    ("7", 8, "Clasa a VII-a", "Grade 7"),
+    ("8", 9, "Clasa a VIII-a", "Grade 8"),
 ]
 
 SUBJECT_NAMES = {  # code: (name_ro, name_en)
+    "DLC": ("Domeniul Limbă și comunicare", "Language and communication"),
+    "DS": ("Domeniul Științe", "Sciences"),
+    "DOS": ("Domeniul Om și societate", "People and society"),
+    "DEC": ("Domeniul Estetic și creativ", "Aesthetic and creative"),
+    "DPM": ("Domeniul Psihomotric", "Psychomotor"),
     "CLR": ("Comunicare în limba română", "Communication in Romanian"),
     "MEM": ("Matematică și explorarea mediului", "Mathematics and Environmental Exploration"),
     "EN": ("Limba engleză", "English"),
@@ -64,9 +71,11 @@ SUBJECT_NAMES = {  # code: (name_ro, name_en)
     "EM": ("Educație muzicală", "Music Education"),
 }
 
+KINDERGARTEN_DOMAINS = ["DLC", "DS", "DOS", "DEC", "DPM"]
 PRIMARY_EARLY = ["CLR", "MEM", "EN", "DP", "MM", "AVAP", "EF", "REL"]
 SUBJECTS_BY_GRADE = {  # grade code: subject codes in display order (sort_order = position from 1)
-    "K": PRIMARY_EARLY,
+    "K": KINDERGARTEN_DOMAINS,
+    "P": PRIMARY_EARLY,
     "1": PRIMARY_EARLY,
     "2": PRIMARY_EARLY,
     "3": ["LLR", "MAT", "SN", "EN", "EC", "MM", "AVAP", "EF", "REL"],
