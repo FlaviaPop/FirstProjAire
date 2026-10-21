@@ -29,8 +29,6 @@
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
 | Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 5/11 stories done (1.0, 1.1, 1.2, 1.3, 1.5) | 2026-10-21 16:45 |
 | Epic 2: Grade & Subject Catalogue | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/2 stories done (2.1) | 2026-10-21 16:20 |
-| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 2/11 stories done — 1.0, 1.3 (`docs/stories-implemented/`) | 2026-10-21 12:30 |
-| Epic 2: Grade & Subject Catalogue | ⏸️ Not Started | — | — | 0/2 stories done | 2026-10-19 16:35 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
 | Epic 5: Pilot Reporting | ⏸️ Not Started | — | — | 0/2 stories done (5.1 CYCLE-2, 5.2 CYCLE-3) | 2026-10-19 19:23 |
@@ -57,7 +55,7 @@
 **Started**: 2026-10-21
 
 **Progress**:
-- [x] Story 1.0 Root Tooling Seed (wave 1, Dev 1): 28/28 tests, 100% coverage, all gates green ✅ (on branch `feature/story-1.0-root-tooling-seed`, not committed yet)
+- [x] Story 1.0 Root Tooling Seed (wave 1, Dev 1): 28/28 tests, 100% coverage, all gates green ✅ (commit `26b4ece`, merged to `main` @ `2c24482`)
 - [x] Story 1.0 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 2 🟡 · 5 🟢 (`docs/reviews/story-1.0-code-review-v1.md`)
 - [x] Remediation from `story-1.0-code-review-v1.md`: 5 issues fixed (2 🟡, 3 🟢), 2 🟢 deferred (ISS-004 → DevOps, ISS-005 → Story 1.1)
 - [x] QA test plan, scope story 1.0: `docs/testing/test-plan-story-1.0.md` (31 scenarios; 15/15 AC + 5 requirement rows traced)
@@ -65,11 +63,10 @@
 - [x] Bug triage: 1 bug (BUG-001 🟢 Low / P3), 0 release blockers. Recommendation: approve merge; fix with Story 1.1 (`docs/testing/bug-triage-2026-10-21.md`)
 - [x] Wave 2 Dev 1 (in one go, 4 isolated worktrees): 2.1, 1.5, 1.2, 1.1 implemented and merged into `feature/wave-2-dev-1` (2.1 → 1.5 → 1.2 → 1.1); 500/500 tests, coverage 100%, all gates green
 - [x] Story 2.1 AC 10 owner decision (2026-10-21): 10 levels — Grădiniță (K, 5 experiential domains), Clasa pregătitoare (P), grades 1–8; subject lists confirmed
+- [x] Story 1.3 RBAC Core (wave 2, Dev 2, one-by-one): 85/85 tests on its branch, coverage 100% (domain 100%), all gates green
 - [x] Story 1.3 (Dev 2) committed and merged into `feature/wave-2-dev-1`; fixture stand-ins removed (1.2's conftest fixtures used); 555/555 tests
 - [x] Docs updated for the 2.1 owner decision: stories 2.1 and 2.2 (10 levels, K = Grădiniță, P = Clasa pregătitoare, 111 subjects); notes in requirements, architecture and implementation plan
 - [ ] Dev 2 → 1.8, 1.4 next (wave 2 completes after them)
-- [x] Story 1.3 RBAC Core (wave 2, Dev 2, one-by-one): 85/85 tests, coverage 100% (domain 100%), all gates green — branch `feature/story-1.3-rbac-core`
-- [ ] Wave 2: Dev 1 → 1.5, 1.2, 2.1, 1.1 (running in isolated worktrees) · Dev 2 → 1.8, 1.4 next · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
 
 ### Implementation Plan
 
@@ -97,7 +94,6 @@
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
 | Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 6/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 16:45 |
-| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 2/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 11:07 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
@@ -112,9 +108,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.0 | Root Tooling Seed | 2026-10-21 | 2026-10-21 (remediation started and finished 2026-10-21) | 2026-10-21 11:20 |
 | CYCLE-1 | 1.1 | Error Handling & Observability | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 1.2 | Login & Session Security | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
-| CYCLE-1 | 1.3 | RBAC Core | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 1.1 | Error Handling & Observability | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 1.2 | Login & Session Security | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.3 | RBAC Core | 2026-10-21 | 2026-10-21 | 2026-10-21 12:30 |
 | CYCLE-1 | 1.4 | Internationalization | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
@@ -168,10 +161,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Integration Tests | 100% pass | 100% (555/555 full suite, wave-2 incl. 1.3 merged) | ✅ | 2026-10-21 16:45 |
 | Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
 | Documentation | All stories | 6/45 | 🟡 | 2026-10-21 16:45 |
-| Unit Test Coverage | ≥85% | 100% | ✅ | 2026-10-21 11:20 |
-| Integration Tests | 100% pass | 100% (49/49 on 1.3 branch) | ✅ | 2026-10-21 12:30 |
-| Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
-| Documentation | All stories | 2/45 | 🟡 | 2026-10-21 12:30 |
 
 ---
 
@@ -228,6 +217,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Wave-2 integration: 2.1, 1.5, 1.2, 1.1, 1.3 merged on `feature/wave-2-dev-1` | Idle | 2026-10-21 | 2026-10-21 16:45 |
-| DEV | Story 1.3 RBAC Core complete (Dev 2); Dev 1 wave-2 agents running | Active | 2026-10-21 | 2026-10-21 12:30 |
 | REVIEWER | Reviewed story 1.0 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 11:13 |
 | QA | Bug triage complete — 1 bug, 0 blockers | Active | 2026-10-21 | 2026-10-21 11:45 |
