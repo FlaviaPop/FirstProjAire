@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-21 11:45
-**Updated By**: QA
+**Last Updated**: 2026-10-21 11:55
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -60,7 +60,7 @@
 - [x] QA test plan, scope story 1.0: `docs/testing/test-plan-story-1.0.md` (31 scenarios; 15/15 AC + 5 requirement rows traced)
 - [x] QA validation of story 1.0: 🟢 PASS at commit `26b4ece`. 30/30 tests, 100% coverage, 20/20 requirements covered; BUG-001 🟢 Low (healthz logs wrong cause for read-only data dir), non-blocking (`docs/testing/validation-report-story-1.0-2026-10-21.md`)
 - [x] Bug triage: 1 bug (BUG-001 🟢 Low / P3), 0 release blockers. Recommendation: approve merge; fix with Story 1.1 (`docs/testing/bug-triage-2026-10-21.md`)
-- [ ] Wave 2: Dev 1 → 1.5, 1.2, 2.1, 1.1 · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
+- [ ] Wave 2 (Dev 1, in one go, 4 isolated worktrees, started 2026-10-21): 1.5, 1.2, 2.1, 1.1 · Dev 2 → 1.3, 1.8, 1.4 (separate run) · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
 
 ### Implementation Plan
 
@@ -100,17 +100,17 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILDID | Story | Title | Start | End | Recorded |
 |---------|-------|-------|-------|-----|----------|
 | CYCLE-1 | 1.0 | Root Tooling Seed | 2026-10-21 | 2026-10-21 (remediation started and finished 2026-10-21) | 2026-10-21 11:20 |
-| CYCLE-1 | 1.1 | Error Handling & Observability | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 1.2 | Login & Session Security | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.1 | Error Handling & Observability | 2026-10-21 | — | 2026-10-21 11:55 |
+| CYCLE-1 | 1.2 | Login & Session Security | 2026-10-21 | — | 2026-10-21 11:55 |
 | CYCLE-1 | 1.3 | RBAC Core | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.4 | Internationalization | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | — | 2026-10-21 11:55 |
 | CYCLE-1 | 1.6 | Molecule Primitives | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.7 | App Shell & Role Homes | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.8 | Audit Log | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.10 | Foundation E2E Journeys | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 2.1 | Catalogue Data | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 2.1 | Catalogue Data | 2026-10-21 | — | 2026-10-21 11:55 |
 | CYCLE-1 | 2.2 | Catalogue & Subject Pages | — | — | 2026-10-19 16:35 |
 | CYCLE-2 | 3.1 | Content Domain Rules | — | — | 2026-10-19 18:44 |
 | CYCLE-2 | 3.2 | Content Data Model | — | — | 2026-10-19 18:44 |
