@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "infrastructure.web",  # registers the shared templatetags package ({% load ui %})
     "infrastructure.persistence.accounts",
+    "infrastructure.persistence.catalogue",  # Story 2.1: grade/subject catalogue (K-8)
 ]
 
 MIDDLEWARE = [
