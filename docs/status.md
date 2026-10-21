@@ -218,9 +218,8 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 1. **aire-dev-implement (Dev 2)**: 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages). Branch from `feature/wave-2-dev-1` (or `main` after it is merged)
 2. **aire-review-code** for the remaining wave-2 stories (1.2, 1.8, 1.1, 1.5, 2.1); then merge `feature/wave-2-dev-1` to `main`
-3. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3, 1.8; then merge `feature/wave-2-dev-1` to `main`
-4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
-5. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
+3. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
+4. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ---
 
