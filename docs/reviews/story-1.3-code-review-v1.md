@@ -1,5 +1,12 @@
 # Code Review - Story 1.3: RBAC Core
 
+> ## 🛠️ Remediation Status: 🟡 Partially Remediated (4/5)
+> - **Remediated**: 2026-10-21 by DEV Agent
+> - **Fixed**: 4 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 3
+> - **Deferred (with user consent)**: 1 (ISS-004 → Story 1.6) — see Remediation Section
+> - **Tests**: 598/598 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-21
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -129,6 +136,13 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 
 **Why This Matters**: The story's own rule is "app fails fast" for a misconfigured guard. A typo should break the app at import like the empty case does, not ship a page nobody can open.
 
+
+**Resolution** (2026-10-21, DEV):
+- Fix: `require_permission` converts every key with `Permission(p)` at decoration, so an unknown key raises `ValueError("'content:edt' is not a valid Permission")` at import; valid plain strings are normalised to `Permission` members
+- Commit / change ref: `src/infrastructure/web/common/decorators.py:66` (+ docstring `Raises:`)
+- Test evidence: `tests/integration/web/test_url_protection.py:180` `test_decorator_rejects_unknown_permission_keys_at_import[content:edt|CONTENT_EDIT|'']` (3 cases, failed before the fix) and `:198` `test_decorator_normalises_valid_string_keys_to_permissions`; all green
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: Guard silently breaks `async` views 🟢 Low
@@ -143,6 +157,13 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 - Reject at decoration: `if inspect.iscoroutinefunction(view): raise TypeError("async views are not supported by require_permission")`, or
 - Provide an async branch (`async def wrapper` + `markcoroutinefunction`) if async views are ever introduced.
 
+
+**Resolution** (2026-10-21, DEV):
+- Fix: `_guard` rejects coroutine functions at decoration with `TypeError("async views are not supported by the role guards")` (first suggested option; no async views exist, so no async branch is added)
+- Commit / change ref: `src/infrastructure/web/common/decorators.py:36-38`
+- Test evidence: `tests/integration/web/test_url_protection.py:189` `test_guards_reject_async_views_at_import[perm|auth]` (failed before the fix); green
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-003: `View` alias collides conceptually with `django.views.View` 🟢 Low
@@ -153,6 +174,13 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 **Issue**: Later stories will import both `django.views.View` (class-based views) and this module. A module-level `View` meaning "view callable" invites confusion or shadowing.
 
 **Suggested Fix**: Rename to `ViewCallable` (or `ViewFunc`).
+
+
+**Resolution** (2026-10-21, DEV):
+- Fix: alias renamed `ViewCallable` (with a one-line comment on why); all 3 uses updated; `grep` showed no importers of the old name
+- Commit / change ref: `src/infrastructure/web/common/decorators.py:22-23`, `_guard`, `require_permission`, `require_authenticated` signatures
+- Test evidence: refactor only, no behaviour change (non-testable rename); mypy clean, full suite green
+- Status: ✅ Resolved
 
 ---
 
@@ -165,6 +193,9 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 
 **Suggested Fix**: Add a second test that reloads the URLConf under `settings.DEBUG = True` (e.g. `override_settings(DEBUG=True)` + `clear_url_caches()` + `importlib.reload(config.urls)`), with an explicit allow-list `DEBUG_ONLY_URL_NAMES = {"styleguide:index"}`, so every unguarded dev route is a deliberate, reviewed decision.
 
+
+**Deferral** (2026-10-21, DEV): deferred with user consent to **Story 1.6** (Molecule Primitives), which adds more DEBUG-only styleguide routes and is the natural place to introduce `DEBUG_ONLY_URL_NAMES` and the `DEBUG=True` walk. Still open.
+
 ---
 
 ### ISS-005: Self-review describes the fixture stand-ins as still present 🟢 Low
@@ -175,6 +206,13 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 **Issue**: The stand-ins were removed when Story 1.3 was merged with 1.2 (`09b8dea`), and `CLIENT_FOR_ROLE` now resolves Story 1.2's `tests/conftest.py` fixtures. The review doc still says "temporary role-client stand-ins" and "delete them when Story 1.2 is merged".
 
 **Suggested Fix**: Append a short "Post-merge note (2026-10-21)" stating the stand-ins were removed in `09b8dea`, and tick the Next Steps item. Don't rewrite the original evidence.
+
+
+**Resolution** (2026-10-21, DEV):
+- Fix: appended a "Post-merge note (2026-10-21)" (stand-ins removed in `09b8dea`; review remediation summary) and ticked the Next Steps items; original evidence untouched
+- Commit / change ref: `docs/stories-implemented/story-1.3-review.md` (end of file)
+- Test evidence: documentation-only (non-testable)
+- Status: ✅ Resolved
 
 ---
 
@@ -224,3 +262,74 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-21
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-21
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 Medium + chosen 🟢 Low (no 🔴/🟠 in this report); scope confirmed by the user
+**Scenario**: Code Review
+**Stories Affected**: 1.3
+**Branch**: `feature/wave-2-dev-1` (after merging `feature/story-1.8-audit-log` in `fb28aab`)
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.3 | `decorators.py:66` | Unknown permission keys accepted | `Permission(p)` at decoration → `ValueError` at import | `test_url_protection.py:180` (×3), `:198` ✅ |
+| ISS-002 | 🟢 Low | 1.3 | `decorators.py:36-38` | Async views silently broken | `TypeError` at decoration | `test_url_protection.py:189` (×2) ✅ |
+| ISS-003 | 🟢 Low | 1.3 | `decorators.py:22-23` | `View` alias ambiguous | Renamed `ViewCallable` | n/a (rename) |
+| ISS-005 | 🟢 Low | 1.3 | `story-1.3-review.md` | Stale stand-in note | Post-merge note appended | n/a (docs) |
+
+## Issues Deferred (with user consent)
+
+| ID | Severity | Story | Reason |
+|----|----------|-------|--------|
+| ISS-004 | 🟢 Low | 1.3 | DEBUG-only URL walk → Story 1.6 (adds more styleguide routes) |
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/common/decorators.py` | Modified | Key validation, async rejection, `ViewCallable` |
+| `tests/integration/web/test_url_protection.py` | Modified | 6 new tests (`import re` added) |
+| `docs/stories-implemented/story-1.3-review.md` | Modified | Post-merge note |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Fail fast at import (Story 1.3 AC 6) | `require_permission`, `_guard` | Misconfiguration breaks startup, never ships |
+| Testing §12 (AAA, behavioural names) | new tests | Exact-message match on the rejected key |
+
+## Testing Summary
+
+- **Targeted tests added**: 6 (3 unknown-key cases, 1 normalisation, 2 async cases)
+- **Full suite**: 598/598 passing
+- **Coverage**: 100% (target ≥85%); `decorators.py` 100% (statements + branches); `src/domain` 100%
+- **Gates**: ruff format/check clean · mypy 0 issues (86 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Test Output** (verbatim, filtered):
+```
+collected 598 items
+tests/integration/web/test_url_protection.py .................           [ 49%]
+tests/integration/web/test_url_protection.py ..........                  [ 54%]
+TOTAL                                                     541      0     56      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+============================= 598 passed in 5.69s ==============================
+```
+
+## Deviations from Report Suggestions
+
+- ISS-001: the first test draft used an alternation regex (`content:edt|CONTENT_EDIT|''`) that would pass if *any* key appeared. It was tightened to the exact `"<key>" is not a valid Permission` message per case.
+- ISS-002: chose rejection over an async branch, because there are no async views and the patterns don't plan any.
+
+## Lessons Learned
+
+1. `StrEnum` membership checks accept plain strings, which hides typos. Validate at the boundary by constructing the enum.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
+- [ ] ISS-004 with Story 1.6

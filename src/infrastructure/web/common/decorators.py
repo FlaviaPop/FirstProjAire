@@ -5,6 +5,7 @@ adds @require_permission here, plus a test that fails for any URL that is neithe
 decorated nor listed below.
 """
 
+import inspect
 from collections.abc import Callable
 from functools import wraps
 from typing import Any, Protocol, cast
@@ -18,7 +19,8 @@ from domain.accounts.roles import parse_role
 
 PUBLIC_URL_NAMES: frozenset[str] = frozenset({"healthz", "accounts:login", "accounts:logout"})
 
-View = Callable[..., HttpResponse]
+# Not `View`, to avoid confusion with django.views.View (class-based views).
+ViewCallable = Callable[..., HttpResponse]
 
 
 class GuardedView(Protocol):
@@ -30,7 +32,11 @@ class GuardedView(Protocol):
     def __call__(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse: ...
 
 
-def _guard(view: View, permissions: tuple[Permission, ...]) -> GuardedView:
+def _guard(view: ViewCallable, permissions: tuple[Permission, ...]) -> GuardedView:
+    if inspect.iscoroutinefunction(view):
+        # The wrapper is synchronous and would return an un-awaited coroutine.
+        raise TypeError("async views are not supported by the role guards")
+
     @wraps(view)
     def wrapper(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if not request.user.is_authenticated:
@@ -46,20 +52,21 @@ def _guard(view: View, permissions: tuple[Permission, ...]) -> GuardedView:
     return guarded
 
 
-def require_permission(*permissions: Permission) -> Callable[[View], GuardedView]:
+def require_permission(*permissions: Permission) -> Callable[[ViewCallable], GuardedView]:
     """Allow the view only if the user's role holds ALL given permissions (403 otherwise).
 
     Anonymous users are redirected to `settings.LOGIN_URL` with `next`.
 
     Raises:
-        ValueError: at decoration time when no permission is given (fail fast at import).
+        ValueError: at decoration time when no permission is given, or when a key isn't one of
+            the 16 `Permission` values (fail fast at import instead of denying everyone).
     """
     if not permissions:
         raise ValueError("require_permission needs at least one Permission")
-    required = tuple(permissions)
+    required = tuple(Permission(p) for p in permissions)
     return lambda view: _guard(view, required)
 
 
-def require_authenticated(view: View) -> GuardedView:
+def require_authenticated(view: ViewCallable) -> GuardedView:
     """Allow any signed-in user with a valid role (home, catalogue)."""
     return _guard(view, ())

@@ -193,6 +193,15 @@ AC rows: 12 of 12.
 
 ## Next Steps
 
-- [ ] Commit on `feature/story-1.3-rbac-core`; merge order with wave 2: remove the fixture stand-ins when 1.2 lands
-- [ ] Ready for code review (`aire-review-code`)
-- [ ] Dev 2 next: Story 1.8 (Audit Log), then 1.4 (Internationalization)
+- [x] Commit on `feature/story-1.3-rbac-core`; merge order with wave 2: remove the fixture stand-ins when 1.2 lands (done: commit `8f2a01a`, merged in `09b8dea`)
+- [x] Ready for code review (`aire-review-code`): `docs/reviews/story-1.3-code-review-v1.md`, ⚠️ approved with comments
+- [x] Dev 2 next: Story 1.8 (Audit Log) done; then 1.4 (Internationalization)
+
+## Post-merge note (2026-10-21)
+
+- The temporary role-client fixture stand-ins described above (Files Changed, Gate 3, Challenges, Deviations) were **removed** when Story 1.3 was merged with Story 1.2 in `09b8dea`. `CLIENT_FOR_ROLE` now resolves Story 1.2's fixtures in `tests/conftest.py`, and `PUBLIC_URL_NAMES` holds `healthz`, `accounts:login` and `accounts:logout`.
+- Review v1 remediation (same day) changed `decorators.py`:
+  - unknown permission keys now raise `ValueError` at import (ISS-001)
+  - `async` views raise `TypeError` at import (ISS-002)
+  - the `View` alias is renamed `ViewCallable` (ISS-003)
+  See `docs/reviews/story-1.3-code-review-v1.md` → Remediation.

@@ -4,6 +4,8 @@ The coverage test is unmarked, so it walks the real ROOT_URLCONF. The decorator-
 tests use this module's own `urlpatterns` via @pytest.mark.urls(__name__).
 """
 
+import re
+
 import pytest
 from django.contrib.sessions.models import Session
 from django.db import connection
@@ -172,6 +174,32 @@ def test_role_cannot_be_elevated_by_request_parameters(client):
 def test_decorator_requires_at_least_one_permission():
     with pytest.raises(ValueError, match="at least one Permission"):
         require_permission()
+
+
+@pytest.mark.parametrize("bad_key", ["content:edt", "CONTENT_EDIT", ""])
+def test_decorator_rejects_unknown_permission_keys_at_import(bad_key):
+    # Review v1 ISS-001: a typo must fail at import, not ship a page that denies everyone.
+    with pytest.raises(ValueError, match=re.escape(f"{bad_key!r} is not a valid Permission")):
+        require_permission(P.CONTENT_EDIT, bad_key)
+
+
+@pytest.mark.parametrize(
+    "decorate", [require_permission(P.CONTENT_EDIT), require_authenticated], ids=["perm", "auth"]
+)
+def test_guards_reject_async_views_at_import(decorate):
+    # Review v1 ISS-002: the sync wrapper would never await the coroutine.
+    async def _async_view(request):
+        return HttpResponse("never")
+
+    with pytest.raises(TypeError, match="async views are not supported"):
+        decorate(_async_view)
+
+
+def test_decorator_normalises_valid_string_keys_to_permissions():
+    guarded = require_permission("content:edit")(_any)
+
+    assert guarded.required_permissions == (P.CONTENT_EDIT,)
+    assert type(guarded.required_permissions[0]) is P
 
 
 def test_wrappers_expose_required_permissions_and_names():
