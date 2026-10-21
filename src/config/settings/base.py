@@ -1,6 +1,9 @@
 """Settings shared by every environment. Environment-specific values live in dev/test/prod."""
 
+from datetime import timedelta
 from pathlib import Path
+
+from csp.constants import NONE, SELF
 
 from config.settings.env import env_path, env_str
 
@@ -19,12 +22,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "csp.middleware.CSPMiddleware",  # Story 1.2
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",  # Story 1.2: must stay last
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -83,4 +88,61 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": LOG_LEVEL},
+}
+
+# --- Story 1.2: authentication, brute-force protection, sessions, security headers ---
+# Fixed product policy (patterns §10): constants here, not env vars. Only the proxy count
+# depends on the deployment.
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",  # Argon2id (architecture: Security Design)
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",  # fallbacks: older hashes upgrade on login
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+]
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
+INSTALLED_APPS += ["axes", "csp"]
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",  # first: refuses locked-out username+IP pairs
+    "django.contrib.auth.backends.ModelBackend",
+]
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=15)
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]  # architecture: "per username+IP"
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_TEMPLATE = "accounts/locked_out.html"
+AXES_HTTP_RESPONSE_CODE = 429
+# Story 1.2 table: an attempt during the cool-off has no side effect, so it must not
+# restart the 15 minutes (axes' default would).
+AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
+AXES_IPWARE_PROXY_COUNT = int(env_str("AXES_PROXY_COUNT", "0"))
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_AGE = 8 * 60 * 60
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = True  # HTMX reads the token from the page, not the cookie (Story 1.7)
+
+LOGIN_URL = "accounts:login"
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": [SELF],
+        "script-src": [SELF],
+        "style-src": [SELF],
+        "img-src": [SELF, "data:"],
+        "font-src": [SELF],
+        "form-action": [SELF],
+        "frame-ancestors": [NONE],
+        "base-uri": [SELF],
+    }
 }

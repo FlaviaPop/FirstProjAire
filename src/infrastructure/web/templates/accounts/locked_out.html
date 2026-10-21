@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% load i18n static %}
+{% block title %}{% translate "Too many attempts" %}{% endblock %}
+{% block content %}
+<section class="login-card" aria-labelledby="lockout-title">
+  <h1 id="lockout-title">
+    <svg class="icon icon--32" width="32" height="32" focusable="false" aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lock-simple-duotone"></use></svg>
+    {% translate "Too many attempts" %}
+  </h1>
+  <div class="form-banner form-banner--error" role="alert">{% translate "Too many failed attempts. Try again in 15 minutes or ask the administrator." %}</div>
+</section>
+{% endblock %}

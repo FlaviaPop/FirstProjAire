@@ -6,3 +6,22 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+# --- Story 1.2: login and lockout ---
+msgid "Sign in"
+msgstr "Autentificare"
+
+msgid "Username"
+msgstr "Nume de utilizator"
+
+msgid "Password"
+msgstr "Parolă"
+
+msgid "Incorrect username or password."
+msgstr "Nume de utilizator sau parolă incorecte."
+
+msgid "Too many attempts"
+msgstr "Prea multe încercări"
+
+msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+msgstr "Prea multe încercări eșuate. Încearcă din nou peste 15 minute sau cere ajutorul administratorului."

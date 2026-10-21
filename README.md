@@ -77,6 +77,7 @@ Environment variables are read only in `src/config/settings/env.py`.
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | yes | empty | `https://…` origins |
 | `DATABASE_PATH` | yes | `./data/db.sqlite3` | must be on a persistent volume in prod |
 | `LOG_LEVEL` | no | `INFO` | |
+| `AXES_PROXY_COUNT` | no | `0` | reverse proxies in front of Django, for the login lockout's client IP. Only takes effect if `python-ipware` is installed; without it axes uses `REMOTE_ADDR` |
 
 ## Troubleshooting
 
@@ -86,3 +87,4 @@ Environment variables are read only in `src/config/settings/env.py`.
 | `/healthz` returns 503 | Check that `DATABASE_PATH` exists and its directory is writable |
 | `lint-imports` can't find `domain` | Run it as `PYTHONPATH=src uv run lint-imports` |
 | `database is locked` | Only one app instance may write to the SQLite file (ADR-004) |
+| "Too many attempts" (429) on sign-in | 5 failed logins lock that username+IP for 15 minutes. Wait, or run `uv run python manage.py axes_reset_username <username>` |

@@ -5,4 +5,4 @@ adds @require_permission here, plus a test that fails for any URL that is neithe
 decorated nor listed below.
 """
 
-PUBLIC_URL_NAMES: frozenset[str] = frozenset({"healthz"})
+PUBLIC_URL_NAMES: frozenset[str] = frozenset({"healthz", "accounts:login", "accounts:logout"})

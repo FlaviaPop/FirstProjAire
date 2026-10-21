@@ -6,3 +6,22 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+# --- Story 1.2: login and lockout ---
+msgid "Sign in"
+msgstr "Sign in"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Incorrect username or password."
+msgstr "Incorrect username or password."
+
+msgid "Too many attempts"
+msgstr "Too many attempts"
+
+msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+msgstr "Too many failed attempts. Try again in 15 minutes or ask the administrator."
