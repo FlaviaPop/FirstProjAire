@@ -28,3 +28,6 @@ test-results/
 .env
 data/
 staticfiles/
+
+# Claude Code agent worktrees (local only)
+.claude/worktrees/
