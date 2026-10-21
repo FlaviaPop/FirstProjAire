@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "infrastructure.web",  # registers the shared templatetags package ({% load ui %})
     "infrastructure.persistence.accounts",
     "infrastructure.persistence.catalogue",  # Story 2.1: grade/subject catalogue (K-8)
+    "infrastructure.persistence.audit",  # Story 1.8: append-only audit log + auth receivers
 ]
 
 MIDDLEWARE = [
