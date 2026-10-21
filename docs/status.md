@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-21 11:55
+**Last Updated**: 2026-10-21 16:20
 **Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
@@ -26,8 +26,8 @@
 | UI/UX Design | ✅ Done | AIRE_UI_UX_DESIGNER | 2026-10-19 | `docs/ui-ux/ui-ux-spec.md` | 2026-10-19 14:56 |
 | Build Cycles | ✅ Done | AIRE_BUILD_CYCLE_PLANNER | 2026-10-19 | `docs/plans/builds/` · `docs/plans/build-cycles.md` | 2026-10-19 14:45 |
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
-| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/11 stories done — `docs/stories-implemented/story-1.0-review.md` | 2026-10-21 11:07 |
-| Epic 2: Grade & Subject Catalogue | ⏸️ Not Started | — | — | 0/2 stories done | 2026-10-19 16:35 |
+| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 4/11 stories done on this branch (1.0, 1.1, 1.2, 1.5); 1.3 done on `feature/story-1.3-rbac-core` | 2026-10-21 16:20 |
+| Epic 2: Grade & Subject Catalogue | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/2 stories done (2.1) | 2026-10-21 16:20 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
 | Epic 5: Pilot Reporting | ⏸️ Not Started | — | — | 0/2 stories done (5.1 CYCLE-2, 5.2 CYCLE-3) | 2026-10-19 19:23 |
@@ -60,7 +60,9 @@
 - [x] QA test plan, scope story 1.0: `docs/testing/test-plan-story-1.0.md` (31 scenarios; 15/15 AC + 5 requirement rows traced)
 - [x] QA validation of story 1.0: 🟢 PASS at commit `26b4ece`. 30/30 tests, 100% coverage, 20/20 requirements covered; BUG-001 🟢 Low (healthz logs wrong cause for read-only data dir), non-blocking (`docs/testing/validation-report-story-1.0-2026-10-21.md`)
 - [x] Bug triage: 1 bug (BUG-001 🟢 Low / P3), 0 release blockers. Recommendation: approve merge; fix with Story 1.1 (`docs/testing/bug-triage-2026-10-21.md`)
-- [ ] Wave 2 (Dev 1, in one go, 4 isolated worktrees, started 2026-10-21): 1.5, 1.2, 2.1, 1.1 · Dev 2 → 1.3, 1.8, 1.4 (separate run) · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
+- [x] Wave 2 Dev 1 (in one go, 4 isolated worktrees): 2.1, 1.5, 1.2, 1.1 implemented and merged into `feature/wave-2-dev-1` (2.1 → 1.5 → 1.2 → 1.1); 500/500 tests, coverage 100%, all gates green
+- [x] Story 2.1 AC 10 owner decision (2026-10-21): 10 levels — Grădiniță (K, 5 experiential domains), Clasa pregătitoare (P), grades 1–8; subject lists confirmed
+- [ ] Dev 2 → 1.3 done on its own branch (not committed yet); 1.8, 1.4 next
 
 ### Implementation Plan
 
@@ -87,7 +89,7 @@
 
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
-| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 1/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 11:07 |
+| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 5/13 (+1.3 unmerged) | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 16:20 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
@@ -100,17 +102,17 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILDID | Story | Title | Start | End | Recorded |
 |---------|-------|-------|-------|-----|----------|
 | CYCLE-1 | 1.0 | Root Tooling Seed | 2026-10-21 | 2026-10-21 (remediation started and finished 2026-10-21) | 2026-10-21 11:20 |
-| CYCLE-1 | 1.1 | Error Handling & Observability | 2026-10-21 | — | 2026-10-21 11:55 |
-| CYCLE-1 | 1.2 | Login & Session Security | 2026-10-21 | — | 2026-10-21 11:55 |
+| CYCLE-1 | 1.1 | Error Handling & Observability | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
+| CYCLE-1 | 1.2 | Login & Session Security | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 1.3 | RBAC Core | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.4 | Internationalization | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | — | 2026-10-21 11:55 |
+| CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 1.6 | Molecule Primitives | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.7 | App Shell & Role Homes | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.8 | Audit Log | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.10 | Foundation E2E Journeys | — | — | 2026-10-19 16:35 |
-| CYCLE-1 | 2.1 | Catalogue Data | 2026-10-21 | — | 2026-10-21 11:55 |
+| CYCLE-1 | 2.1 | Catalogue Data | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 2.2 | Catalogue & Subject Pages | — | — | 2026-10-19 16:35 |
 | CYCLE-2 | 3.1 | Content Domain Rules | — | — | 2026-10-19 18:44 |
 | CYCLE-2 | 3.2 | Content Data Model | — | — | 2026-10-19 18:44 |
@@ -151,10 +153,10 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
-| Unit Test Coverage | ≥85% | 100% | ✅ | 2026-10-21 11:20 |
-| Integration Tests | 100% pass | 100% (23/23) | ✅ | 2026-10-21 11:20 |
+| Unit Test Coverage | ≥85% | 100% (domain 100%) | ✅ | 2026-10-21 16:20 |
+| Integration Tests | 100% pass | 100% (500/500 full suite, wave-2 Dev 1 merged) | ✅ | 2026-10-21 16:20 |
 | Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
-| Documentation | All stories | 1/45 | 🟡 | 2026-10-21 11:07 |
+| Documentation | All stories | 5/45 | 🟡 | 2026-10-21 16:20 |
 
 ---
 
@@ -185,14 +187,18 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 - [x] **QA Validation — Story 1.0**: 🟢 PASS — 2026-10-21
   - Evidence: `docs/testing/validation-report-story-1.0-2026-10-21.md` — commit `26b4ece`; 7/7 unit, 23/23 integration, coverage 100%, 4 stable runs, all gates green; 31/31 scenarios executed; BUG-001 🟢 Low open
 
+- [x] **Wave 2 — Dev 1 (2.1, 1.5, 1.2, 1.1)**: Done — 2026-10-21
+  - Evidence: `docs/stories-implemented/story-2.1-review.md` (76/76, 10/10 AC), `story-1.5-review.md` (222/222, 10/10 AC), `story-1.2-review.md` (134/134, 15/15 AC), `story-1.1-review.md` (158/158, 16/16 AC); merged suite 500/500, coverage 100%; integration fix `AXES_VERBOSE = False`
 ---
 
 ## Upcoming
 
-1. **Merge Story 1.0** (`feature/story-1.0-root-tooling-seed`, commit `26b4ece`) to `main` (wave-2 branches start from it)
-2. Track BUG-001 (🟢 healthz log cause) and fold it into Story 1.1 together with ISS-005
-3. **aire-dev-implement**: wave 2. Dev 1 → 1.5 UI tokens/fonts first; Dev 2 → 1.3 RBAC Core
-4. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
+1. **Bring in Story 1.3** (`feature/story-1.3-rbac-core`, staged/uncommitted): commit, merge into `feature/wave-2-dev-1`, resolve `decorators.py` (`PUBLIC_URL_NAMES` + 1.2's `accounts:login`/`logout`) and `test_role_access_matrix.py` (delete 1.3's fixture stand-ins; keep 1.2's logout row)
+2. **Doc updates for the 2.1 owner decision**: story 2.1 (K = Grădiniță, new P, sort orders K=0, P=1, 1–8 = 2–9, 10 levels / 111 subjects), story 2.2 ("9 grades" ×2), note in requirements/architecture/plan that "K–8" includes Clasa pregătitoare; UI canvas Catalogue screen
+3. **Bugs to triage**: BUG-001 (🟢 healthz logs wrong cause, read-only dir); BUG-002 candidate: `/healthz` returns 500 (not 503) when the DB is down and the request carries a session cookie; CSRF failures render Django's default page instead of 1.1's 403 page (`CSRF_FAILURE_VIEW`)
+4. **aire-dev-implement (Dev 2)**: 1.8 Audit Log, then 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages)
+5. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3; merge the integration branch to `main` after review
+6. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ---
 
@@ -205,6 +211,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Remediated story 1.0 (story-1.0-code-review-v1.md) | Active | 2026-10-21 | 2026-10-21 11:20 |
+| DEV | Story 2.1+1.5+1.2+1.1 complete (Dev 1 wave 2, merged) | Idle | 2026-10-21 | 2026-10-21 16:20 |
 | REVIEWER | Reviewed story 1.0 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 11:13 |
 | QA | Bug triage complete — 1 bug, 0 blockers | Active | 2026-10-21 | 2026-10-21 11:45 |
