@@ -1,6 +1,7 @@
 # Project Status
 
 **Last Updated**: 2026-10-21 16:20
+**Last Updated**: 2026-10-21 12:30
 **Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
@@ -28,6 +29,8 @@
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
 | Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 4/11 stories done on this branch (1.0, 1.1, 1.2, 1.5); 1.3 done on `feature/story-1.3-rbac-core` | 2026-10-21 16:20 |
 | Epic 2: Grade & Subject Catalogue | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/2 stories done (2.1) | 2026-10-21 16:20 |
+| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 2/11 stories done — 1.0, 1.3 (`docs/stories-implemented/`) | 2026-10-21 12:30 |
+| Epic 2: Grade & Subject Catalogue | ⏸️ Not Started | — | — | 0/2 stories done | 2026-10-19 16:35 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
 | Epic 5: Pilot Reporting | ⏸️ Not Started | — | — | 0/2 stories done (5.1 CYCLE-2, 5.2 CYCLE-3) | 2026-10-19 19:23 |
@@ -63,6 +66,8 @@
 - [x] Wave 2 Dev 1 (in one go, 4 isolated worktrees): 2.1, 1.5, 1.2, 1.1 implemented and merged into `feature/wave-2-dev-1` (2.1 → 1.5 → 1.2 → 1.1); 500/500 tests, coverage 100%, all gates green
 - [x] Story 2.1 AC 10 owner decision (2026-10-21): 10 levels — Grădiniță (K, 5 experiential domains), Clasa pregătitoare (P), grades 1–8; subject lists confirmed
 - [ ] Dev 2 → 1.3 done on its own branch (not committed yet); 1.8, 1.4 next
+- [x] Story 1.3 RBAC Core (wave 2, Dev 2, one-by-one): 85/85 tests, coverage 100% (domain 100%), all gates green — branch `feature/story-1.3-rbac-core`
+- [ ] Wave 2: Dev 1 → 1.5, 1.2, 2.1, 1.1 (running in isolated worktrees) · Dev 2 → 1.8, 1.4 next · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
 
 ### Implementation Plan
 
@@ -90,6 +95,7 @@
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
 | Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 5/13 (+1.3 unmerged) | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 16:20 |
+| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 2/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 11:07 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
@@ -105,6 +111,9 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.1 | Error Handling & Observability | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 1.2 | Login & Session Security | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 1.3 | RBAC Core | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.1 | Error Handling & Observability | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.2 | Login & Session Security | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.3 | RBAC Core | 2026-10-21 | 2026-10-21 | 2026-10-21 12:30 |
 | CYCLE-1 | 1.4 | Internationalization | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
 | CYCLE-1 | 1.6 | Molecule Primitives | — | — | 2026-10-19 16:35 |
@@ -157,6 +166,10 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Integration Tests | 100% pass | 100% (500/500 full suite, wave-2 Dev 1 merged) | ✅ | 2026-10-21 16:20 |
 | Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
 | Documentation | All stories | 5/45 | 🟡 | 2026-10-21 16:20 |
+| Unit Test Coverage | ≥85% | 100% | ✅ | 2026-10-21 11:20 |
+| Integration Tests | 100% pass | 100% (49/49 on 1.3 branch) | ✅ | 2026-10-21 12:30 |
+| Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
+| Documentation | All stories | 2/45 | 🟡 | 2026-10-21 12:30 |
 
 ---
 
@@ -186,6 +199,8 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.0-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 30/30 tests (7 unit, 23 integration), coverage 100%, ruff/mypy/import-linter/makemigrations clean; ISS-004 deferred to DevOps, ISS-005 to Story 1.1
 - [x] **QA Validation — Story 1.0**: 🟢 PASS — 2026-10-21
   - Evidence: `docs/testing/validation-report-story-1.0-2026-10-21.md` — commit `26b4ece`; 7/7 unit, 23/23 integration, coverage 100%, 4 stable runs, all gates green; 31/31 scenarios executed; BUG-001 🟢 Low open
+- [x] **Story 1.3 RBAC Core**: Done — 2026-10-21
+  - Evidence: `docs/stories-implemented/story-1.3-review.md` — 85/85 tests (36 unit, 49 integration), coverage 100%, `src/domain` 100%, ruff/mypy/import-linter/makemigrations clean
 
 - [x] **Wave 2 — Dev 1 (2.1, 1.5, 1.2, 1.1)**: Done — 2026-10-21
   - Evidence: `docs/stories-implemented/story-2.1-review.md` (76/76, 10/10 AC), `story-1.5-review.md` (222/222, 10/10 AC), `story-1.2-review.md` (134/134, 15/15 AC), `story-1.1-review.md` (158/158, 16/16 AC); merged suite 500/500, coverage 100%; integration fix `AXES_VERBOSE = False`
@@ -199,6 +214,10 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 4. **aire-dev-implement (Dev 2)**: 1.8 Audit Log, then 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages)
 5. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3; merge the integration branch to `main` after review
 6. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
+1. **Merge wave 2** into one integration branch: Dev 1's four story branches (1.5, 1.2, 2.1, 1.1) + `feature/story-1.3-rbac-core`. Delete 1.3's fixture stand-ins in `test_role_access_matrix.py` once 1.2 is in.
+2. **aire-dev-implement** (Dev 2): Story 1.8 Audit Log, then 1.4 Internationalization (installs GNU gettext)
+3. Track BUG-001 (🟢 healthz log cause) and ISS-005 (dev log level) with Story 1.1
+4. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ---
 
@@ -212,5 +231,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Story 2.1+1.5+1.2+1.1 complete (Dev 1 wave 2, merged) | Idle | 2026-10-21 | 2026-10-21 16:20 |
+| DEV | Story 1.3 RBAC Core complete (Dev 2); Dev 1 wave-2 agents running | Active | 2026-10-21 | 2026-10-21 12:30 |
 | REVIEWER | Reviewed story 1.0 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 11:13 |
 | QA | Bug triage complete — 1 bug, 0 blockers | Active | 2026-10-21 | 2026-10-21 11:45 |
