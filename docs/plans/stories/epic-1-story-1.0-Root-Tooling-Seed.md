@@ -133,7 +133,7 @@ Finally, create **every** file listed in `shared_files` (dependency graph), so w
 6. `UserModel.objects.create_superuser(...)` sets `role=ADMIN`, `is_staff=True`, `is_superuser=True`; `create_user(...)` hashes the password (never stored in plain text).
 7. SQLite is configured exactly as patterns §6.1 (`transaction_mode=IMMEDIATE`, `timeout=20`, WAL + `synchronous=NORMAL` via `init_command`), and `ATOMIC_REQUESTS=False`.
 8. Settings split: `base.py` (shared), `dev.py` (DEBUG, dev-only secret, creates the `data/` directory), `test.py` (fast `MD5PasswordHasher` for tests only, temporary DB), `prod.py` (DEBUG False, `DJANGO_SECRET_KEY` **required**, security flags from patterns §10). Environment variables are read **only** through `config/settings/env.py`.
-9. `GET /healthz` (no language prefix, no auth) → `200 {"status":"ok","db":"ok"}` when `SELECT 1` succeeds and the DB directory is writable; `503 {"status":"unavailable","db":"error"}` otherwise; non-GET/HEAD → `405`. The URL name `healthz` is in `PUBLIC_URL_NAMES`.
+9. `GET /healthz` (no language prefix, no auth) → `200 {"status":"ok","db":"ok"}` when `SELECT 1` succeeds and the DB directory is writable; `503 {"status":"unavailable","db":"error"}` otherwise; non-GET/HEAD → rejected with no side effects: `403` in a real request (CSRF middleware runs before the view; `csrf_exempt` is forbidden by patterns §13) and `405` from the view's own `@require_safe` guard (accepted by the project owner 2026-10-21). The URL name `healthz` is in `PUBLIC_URL_NAMES`.
 10. Every `shared_files` entry exists after this story: `container.py` (empty composition root module with a docstring), `decorators.py` (`PUBLIC_URL_NAMES` only), `base.html` (valid minimal layout), `tokens.css` (full token set), `templatetags/ui.py` (empty `Library`), both `django.po` (valid headers), `tests/conftest.py`, `tests/factories/accounts.py`, `tests/integration/web/test_role_access_matrix.py` (public-route assertion), `.env.example`, `README.md`, `.gitignore`.
 11. Quality commands pass on the seed: `uv run ruff format --check .`, `uv run ruff check .`, `uv run mypy`, `uv run lint-imports`, `uv run pytest --cov=src --cov-branch --cov-fail-under=85`.
 12. import-linter contracts "Layers point inward" and "Domain is framework-free" are configured (with `include_external_packages = true`) and kept.
@@ -154,7 +154,7 @@ No role-differentiated access — single actor.
 | `HEAD /healthz` | `200`, empty body | none |
 | `GET /healthz` when `SELECT 1` raises `DatabaseError` | `503 {"status":"unavailable","db":"error"}` | `ERROR` log line with the exception class (no stack trace in the body) |
 | `GET /healthz` when the DB directory is read-only | `503 {"status":"unavailable","db":"error"}` | `ERROR` log line |
-| `POST /healthz` (or any non-GET/HEAD) | `405 Method Not Allowed` | none |
+| `POST /healthz` (or any non-GET/HEAD) | `403 Forbidden` (CSRF check runs first); the view-level guard returns `405 Method Not Allowed` | none |
 | `GET /ro/healthz` / `GET /en/healthz` | `404` (health is deliberately outside `i18n_patterns`) | none |
 | `manage.py migrate` on an empty DB | creates all tables; `accounts_user` exists | DB file created at `DATABASE_PATH` |
 | `manage.py migrate` repeated | "No migrations to apply." | none |

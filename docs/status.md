@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-19 19:23
-**Updated By**: PRODUCT_OWNER
+**Last Updated**: 2026-10-21 11:45
+**Updated By**: QA
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -26,7 +26,7 @@
 | UI/UX Design | ✅ Done | AIRE_UI_UX_DESIGNER | 2026-10-19 | `docs/ui-ux/ui-ux-spec.md` | 2026-10-19 14:56 |
 | Build Cycles | ✅ Done | AIRE_BUILD_CYCLE_PLANNER | 2026-10-19 | `docs/plans/builds/` · `docs/plans/build-cycles.md` | 2026-10-19 14:45 |
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
-| Epic 1: Foundation | ⏸️ Not Started | — | — | 0/11 stories done | 2026-10-19 16:35 |
+| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/11 stories done — `docs/stories-implemented/story-1.0-review.md` | 2026-10-21 11:07 |
 | Epic 2: Grade & Subject Catalogue | ⏸️ Not Started | — | — | 0/2 stories done | 2026-10-19 16:35 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
@@ -34,8 +34,8 @@
 | Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
-| Review | ⏸️ Not Started | AIRE_REVIEWER | — | `docs/reviews/` | 2026-10-19 11:09 |
-| QA | ⏸️ Not Started | AIRE_QA | — | `docs/testing/` | 2026-10-19 11:09 |
+| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-21 | `docs/reviews/` — 1/45 stories reviewed | 2026-10-21 11:13 |
+| QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/validation-report-story-1.0-2026-10-21.md` — story 1.0 PASS (1 🟢 bug) | 2026-10-21 11:40 |
 
 ---
 
@@ -46,6 +46,21 @@
 ---
 
 ## Current Step Details
+
+### Implementation — CYCLE-1
+
+**Owner**: AIRE_DEV
+**Status**: 🟡 In Progress
+**Started**: 2026-10-21
+
+**Progress**:
+- [x] Story 1.0 Root Tooling Seed (wave 1, Dev 1): 28/28 tests, 100% coverage, all gates green ✅ (on branch `feature/story-1.0-root-tooling-seed`, not committed yet)
+- [x] Story 1.0 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 2 🟡 · 5 🟢 (`docs/reviews/story-1.0-code-review-v1.md`)
+- [x] Remediation from `story-1.0-code-review-v1.md`: 5 issues fixed (2 🟡, 3 🟢), 2 🟢 deferred (ISS-004 → DevOps, ISS-005 → Story 1.1)
+- [x] QA test plan, scope story 1.0: `docs/testing/test-plan-story-1.0.md` (31 scenarios; 15/15 AC + 5 requirement rows traced)
+- [x] QA validation of story 1.0: 🟢 PASS at commit `26b4ece`. 30/30 tests, 100% coverage, 20/20 requirements covered; BUG-001 🟢 Low (healthz logs wrong cause for read-only data dir), non-blocking (`docs/testing/validation-report-story-1.0-2026-10-21.md`)
+- [x] Bug triage: 1 bug (BUG-001 🟢 Low / P3), 0 release blockers. Recommendation: approve merge; fix with Story 1.1 (`docs/testing/bug-triage-2026-10-21.md`)
+- [ ] Wave 2: Dev 1 → 1.5, 1.2, 2.1, 1.1 · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
 
 ### Implementation Plan
 
@@ -72,7 +87,7 @@
 
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
-| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 0/13 | ⏸️ Not Started | — | — | 2026-10-19 16:35 |
+| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 1/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 11:07 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
@@ -84,7 +99,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 | BUILDID | Story | Title | Start | End | Recorded |
 |---------|-------|-------|-------|-----|----------|
-| CYCLE-1 | 1.0 | Root Tooling Seed | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.0 | Root Tooling Seed | 2026-10-21 | 2026-10-21 (remediation started and finished 2026-10-21) | 2026-10-21 11:20 |
 | CYCLE-1 | 1.1 | Error Handling & Observability | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.2 | Login & Session Security | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.3 | RBAC Core | — | — | 2026-10-19 16:35 |
@@ -136,10 +151,10 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
-| Unit Test Coverage | ≥85% | —% | ⏸️ | 2026-10-19 16:35 |
-| Integration Tests | 100% pass | — | ⏸️ | 2026-10-19 16:35 |
-| Code Review | All stories | 0/45 | ⏸️ | 2026-10-19 19:23 |
-| Documentation | All stories | 0/45 | ⏸️ | 2026-10-19 19:23 |
+| Unit Test Coverage | ≥85% | 100% | ✅ | 2026-10-21 11:20 |
+| Integration Tests | 100% pass | 100% (23/23) | ✅ | 2026-10-21 11:20 |
+| Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
+| Documentation | All stories | 1/45 | 🟡 | 2026-10-21 11:07 |
 
 ---
 
@@ -161,14 +176,23 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/plans/implementation-plan.md` (Epics 3–5, waves 6–9), `docs/plans/dependency-graph.yml`, `docs/plans/stories/` (14 files)
 - [x] **Implementation Plan — CYCLE-3 (18 stories)**: Done — 2026-10-19
   - Evidence: `docs/plans/implementation-plan.md` (Epics 5–8, waves 10–13), `docs/plans/dependency-graph.yml`, `docs/plans/stories/` (18 files)
+- [x] **Story 1.0 Root Tooling Seed**: Done — 2026-10-21
+  - Evidence: `docs/stories-implemented/story-1.0-review.md` — 28/28 tests passed (7 unit, 21 integration), coverage 100%, ruff/mypy/import-linter/makemigrations clean. Deviation: production POST /healthz → 403 (CSRF), accepted by user.
+- [x] **Code Review — Story 1.0 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-21
+  - Evidence: `docs/reviews/story-1.0-code-review-v1.md` — gates re-run by reviewer (28/28, 100%); 0 blockers, 0 high, 2 medium (self-review evidence count, AC 9 contract text), 5 low
+- [x] **Remediation — Story 1.0 (review v1)**: 🟡 Partially Remediated (5/7) — 2026-10-21
+  - Evidence: `docs/reviews/story-1.0-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 30/30 tests (7 unit, 23 integration), coverage 100%, ruff/mypy/import-linter/makemigrations clean; ISS-004 deferred to DevOps, ISS-005 to Story 1.1
+- [x] **QA Validation — Story 1.0**: 🟢 PASS — 2026-10-21
+  - Evidence: `docs/testing/validation-report-story-1.0-2026-10-21.md` — commit `26b4ece`; 7/7 unit, 23/23 integration, coverage 100%, 4 stable runs, all gates green; 31/31 scenarios executed; BUG-001 🟢 Low open
 
 ---
 
 ## Upcoming
 
-1. **Tracker export decision** for the 13 CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
-2. **aire-dev-implement 1.0** — Root Tooling Seed (wave 1, Dev-1)
-3. All three cycles are planned — no further planning needed before launch
+1. **Merge Story 1.0** (`feature/story-1.0-root-tooling-seed`, commit `26b4ece`) to `main` (wave-2 branches start from it)
+2. Track BUG-001 (🟢 healthz log cause) and fold it into Story 1.1 together with ISS-005
+3. **aire-dev-implement**: wave 2. Dev 1 → 1.5 UI tokens/fonts first; Dev 2 → 1.3 RBAC Core
+4. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ---
 
@@ -181,3 +205,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
+| DEV | Remediated story 1.0 (story-1.0-code-review-v1.md) | Active | 2026-10-21 | 2026-10-21 11:20 |
+| REVIEWER | Reviewed story 1.0 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 11:13 |
+| QA | Bug triage complete — 1 bug, 0 blockers | Active | 2026-10-21 | 2026-10-21 11:45 |

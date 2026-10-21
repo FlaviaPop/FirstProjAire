@@ -1,0 +1,8 @@
+# Learning Platform — en translations.
+msgid ""
+msgstr ""
+"Project-Id-Version: learning-platform 0.1.0\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
