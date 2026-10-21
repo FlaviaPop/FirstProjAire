@@ -200,6 +200,8 @@ No learning-outcome improvement target is required for this pilot; success is ba
 - Teacher content editing and test configuration; admin flag/block/review flow with in-app teacher notification.
 - Visible but inactive grade/subject catalogue from kindergarten through grade 8.
 
+> **Owner decision (2026-10-21):** "kindergarten" = **Grădiniță** (code `K`, preschool, 5 experiential domains); **Clasa pregătitoare** (code `P`) is shown as its own level before grade 1, so the catalogue has 10 levels. See Story 2.1.
+
 ### OUT of Scope ❌
 - Active learning content or actions for grades other than grade 2.
 - Active grade 2 subjects beyond CLR, MEM, and EN.

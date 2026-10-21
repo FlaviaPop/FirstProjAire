@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-21 16:20
+**Last Updated**: 2026-10-21 16:45
 **Last Updated**: 2026-10-21 12:30
 **Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
@@ -27,7 +27,7 @@
 | UI/UX Design | ✅ Done | AIRE_UI_UX_DESIGNER | 2026-10-19 | `docs/ui-ux/ui-ux-spec.md` | 2026-10-19 14:56 |
 | Build Cycles | ✅ Done | AIRE_BUILD_CYCLE_PLANNER | 2026-10-19 | `docs/plans/builds/` · `docs/plans/build-cycles.md` | 2026-10-19 14:45 |
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
-| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 4/11 stories done on this branch (1.0, 1.1, 1.2, 1.5); 1.3 done on `feature/story-1.3-rbac-core` | 2026-10-21 16:20 |
+| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 5/11 stories done (1.0, 1.1, 1.2, 1.3, 1.5) | 2026-10-21 16:45 |
 | Epic 2: Grade & Subject Catalogue | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/2 stories done (2.1) | 2026-10-21 16:20 |
 | Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 2/11 stories done — 1.0, 1.3 (`docs/stories-implemented/`) | 2026-10-21 12:30 |
 | Epic 2: Grade & Subject Catalogue | ⏸️ Not Started | — | — | 0/2 stories done | 2026-10-19 16:35 |
@@ -65,7 +65,9 @@
 - [x] Bug triage: 1 bug (BUG-001 🟢 Low / P3), 0 release blockers. Recommendation: approve merge; fix with Story 1.1 (`docs/testing/bug-triage-2026-10-21.md`)
 - [x] Wave 2 Dev 1 (in one go, 4 isolated worktrees): 2.1, 1.5, 1.2, 1.1 implemented and merged into `feature/wave-2-dev-1` (2.1 → 1.5 → 1.2 → 1.1); 500/500 tests, coverage 100%, all gates green
 - [x] Story 2.1 AC 10 owner decision (2026-10-21): 10 levels — Grădiniță (K, 5 experiential domains), Clasa pregătitoare (P), grades 1–8; subject lists confirmed
-- [ ] Dev 2 → 1.3 done on its own branch (not committed yet); 1.8, 1.4 next
+- [x] Story 1.3 (Dev 2) committed and merged into `feature/wave-2-dev-1`; fixture stand-ins removed (1.2's conftest fixtures used); 555/555 tests
+- [x] Docs updated for the 2.1 owner decision: stories 2.1 and 2.2 (10 levels, K = Grădiniță, P = Clasa pregătitoare, 111 subjects); notes in requirements, architecture and implementation plan
+- [ ] Dev 2 → 1.8, 1.4 next (wave 2 completes after them)
 - [x] Story 1.3 RBAC Core (wave 2, Dev 2, one-by-one): 85/85 tests, coverage 100% (domain 100%), all gates green — branch `feature/story-1.3-rbac-core`
 - [ ] Wave 2: Dev 1 → 1.5, 1.2, 2.1, 1.1 (running in isolated worktrees) · Dev 2 → 1.8, 1.4 next · Dev 2 → 1.3, 1.8, 1.4 (start after 1.0 is merged to `main`)
 
@@ -94,7 +96,7 @@
 
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
-| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 5/13 (+1.3 unmerged) | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 16:20 |
+| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 6/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 16:45 |
 | Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 2/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-21 11:07 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
@@ -163,9 +165,9 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%) | ✅ | 2026-10-21 16:20 |
-| Integration Tests | 100% pass | 100% (500/500 full suite, wave-2 Dev 1 merged) | ✅ | 2026-10-21 16:20 |
+| Integration Tests | 100% pass | 100% (555/555 full suite, wave-2 incl. 1.3 merged) | ✅ | 2026-10-21 16:45 |
 | Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
-| Documentation | All stories | 5/45 | 🟡 | 2026-10-21 16:20 |
+| Documentation | All stories | 6/45 | 🟡 | 2026-10-21 16:45 |
 | Unit Test Coverage | ≥85% | 100% | ✅ | 2026-10-21 11:20 |
 | Integration Tests | 100% pass | 100% (49/49 on 1.3 branch) | ✅ | 2026-10-21 12:30 |
 | Code Review | All stories | 1/45 | 🟡 | 2026-10-21 11:13 |
@@ -208,16 +210,11 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 ## Upcoming
 
-1. **Bring in Story 1.3** (`feature/story-1.3-rbac-core`, staged/uncommitted): commit, merge into `feature/wave-2-dev-1`, resolve `decorators.py` (`PUBLIC_URL_NAMES` + 1.2's `accounts:login`/`logout`) and `test_role_access_matrix.py` (delete 1.3's fixture stand-ins; keep 1.2's logout row)
-2. **Doc updates for the 2.1 owner decision**: story 2.1 (K = Grădiniță, new P, sort orders K=0, P=1, 1–8 = 2–9, 10 levels / 111 subjects), story 2.2 ("9 grades" ×2), note in requirements/architecture/plan that "K–8" includes Clasa pregătitoare; UI canvas Catalogue screen
-3. **Bugs to triage**: BUG-001 (🟢 healthz logs wrong cause, read-only dir); BUG-002 candidate: `/healthz` returns 500 (not 503) when the DB is down and the request carries a session cookie; CSRF failures render Django's default page instead of 1.1's 403 page (`CSRF_FAILURE_VIEW`)
-4. **aire-dev-implement (Dev 2)**: 1.8 Audit Log, then 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages)
-5. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3; merge the integration branch to `main` after review
-6. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
-1. **Merge wave 2** into one integration branch: Dev 1's four story branches (1.5, 1.2, 2.1, 1.1) + `feature/story-1.3-rbac-core`. Delete 1.3's fixture stand-ins in `test_role_access_matrix.py` once 1.2 is in.
-2. **aire-dev-implement** (Dev 2): Story 1.8 Audit Log, then 1.4 Internationalization (installs GNU gettext)
-3. Track BUG-001 (🟢 healthz log cause) and ISS-005 (dev log level) with Story 1.1
-4. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
+1. **aire-dev-implement (Dev 2)**: 1.8 Audit Log, then 1.4 Internationalization (installs GNU gettext, `LocaleMiddleware` → fixes `/en/…` 404s and RO-only error pages). Branch from `feature/wave-2-dev-1` (or `main` after it is merged)
+2. **Bugs to triage**: BUG-001 (🟢 healthz logs wrong cause, read-only dir); BUG-002 candidate: `/healthz` returns 500 (not 503) when the DB is down and the request carries a session cookie; CSRF failures render Django's default page instead of 1.1's 403 page (`CSRF_FAILURE_VIEW`)
+3. **aire-review-code** for 1.1, 1.2, 1.5, 2.1, 1.3; then merge `feature/wave-2-dev-1` to `main`
+4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
+5. **Tracker export decision** for the CYCLE-1 stories (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ---
 
@@ -230,7 +227,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Story 2.1+1.5+1.2+1.1 complete (Dev 1 wave 2, merged) | Idle | 2026-10-21 | 2026-10-21 16:20 |
+| DEV | Wave-2 integration: 2.1, 1.5, 1.2, 1.1, 1.3 merged on `feature/wave-2-dev-1` | Idle | 2026-10-21 | 2026-10-21 16:45 |
 | DEV | Story 1.3 RBAC Core complete (Dev 2); Dev 1 wave-2 agents running | Active | 2026-10-21 | 2026-10-21 12:30 |
 | REVIEWER | Reviewed story 1.0 (approved with comments) | Idle | 2026-10-21 | 2026-10-21 11:13 |
 | QA | Bug triage complete — 1 bug, 0 blockers | Active | 2026-10-21 | 2026-10-21 11:45 |

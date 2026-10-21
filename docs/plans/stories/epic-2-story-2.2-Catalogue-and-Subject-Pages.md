@@ -17,13 +17,13 @@
   - tests/integration/web/test_role_access_matrix.py
   - tests/integration/web/catalogue/**
 **Roles Ref**: docs/requirements.md#roles--permissions-matrix — personas this story differentiates: Student, Teacher, Parent/Guardian, Admin
-**QA Candidate**: Yes — **Observable:** `/<lang>/catalogue/` lists grades K–8 with their subjects. Grade 2's CLR, MEM and EN are active cards: links for Students, informational cards for other roles. Every other subject is an "Unavailable" tile with no link. `/<lang>/subjects/<id>/` opens an active subject's chapter-list page (empty state until CYCLE-2 adds chapters) for Students; inactive or unknown subjects return 404; non-students get 403. **Mechanism:**
+**QA Candidate**: Yes — **Observable:** `/<lang>/catalogue/` lists all 10 levels (Grădiniță, Clasa pregătitoare, grades 1–8) with their subjects. Grade 2's CLR, MEM and EN are active cards: links for Students, informational cards for other roles. Every other subject is an "Unavailable" tile with no link. `/<lang>/subjects/<id>/` opens an active subject's chapter-list page (empty state until CYCLE-2 adds chapters) for Students; inactive or unknown subjects return 404; non-students get 403. **Mechanism:**
 - query service `catalogue_overview()` (2 queries: grades + prefetched subjects) and `active_subject(subject_id)` (raises `NotFound` for missing or inactive) in `persistence/catalogue/queries.py`, returning frozen DTOs
 - views `catalogue:index` (`@require_authenticated`) and `catalogue:subject` (`@require_permission(lessons:view)`)
 - names via `{% localized %}`; cards via `ui_card`, tiles via `ui_disabled_tile`, empty state via `ui_empty_state`
 - the Student "Learn" menu item (Story 1.7 registry) appears automatically once `catalogue:index` resolves
 
-**Authz & preconditions:** catalogue for any signed-in role; subject page requires `lessons:view` (Student only, per the matrix); anonymous → login. **Edge & idempotency:** an inactive subject's URL → 404 identical to a non-existent id (no hint it exists); a non-numeric id → 404 (route converter); reloads are read-only and identical; a missing seed (empty catalogue) shows an empty state instead of a crash. **Regression:** active vs unavailable rendering for all 9 grades, the 404 for every inactive subject, the 403 for non-students on subject pages, RO/EN names with diacritics, no link from any unavailable tile, keyboard access to active cards.
+**Authz & preconditions:** catalogue for any signed-in role; subject page requires `lessons:view` (Student only, per the matrix); anonymous → login. **Edge & idempotency:** an inactive subject's URL → 404 identical to a non-existent id (no hint it exists); a non-numeric id → 404 (route converter); reloads are read-only and identical; a missing seed (empty catalogue) shows an empty state instead of a crash. **Regression:** active vs unavailable rendering for all 10 levels, the 404 for every inactive subject, the 403 for non-students on subject pages, RO/EN names with diacritics, no link from any unavailable tile, keyboard access to active cards.
 
 ---
 
@@ -40,7 +40,7 @@ This is the first page about learning. Opening "Learn" shows the whole school st
 
 **Acceptance Criteria** (plain-English):
 - Every signed-in person can open the catalogue; visitors who aren't signed in are asked to sign in.
-- The catalogue shows grades K through 8 in order, each with its subjects, in the language in use.
+- The catalogue shows all 10 levels in order (Grădiniță, Clasa pregătitoare, grades 1 to 8), each with its subjects, in the language in use.
 - Only grade 2's CLR, MEM and English are active; they're highlighted as the pilot subjects.
 - Every other subject shows as "Unavailable" and can't be clicked or reached with the keyboard.
 - Typing the address of an unavailable or non-existent subject shows "Page not found".
@@ -54,7 +54,7 @@ This is the first page about learning. Opening "Learn" shows the whole school st
 ### Student
 **Scenario / narrative**: As a grade-2 Student, I click "Learn" on my home page and see colourful sections for each grade. In my grade's section, three big cards light up: Comunicare în limba română, Matematică și explorarea mediului and Limba engleză. The other grades' subjects are greyed out with a small lock and the word "Indisponibil", and clicking them does nothing. I open Mathematics and see its page with a "back to the catalogue" trail and a message that no chapters are published yet. When my classmate tells me the address of a grade 5 subject and I type it in, I see "Page not found".
 **Steps**:
-1. `GET /ro/catalogue/` → `@require_authenticated` → `catalogue_overview()` reads 9 grades + subjects (2 queries) → renders the grade sections; active subjects as `ui_card` with `href=/ro/subjects/<id>/` (the role holds `lessons:view`); inactive as `ui_disabled_tile`.
+1. `GET /ro/catalogue/` → `@require_authenticated` → `catalogue_overview()` reads 10 levels + subjects (2 queries) → renders the grade sections; active subjects as `ui_card` with `href=/ro/subjects/<id>/` (the role holds `lessons:view`); inactive as `ui_disabled_tile`.
 2. Click a card → `GET /ro/subjects/<id>/` → `@require_permission(lessons:view)` passes → `active_subject(id)` → page header with breadcrumb (Catalogue › Clasa a II-a › Matematică…) + `ui_empty_state("No chapters are published yet.")`.
 3. Typed URL of an inactive subject → `active_subject` raises `NotFound` → 404 page.
 
@@ -133,7 +133,7 @@ The subject page is the CYCLE-2 extension point: its chapter list will come from
 1. `catalogue_overview() -> tuple[GradeDTO, ...]` returns grades ordered by `sort_order`, each with `subjects: tuple[SubjectDTO, ...]` ordered by `sort_order`, using exactly **2** SQL queries (`assertNumQueries(2)`).
 2. `active_subject(subject_id) -> SubjectDTO` (with its `grade_name_ro`/`grade_name_en` for the breadcrumb) raises `domain.common.errors.NotFound` when the id doesn't exist **or** `is_active=False`. Both cases produce an identical 404 page.
 3. `catalogue:index` → `GET /<lang>/catalogue/`, `@require_authenticated`. `catalogue:subject` → `GET /<lang>/subjects/<int:subject_id>/`, `@require_permission(Permission.LESSONS_VIEW)`. Both GET only (`@require_safe`); POST → 405.
-4. The catalogue renders one `<section aria-labelledby>` per grade (9), with the localized grade name as `<h2>`. Active subjects are rendered with `ui_card`: with `href` = `catalogue:subject` URL when the viewer has `lessons:view`, otherwise without `href` and with meta "Available to students". Inactive subjects are rendered with `ui_disabled_tile`. The grade containing active subjects shows a "Pilot" label.
+4. The catalogue renders one `<section aria-labelledby>` per level (10), with the localized grade name as `<h2>`. Active subjects are rendered with `ui_card`: with `href` = `catalogue:subject` URL when the viewer has `lessons:view`, otherwise without `href` and with meta "Available to students". Inactive subjects are rendered with `ui_disabled_tile`. The grade containing active subjects shows a "Pilot" label.
 5. No `<a>` element points to an inactive subject anywhere in the catalogue HTML (test-proven for every inactive subject id).
 6. The subject page shows `ui_page_header` with breadcrumb `[Catalogue → /<lang>/catalogue/, <grade name>, <subject name>]` (last item `aria-current="page"`) and `ui_empty_state("No chapters are published yet.")`.
 7. An empty catalogue (no grades) renders `ui_empty_state("The catalogue is not available yet.")` with status 200.
@@ -163,7 +163,7 @@ The subject page is the CYCLE-2 extension point: its chapter list will come from
 
 | Trigger | Response | Side-effect |
 |---------|----------|-------------|
-| Student `GET /ro/catalogue/` | `200`, 9 grade sections, 3 linked active cards | none (2 SQL queries) |
+| Student `GET /ro/catalogue/` | `200`, 10 level sections, 3 linked active cards | none (2 SQL queries) |
 | Teacher/Parent/Admin `GET /en/catalogue/` | `200`, 3 informational active cards, English names | none |
 | Same GET repeated | identical `200` | none |
 | Anonymous `GET /ro/catalogue/` | `302 /ro/accounts/login/?next=/ro/catalogue/` | none |
@@ -179,7 +179,7 @@ The subject page is the CYCLE-2 extension point: its chapter list will come from
 - On the Student catalogue page, exactly 3 subject links match `/ro/subjects/\d+/`, and they belong to grade 2's CLR, MEM, EN. For non-students, 0 such links.
 - Every inactive subject renders `aria-disabled="true"` and its id appears in no `href`.
 - Every inactive subject id returns 404 for a Student. Every active id returns 200 for a Student and 403 for the other roles.
-- `<h2>` grade headings appear in order K, 1 … 8 (9 headings); the grade-2 section carries the "Pilot" label.
+- `<h2>` level headings appear in order K (Grădiniță), P (Clasa pregătitoare), 1 … 8 (10 headings); the grade-2 section carries the "Pilot" label.
 - The EN catalogue shows "Mathematics and Environmental Exploration"; the RO one shows "Matematică și explorarea mediului".
 - **What does NOT change**: no writes of any kind (pure read). Catalogue data and `is_active` flags are untouched. The other roles' home pages and menus are unaffected except for the Student "Learn" item appearing.
 
@@ -346,10 +346,10 @@ def _inactive_ids():
     return set(SubjectModel.objects.filter(is_active=False).values_list("pk", flat=True))
 
 
-def test_student_sees_nine_grades_and_three_subject_links(student_client):
+def test_student_sees_ten_levels_and_three_subject_links(student_client):
     html = student_client.get("/ro/catalogue/").content.decode()
 
-    assert html.count("<h2 id=\"grade-") == 9
+    assert html.count("<h2 id=\"grade-") == 10
     linked = {int(i) for i in re.findall(r'href="/ro/subjects/(\d+)/"', html)}
     assert linked == _active_ids()
 
@@ -437,7 +437,7 @@ def test_overview_uses_two_queries(django_assert_num_queries):
     with django_assert_num_queries(2):
         grades = catalogue_overview()
 
-    assert [g.code for g in grades] == ["K", "1", "2", "3", "4", "5", "6", "7", "8"]
+    assert [g.code for g in grades] == ["K", "P", "1", "2", "3", "4", "5", "6", "7", "8"]
     assert [g.code for g in grades if g.has_active] == ["2"]
 
 
@@ -457,7 +457,7 @@ def test_inactive_subject_is_not_found():
 ```
 
 Manual:
-- As a Student (RO and EN): open Learn → catalogue → check 9 grade sections, the "Pilot" label on grade 2, three clickable cards, the unavailable tiles with the lock and "Indisponibil"/"Unavailable". Tab through the page and confirm unavailable tiles are skipped. Open MEM and check the breadcrumb and empty state.
+- As a Student (RO and EN): open Learn → catalogue → check 10 level sections (Grădiniță first, then Clasa pregătitoare), the "Pilot" label on grade 2, three clickable cards, the unavailable tiles with the lock and "Indisponibil"/"Unavailable". Tab through the page and confirm unavailable tiles are skipped. Open MEM and check the breadcrumb and empty state.
 - Type an inactive subject's URL (find an id in the Django shell) and confirm 404.
 - As Teacher/Parent/Admin: catalogue shows informational cards; subject URL gives 403.
 
@@ -467,6 +467,6 @@ Manual:
 - ❌ Chapters, lessons, exercises and the chapter list content (CYCLE-2, Epics 3–4); the subject page shows the empty state until then.
 - ❌ Teacher authoring entry points from the catalogue (CYCLE-2 teacher dashboard).
 - ❌ Editing grades or subjects, or activating more subjects (out of scope).
-- ❌ Search or filtering of the catalogue (not required; 9 grades).
+- ❌ Search or filtering of the catalogue (not required; 10 levels).
 
 **Evidence**: pytest output (pages + queries, incl. the 2-query assertion), coverage %, screenshots of the Student catalogue (RO), a Teacher catalogue (EN), the subject page with breadcrumb and empty state, and the 404 for an inactive subject, all recorded in `docs/stories-implemented/story-2.2-review.md` under "## DoD Evidence".

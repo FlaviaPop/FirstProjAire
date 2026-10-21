@@ -26,16 +26,16 @@ The requirements ask the platform to show the full school structure (kindergarte
 
 This story stores that structure in the database, with every grade and subject name in Romanian and English, and marks exactly those three subjects as active. It loads automatically when the platform is installed, with no manual data entry. It also survives restarts and can be undone cleanly if a release is rolled back.
 
-The list of subjects for grades other than grade 2 isn't spelled out in the requirements. This story uses a **proposed list based on the Romanian national curriculum framework**, which the project owner must confirm before release (see the table and open items below). The word "kindergarten" is interpreted as *Clasa pregătitoare* (the preparatory school year that precedes grade 1 in Romania and has official textbooks), which also needs the owner's confirmation. Changing the list later is a small, safe update.
+The list of subjects for grades other than grade 2 isn't spelled out in the requirements. This story uses a **proposed list based on the Romanian national curriculum framework**, which the project owner must confirm before release (see the table and open items below). The project owner decided (2026-10-21) that **"kindergarten" means Grădiniță** (preschool), which is *not* Clasa pregătitoare. The catalogue therefore shows **both**: Grădiniță (code `K`, listing the 5 preschool *domenii experiențiale*) and Clasa pregătitoare (code `P`, the preparatory school year before grade 1), followed by grades 1–8. The owner also confirmed the subject lists below. Changing the list later is a small, safe update.
 
 **Acceptance Criteria** (plain-English):
-- After installation, the platform knows grades K (Clasa pregătitoare) and 1 to 8, in that order, with names in both languages.
+- After installation, the platform knows 10 levels in this order: Grădiniță (K), Clasa pregătitoare (P) and grades 1 to 8, with names in both languages.
 - Each grade has its subjects, with names in both languages, in a fixed display order.
 - Only grade 2's CLR, MEM and English subjects are active; every other subject is stored as inactive.
 - The same subject can't appear twice in one grade.
 - The data loads automatically on installation and survives restarts.
 - Undoing this release removes exactly this data and nothing else.
-- The proposed subject lists for grades other than 2, and the meaning of "kindergarten", are confirmed by the project owner before release.
+- The subject lists for grades other than 2, and the meaning of "kindergarten", are confirmed by the project owner before release (confirmed 2026-10-21: kindergarten = Grădiniță; Clasa pregătitoare added as its own level).
 
 **User Flow**:
 Actor: system — no role variation.
@@ -49,7 +49,7 @@ flowchart TD
   C --> D{grade 2 AND code in CLR, MEM, EN?}
   D -- yes --> E[is_active = True]
   D -- no --> F[is_active = False]
-  E & F --> G[9 grades, N subjects stored]
+  E & F --> G[10 levels, 111 subjects stored]
   G --> H[manage.py migrate catalogue 0001 — reverse]
   H --> I[0002 reverse deletes exactly the seeded codes]
 ```
@@ -75,11 +75,12 @@ The catalogue holds no business rules, so there's no domain package. Read access
 
 > **Data-model refinement:** `SubjectModel.sort_order` is added (not in the architecture ER) to give a stable, curriculum-conventional display order. It's additive and doesn't affect the architecture's contracts.
 
-**Proposed seed (to be confirmed by the project owner before release):**
+**Seed (confirmed by the project owner 2026-10-21):**
 
 | Grade code | Grade (RO / EN) | Subject codes (display order) |
 |---|---|---|
-| K | Clasa pregătitoare / Preparatory grade | CLR, MEM, EN, DP, MM, AVAP, EF, REL |
+| K | Grădiniță / Kindergarten | DLC, DS, DOS, DEC, DPM (preschool experiential domains) |
+| P | Clasa pregătitoare / Preparatory grade | CLR, MEM, EN, DP, MM, AVAP, EF, REL |
 | 1 | Clasa I / Grade 1 | CLR, MEM, EN, DP, MM, AVAP, EF, REL |
 | 2 | Clasa a II-a / Grade 2 | **CLR, MEM, EN (active)**, DP, MM, AVAP, EF, REL |
 | 3 | Clasa a III-a / Grade 3 | LLR, MAT, SN, EN, EC, MM, AVAP, EF, REL |
@@ -94,6 +95,11 @@ The catalogue holds no business rules, so there's no domain package. Read access
 | CLR | Comunicare în limba română | Communication in Romanian |
 | MEM | Matematică și explorarea mediului | Mathematics and Environmental Exploration |
 | EN | Limba engleză | English |
+| DLC | Domeniul Limbă și comunicare | Language and communication |
+| DS | Domeniul Științe | Sciences |
+| DOS | Domeniul Om și societate | People and society |
+| DEC | Domeniul Estetic și creativ | Aesthetic and creative |
+| DPM | Domeniul Psihomotric | Psychomotor |
 | DP | Dezvoltare personală | Personal Development |
 | MM | Muzică și mișcare | Music and Movement |
 | AVAP | Arte vizuale și abilități practice | Visual Arts and Practical Skills |
@@ -120,13 +126,13 @@ The catalogue holds no business rules, so there's no domain package. Read access
 1. App `infrastructure.persistence.catalogue` (`apps.CatalogueConfig`, `label="catalogue"`) is added to `INSTALLED_APPS`.
 2. `GradeModel` (`db_table="catalogue_grade"`): `code` CharField(2, unique), `sort_order` PositiveSmallIntegerField(unique), `name_ro`/`name_en` CharField(80). `Meta.ordering = ["sort_order"]`.
 3. `SubjectModel` (`db_table="catalogue_subject"`): `grade` FK → `GradeModel` (`PROTECT`, `related_name="subjects"`), `code` CharField(8), `sort_order` PositiveSmallIntegerField, `name_ro`/`name_en` CharField(120), `is_active` BooleanField(default False). Constraints: `UniqueConstraint(grade, code, name="uniq_subject_code_per_grade")` and `UniqueConstraint(grade, sort_order, name="uniq_subject_order_per_grade")`. `Meta.ordering = ["grade__sort_order", "sort_order"]`.
-4. Migration `0002_seed_catalogue` inlines the two tables above. Its forward function creates 9 grades (`K`=0, `1`…`8`=1…8) and every listed subject in listed order (`sort_order` = position, starting at 1). It sets `is_active=True` **only** for grade `2` subjects `CLR`, `MEM`, `EN`.
+4. Migration `0002_seed_catalogue` inlines the two tables above. Its forward function creates 10 levels (`K`=0, `P`=1, `1`…`8`=2…9) and every listed subject in listed order (`sort_order` = position, starting at 1). It sets `is_active=True` **only** for grade `2` subjects `CLR`, `MEM`, `EN`.
 5. The reverse function deletes subjects then grades whose codes are in the seed. Rows added later by other means are untouched; if any subject is referenced by later content (CYCLE-2 FKs use `PROTECT`), the reverse fails loudly rather than orphaning data.
 6. The migration uses `apps.get_model(...)` (historical models), never imports from `models.py`, and is idempotent in effect: `get_or_create` keyed on codes, so a partially failed run can be re-applied.
-7. After `migrate`: `GradeModel.objects.count() == 9`; `SubjectModel.objects.filter(is_active=True)` returns exactly the three grade-2 subjects; every name field is non-empty in both languages.
+7. After `migrate`: `GradeModel.objects.count() == 10` and `SubjectModel.objects.count() == 111`; `SubjectModel.objects.filter(is_active=True)` returns exactly the three grade-2 subjects; every name field is non-empty in both languages.
 8. `makemigrations --check` is clean; `migrate catalogue zero` followed by `migrate` succeeds (round-trip).
 9. `tests/factories/catalogue.py` provides `GradeFactory` and `SubjectFactory` (`django_get_or_create` on codes) for Story 2.2 and CYCLE-2 tests.
-10. The review doc records the owner's confirmation (or requested changes) of the proposed subject lists and the K = Clasa pregătitoare interpretation **before** this story is marked Done. If changes arrive after merge, a follow-up data migration `0003_…` applies them.
+10. The review doc records the owner's confirmation (or requested changes) of the proposed subject lists and the meaning of "kindergarten" **before** this story is marked Done. If changes arrive after merge, a follow-up data migration `0003_…` applies them.
 
 **RBAC Enforcement**:
 No role-differentiated access — single actor.
@@ -136,7 +142,7 @@ No role-differentiated access — single actor.
 
 | Trigger | Response | Side-effect |
 |---------|----------|-------------|
-| `manage.py migrate` on an empty DB | "Applying catalogue.0001… OK", "Applying catalogue.0002… OK" | 9 grades + all subjects; 3 active |
+| `manage.py migrate` on an empty DB | "Applying catalogue.0001… OK", "Applying catalogue.0002… OK" | 10 levels + 111 subjects; 3 active |
 | `manage.py migrate` again (repeat) | "No migrations to apply." | none |
 | Re-running the forward seed function after a partial failure | completes without duplicates (`get_or_create`) | missing rows created only |
 | `manage.py migrate catalogue zero` | reverse 0002 then 0001 | seeded rows then tables removed |
@@ -198,11 +204,11 @@ No role-differentiated access — single actor.
    from django.db import migrations
 
    GRADES = [  # (code, sort_order, name_ro, name_en)
-       ("K", 0, "Clasa pregătitoare", "Preparatory grade"),
-       ("1", 1, "Clasa I", "Grade 1"), ("2", 2, "Clasa a II-a", "Grade 2"),
-       ("3", 3, "Clasa a III-a", "Grade 3"), ("4", 4, "Clasa a IV-a", "Grade 4"),
-       ("5", 5, "Clasa a V-a", "Grade 5"), ("6", 6, "Clasa a VI-a", "Grade 6"),
-       ("7", 7, "Clasa a VII-a", "Grade 7"), ("8", 8, "Clasa a VIII-a", "Grade 8"),
+       ("K", 0, "Grădiniță", "Kindergarten"), ("P", 1, "Clasa pregătitoare", "Preparatory grade"),
+       ("1", 2, "Clasa I", "Grade 1"), ("2", 3, "Clasa a II-a", "Grade 2"),
+       ("3", 4, "Clasa a III-a", "Grade 3"), ("4", 5, "Clasa a IV-a", "Grade 4"),
+       ("5", 6, "Clasa a V-a", "Grade 5"), ("6", 7, "Clasa a VI-a", "Grade 6"),
+       ("7", 8, "Clasa a VII-a", "Grade 7"), ("8", 9, "Clasa a VIII-a", "Grade 8"),
    ]
    SUBJECT_NAMES = {  # code: (name_ro, name_en)
        "CLR": ("Comunicare în limba română", "Communication in Romanian"),
@@ -212,7 +218,8 @@ No role-differentiated access — single actor.
    }
    PRIMARY_EARLY = ["CLR", "MEM", "EN", "DP", "MM", "AVAP", "EF", "REL"]
    SUBJECTS_BY_GRADE = {
-       "K": PRIMARY_EARLY, "1": PRIMARY_EARLY, "2": PRIMARY_EARLY,
+       "K": ["DLC", "DS", "DOS", "DEC", "DPM"],  # Grădiniță: preschool experiential domains
+       "P": PRIMARY_EARLY, "1": PRIMARY_EARLY, "2": PRIMARY_EARLY,
        "3": ["LLR", "MAT", "SN", "EN", "EC", "MM", "AVAP", "EF", "REL"],
        "4": ["LLR", "MAT", "SN", "EN", "EC", "IST", "GEO", "MM", "AVAP", "EF", "REL"],
        "5": ["LLR", "MAT", "EN", "ML2", "BIO", "IST", "GEO", "ES", "TIC", "ET", "EP", "EM", "EF", "REL"],
@@ -295,8 +302,9 @@ from infrastructure.persistence.catalogue.models import GradeModel, SubjectModel
 pytestmark = pytest.mark.django_db  # pytest-django applies all migrations, incl. the seed
 
 
-def test_nine_grades_in_order():
-    assert list(GradeModel.objects.values_list("code", flat=True)) == ["K", "1", "2", "3", "4", "5", "6", "7", "8"]
+def test_ten_levels_in_order():
+    assert list(GradeModel.objects.values_list("code", flat=True)) == [
+        "K", "P", "1", "2", "3", "4", "5", "6", "7", "8"]
 
 
 def test_only_grade_two_clr_mem_en_are_active():

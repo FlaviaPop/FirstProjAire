@@ -126,6 +126,8 @@ flowchart LR
 | `audit` | Append-only log of security-relevant actions | `AuditLog` |
 | `reporting` | Pilot readiness (SC-2/FC-1) and pilot completion (SC-1/SC-3) dashboards for admins | read models only |
 
+> **Owner decision (2026-10-21):** "kindergarten" = **Grădiniță** (code `K`, preschool, 5 experiential domains); **Clasa pregătitoare** (code `P`) is shown as its own level before grade 1, so the catalogue has 10 levels. See Story 2.1.
+
 ### Layered view
 
 ```mermaid

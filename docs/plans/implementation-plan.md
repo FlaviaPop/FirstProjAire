@@ -267,6 +267,8 @@ graph TD
 
 **Owner**: DEV | **Goal**: Users see grades K–8 with their subject categories; only grade 2 CLR, MEM and EN are interactive.
 
+> **Owner decision (2026-10-21):** "kindergarten" = **Grădiniță** (code `K`, preschool, 5 experiential domains); **Clasa pregătitoare** (code `P`) is shown as its own level before grade 1, so the catalogue has 10 levels. See Story 2.1.
+
 **Must Read References**:
 - `docs/requirements.md` — Feature "Grade and subject catalogue"
 - `docs/architecture/design/00-system-architecture-greenfield.md` — `catalogue` module, route catalogue
