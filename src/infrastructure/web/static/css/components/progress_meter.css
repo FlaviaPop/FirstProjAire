@@ -1,0 +1,20 @@
+/* Progress meter atom — components/progress_meter.html · {% ui_progress %}. */
+.progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.progress__label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+}
+.progress__name { font-weight: var(--weight-semibold); }
+.progress__bar {
+  flex: 1;
+  min-width: var(--space-16);
+  height: var(--space-3);
+  accent-color: var(--color-primary);
+}
+.progress__text { font-weight: var(--weight-semibold); font-variant-numeric: tabular-nums; }

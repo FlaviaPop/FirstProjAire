@@ -1,0 +1,11 @@
+/* Avatar atom — components/avatar.html · {% ui_avatar %}. Generic icon only (no uploads). */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-pill);
+  background: var(--color-disabled);
+  color: var(--color-primary);
+}

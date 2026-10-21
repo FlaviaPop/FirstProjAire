@@ -1,0 +1,77 @@
+{% load i18n ui %}
+<h3>{% translate "Tokens" %}</h3>
+<h4>{% translate "Colours" %}</h4>
+<ul class="sg-swatches">
+  {% for swatch in swatches %}
+  <li class="sg-swatch">
+    <span class="sg-chip sg-chip--{{ swatch.slug }}"></span>
+    <code>{{ swatch.token }}</code>
+    <span>{{ swatch.hex }}</span>
+    <span class="sg-note">{{ swatch.ratio }} · {{ swatch.against }}</span>
+  </li>
+  {% endfor %}
+</ul>
+<h4>{% translate "Spacing" %}</h4>
+<ul class="sg-list">
+  {% for space in spaces %}
+  <li><code>--space-{{ space }}</code> <span class="sg-space sg-space--{{ space }}"></span></li>
+  {% endfor %}
+</ul>
+<h4>{% translate "Typography" %}</h4>
+<ul class="sg-list">
+  {% for size in type_scale %}
+  <li class="sg-type--{{ size }}"><code>--font-{{ size }}</code> {{ diacritics }}</li>
+  {% endfor %}
+  {% for weight in weights %}
+  <li class="sg-weight--{{ weight }}"><code>{{ weight }}</code> {{ diacritics }}</li>
+  {% endfor %}
+</ul>
+
+<h3>{% translate "Buttons" %}</h3>
+<table class="sg-table">
+  <thead>
+    <tr><td></td><th scope="col">{% translate "Normal" %}</th><th scope="col">{% translate "Disabled" %}</th><th scope="col">{% translate "Loading" %}</th></tr>
+  </thead>
+  <tbody>
+    {% for variant, label, icon in buttons %}
+    <tr>
+      <th scope="row"><code>{{ variant }}</code></th>
+      <td>{% ui_button label variant "button" %} {% ui_button label variant "button" icon=icon %}</td>
+      <td>{% ui_button label variant "button" disabled=True %} {% ui_button label variant "button" icon=icon disabled=True %}</td>
+      <td>{% ui_button label variant "button" loading=True %} {% ui_button label variant "button" icon=icon loading=True %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="sg-note">{% translate "Without icon" %} · {% translate "With icon" %}</p>
+
+<h3>{% translate "Icons" %}</h3>
+<table class="sg-table">
+  <thead>
+    <tr><td></td>{% for size in icon_sizes %}<th scope="col">{{ size }}px — {% translate "Regular" %} · {% translate "Duotone" %}</th>{% endfor %}</tr>
+  </thead>
+  <tbody>
+    {% for name in icon_names %}
+    <tr>
+      <th scope="row"><code>{{ name }}</code></th>
+      {% for size in icon_sizes %}<td>{% ui_icon name size %} {% ui_icon name size "duotone" %}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>{% translate "Badge" %}</h3>
+<p class="sg-row">{% ui_badge 3 unread_label %} {% ui_badge 12 unread_label %} {% ui_badge 0 unread_label %}</p>
+<p class="sg-note">{% translate "A zero count renders nothing." %}</p>
+
+<h3>{% translate "Status pills" %}</h3>
+<p class="sg-row">{% for status in statuses %}{% ui_status_pill status %} {% endfor %}</p>
+
+<h3>{% translate "Avatar" %}</h3>
+<p class="sg-row">{% ui_avatar sample_user %} {% ui_avatar None %} <span class="sg-note">{% translate "Without a name" %}</span></p>
+
+<h3>{% translate "Score" %}</h3>
+<div class="sg-row">{% ui_score 1 %} {% ui_score 50 %} {% ui_score 100 %}</div>
+
+<h3>{% translate "Progress" %}</h3>
+<div class="sg-stack">{% ui_progress 0 0 progress_label %} {% ui_progress 3 8 progress_label %} {% ui_progress 8 8 progress_label %}</div>

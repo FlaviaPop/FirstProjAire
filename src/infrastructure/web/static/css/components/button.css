@@ -1,0 +1,40 @@
+/* Button atom — components/button.html · {% ui_button %}. Tokens only (tokens.css). */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch, var(--touch-min));
+  min-width: var(--touch, var(--touch-min));
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius, var(--radius-staff));
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+.button--primary { background: var(--color-primary); color: var(--color-surface); }
+.button--primary:hover { background: var(--color-primary-hover); }
+.button--secondary { background: transparent; color: var(--color-primary); border-color: var(--color-border); }
+.button--secondary:hover { color: var(--color-primary-hover); }
+.button--danger { background: var(--color-error); color: var(--color-surface); }
+.button--link { background: none; color: var(--color-primary); text-decoration: underline; padding-inline: 0; }
+.button--link:hover { color: var(--color-primary-hover); }
+.button:disabled { background: var(--color-disabled); color: var(--color-muted); border-color: transparent; cursor: not-allowed; }
+.button--link:disabled { background: none; }
+.button__spinner {
+  display: none;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-pill);
+  animation: button-spin .8s linear infinite;
+}
+.button.htmx-request { pointer-events: none; }
+.button.htmx-request .button__spinner { display: inline-block; }
+@keyframes button-spin { to { transform: rotate(360deg); } }
+/* Reduced motion: the spinner stops (tokens.css) and is drawn as a full static ring. */
+@media (prefers-reduced-motion: reduce) {
+  .button__spinner { border-right-color: currentColor; }
+}

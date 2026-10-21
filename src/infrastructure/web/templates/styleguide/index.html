@@ -1,0 +1,31 @@
+{% load static i18n %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% translate "Styleguide" %}</title>
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/button.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/icon.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/badge.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/status_pill.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/avatar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/score.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/progress_meter.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styleguide.css' %}">
+</head>
+<body>
+  <main class="sg">
+    <h1>{% translate "Styleguide" %}</h1>
+    <p>{% translate "Development-only visual reference for the shared UI primitives." %}</p>
+    {% for theme in themes %}
+    <section class="theme-{{ theme }}" aria-labelledby="sg-{{ theme }}">
+      <div class="sg-theme">
+        <h2 id="sg-{{ theme }}">{% if theme == "student" %}{% translate "Student theme" %}{% else %}{% translate "Staff theme" %}{% endif %}</h2>
+        {% include "styleguide/_atoms.html" %}
+      </div>
+    </section>
+    {% endfor %}
+  </main>
+</body>
+</html>

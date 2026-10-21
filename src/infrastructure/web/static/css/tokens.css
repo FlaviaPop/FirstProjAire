@@ -68,3 +68,73 @@
   --grid-gutter: 24px;
   --nav-height: 64px;
 }
+
+/* Story 1.5 — self-hosted Atkinson Hyperlegible Next (SIL OFL 1.1, see ../fonts/OFL.txt).
+   All three weights map ș ț ă â î Ș Ț Ă Â Î; if a face fails to load, --font-family falls back to system-ui. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/AtkinsonHyperlegibleNext-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../fonts/AtkinsonHyperlegibleNext-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/AtkinsonHyperlegibleNext-Bold.woff2') format('woff2');
+}
+
+/* Themes: role-dependent tokens. The layout (Story 1.7) puts one class on <body>.
+   --icon-variant records the theme's icon style; ui_icon callers pass it explicitly. */
+.theme-student {
+  --font-size-base: var(--font-size-base-student);
+  --radius: var(--radius-student);
+  --bg: var(--color-bg-student);
+  --touch: var(--touch-student);
+  --icon-variant: duotone;
+}
+.theme-staff {
+  --font-size-base: var(--font-size-base-staff);
+  --radius: var(--radius-staff);
+  --bg: var(--color-bg-staff);
+  --touch: var(--touch-min);
+  --icon-variant: regular;
+}
+
+/* Base elements */
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base, 16px);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background: var(--bg, var(--color-surface));
+}
+h1, h2, h3 { line-height: var(--line-height-heading); }
+:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Accessibility override: the only place a priority flag is allowed (patterns §11.4, AC 7). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

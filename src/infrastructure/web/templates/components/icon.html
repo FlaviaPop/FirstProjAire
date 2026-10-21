@@ -1,0 +1,1 @@
+{% load static %}<svg class="icon icon--{{ size }}" width="{{ size }}" height="{{ size }}" focusable="false" {% if label %}role="img" aria-label="{{ label }}"{% else %}aria-hidden="true"{% endif %}><use href="{% static 'icons/sprite.svg' %}#{{ symbol }}"></use></svg>

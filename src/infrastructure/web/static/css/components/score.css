@@ -1,0 +1,11 @@
+/* Score atom — components/score.html · {% ui_score %}. "N / 100", announced as one phrase. */
+.score {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--color-text);
+  line-height: var(--line-height-heading);
+}
+.score__value { font-size: var(--font-40); font-weight: var(--weight-bold); color: var(--color-primary); }
+.score__max { font-size: var(--font-24); font-weight: var(--weight-semibold); color: var(--color-muted); }
