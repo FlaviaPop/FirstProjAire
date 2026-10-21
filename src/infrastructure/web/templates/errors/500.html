@@ -1,0 +1,7 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Something went wrong" %}{% endblock %}
+{% block content %}
+  {% translate "Something went wrong" as title %}
+  {% include "errors/_error.html" with title=title icon="plugs" %}
+{% endblock %}

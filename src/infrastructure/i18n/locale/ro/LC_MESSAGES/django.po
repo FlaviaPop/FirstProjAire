@@ -6,3 +6,46 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+# --- Story 1.1: error pages (infrastructure/web/common/errors.py, templates/errors/) ---
+msgid "Request could not be processed"
+msgstr "Cererea nu a putut fi procesată"
+
+msgid "Access denied"
+msgstr "Acces interzis"
+
+msgid "Page not found"
+msgstr "Pagina nu a fost găsită"
+
+msgid "Already done"
+msgstr "Deja finalizat"
+
+msgid "Please check your input"
+msgstr "Vă rugăm să verificați datele introduse"
+
+msgid "Something went wrong"
+msgstr "Ceva nu a funcționat"
+
+msgid "Your request could not be processed. Please try again."
+msgstr "Cererea dumneavoastră nu a putut fi procesată. Vă rugăm să încercați din nou."
+
+msgid "You do not have access to this page."
+msgstr "Nu aveți acces la această pagină."
+
+msgid "We could not find this page."
+msgstr "Nu am găsit această pagină."
+
+msgid "This has already been done and cannot be repeated."
+msgstr "Această acțiune a fost deja efectuată și nu poate fi repetată."
+
+msgid "Please fix the following:"
+msgstr "Vă rugăm să corectați următoarele:"
+
+msgid "Something went wrong on our side. Please try again later."
+msgstr "A apărut o problemă la noi. Vă rugăm să încercați din nou mai târziu."
+
+msgid "Back to home"
+msgstr "Înapoi la pagina principală"
+
+msgid "Reference"
+msgstr "Cod de referință"

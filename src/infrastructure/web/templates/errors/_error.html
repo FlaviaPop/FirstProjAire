@@ -1,0 +1,11 @@
+{% load i18n static %}
+<section class="error-card" aria-labelledby="error-title">
+  <svg class="icon icon--32" aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#{{ icon }}"></use></svg>
+  <h1 id="error-title">{{ title }}</h1>
+  <p>{{ message }}</p>
+  {% if violations %}
+    <ul class="error-card__violations">{% for item in violations %}<li>{{ item }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if status == 500 %}<p class="error-card__ref">{% translate "Reference" %}: {{ request_id }}</p>{% endif %}
+  <a href="/">{% translate "Back to home" %}</a>
+</section>

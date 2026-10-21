@@ -1,0 +1,7 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Please check your input" %}{% endblock %}
+{% block content %}
+  {% translate "Please check your input" as title %}
+  {% include "errors/_error.html" with title=title icon="warning-circle" %}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Page not found" %}{% endblock %}
+{% block content %}
+  {% translate "Page not found" as title %}
+  {% include "errors/_error.html" with title=title icon="compass" %}
+{% endblock %}

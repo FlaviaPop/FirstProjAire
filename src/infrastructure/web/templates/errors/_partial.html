@@ -1,0 +1,4 @@
+<div class="error-partial" role="alert">
+  <p>{{ message }}</p>
+  {% if violations %}<ul>{% for item in violations %}<li>{{ item }}</li>{% endfor %}</ul>{% endif %}
+</div>

@@ -18,6 +18,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "infrastructure.web.common.middleware.RequestIdMiddleware",  # first: request id for all logs
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -25,6 +26,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "infrastructure.web.common.middleware.DomainErrorMiddleware",  # DomainError → 404/422/409/400
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -78,9 +80,29 @@ STATICFILES_DIRS = [BASE_DIR / "src/infrastructure/web/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 LOG_LEVEL = env_str("LOG_LEVEL", "INFO")
+# Story 1.1: JSON lines on stdout with request_id/user_id/role on every record (patterns §9).
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"console": {"class": "logging.StreamHandler"}},
-    "root": {"handlers": ["console"], "level": LOG_LEVEL},
+    "filters": {
+        "request_context": {"()": "infrastructure.logging.request_context.RequestContextFilter"}
+    },
+    "formatters": {"json": {"()": "infrastructure.logging.json_formatter.JsonFormatter"}},
+    "handlers": {
+        "stdout": {
+            "class": "infrastructure.logging.stdout_handler.StdoutHandler",
+            "formatter": "json",
+            "filters": ["request_context"],
+            "level": LOG_LEVEL,  # also caps loggers that propagate with their own level
+        },
+        "null": {"class": "logging.NullHandler"},
+    },
+    "loggers": {
+        # Drop Django's plain-text console handler so django.* records go to the JSON
+        # handler only. INFO stays fixed: DEBUG would emit SQL with parameters (personal data).
+        "django": {"handlers": [], "level": "INFO", "propagate": True},
+        # runserver's access line contains the query string; request.completed replaces it.
+        "django.server": {"handlers": ["null"], "propagate": False},
+    },
+    "root": {"handlers": ["stdout"], "level": LOG_LEVEL},
 }
