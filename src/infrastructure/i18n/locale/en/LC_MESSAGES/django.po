@@ -166,3 +166,22 @@ msgstr "Score"
 #: src/infrastructure/web/templates/styleguide/_atoms.html
 msgid "Progress"
 msgstr "Progress"
+
+# --- Story 1.2: login and lockout ---
+msgid "Sign in"
+msgstr "Sign in"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Incorrect username or password."
+msgstr "Incorrect username or password."
+
+msgid "Too many attempts"
+msgstr "Too many attempts"
+
+msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+msgstr "Too many failed attempts. Try again in 15 minutes or ask the administrator."

@@ -4,3 +4,64 @@ Role-specific users and logged-in clients are added here by the stories that int
 login and RBAC (1.2, 1.3), so every context's tests use the same fixtures. Markers are
 declared in pyproject.toml ([tool.pytest.ini_options] markers, enforced by --strict-markers).
 """
+
+# --- Story 1.2: role users and logged-in clients (patterns §12.3) ---
+import pytest
+
+from tests.factories.accounts import (
+    AdminFactory,
+    ParentFactory,
+    StudentFactory,
+    TeacherFactory,
+)
+
+
+@pytest.fixture
+def student(db):
+    return StudentFactory(username="student1")
+
+
+@pytest.fixture
+def other_student(db):
+    return StudentFactory(username="student2")
+
+
+@pytest.fixture
+def teacher(db):
+    return TeacherFactory(username="teacher1")
+
+
+@pytest.fixture
+def parent(db):
+    return ParentFactory(username="parent1")  # linked to `student` by Story 1.9's fixture
+
+
+@pytest.fixture
+def admin_user(db):
+    return AdminFactory(username="admin1")
+
+
+def _logged_in(client, user):
+    # force_login: Client.login() can't pass `request`, which AxesStandaloneBackend requires.
+    client.force_login(user, backend="django.contrib.auth.backends.ModelBackend")
+    return client
+
+
+@pytest.fixture
+def student_client(client, student):
+    return _logged_in(client, student)
+
+
+@pytest.fixture
+def teacher_client(client, teacher):
+    return _logged_in(client, teacher)
+
+
+@pytest.fixture
+def parent_client(client, parent):
+    return _logged_in(client, parent)
+
+
+@pytest.fixture
+def admin_client(client, admin_user):  # overrides pytest-django's builtin admin_client
+    return _logged_in(client, admin_user)

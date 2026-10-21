@@ -11,6 +11,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
 
 urlpatterns += i18n_patterns(
     # Context URL includes are appended here, one block per context, alphabetically.
+    path("", include("infrastructure.web.accounts.urls")),  # Story 1.2: login, logout
     prefix_default_language=True,
 )
 

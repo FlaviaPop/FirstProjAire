@@ -166,3 +166,22 @@ msgstr "Punctaj"
 #: src/infrastructure/web/templates/styleguide/_atoms.html
 msgid "Progress"
 msgstr "Progres"
+
+# --- Story 1.2: login and lockout ---
+msgid "Sign in"
+msgstr "Autentificare"
+
+msgid "Username"
+msgstr "Nume de utilizator"
+
+msgid "Password"
+msgstr "Parolă"
+
+msgid "Incorrect username or password."
+msgstr "Nume de utilizator sau parolă incorecte."
+
+msgid "Too many attempts"
+msgstr "Prea multe încercări"
+
+msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+msgstr "Prea multe încercări eșuate. Încearcă din nou peste 15 minute sau cere ajutorul administratorului."

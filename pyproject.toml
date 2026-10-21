@@ -91,3 +91,8 @@ name = "Domain is framework-free"
 type = "forbidden"
 source_modules = ["domain", "application"]
 forbidden_modules = ["django", "markdown", "nh3"]
+
+# --- Story 1.2: django-axes ships no type information (django-stubs loads its models) ---
+[[tool.mypy.overrides]]
+module = ["axes.*"]
+ignore_missing_imports = true

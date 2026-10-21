@@ -1,0 +1,28 @@
+{% extends "layouts/base.html" %}
+{% load i18n static %}
+{% block title %}{% translate "Sign in" %}{% endblock %}
+{% block content %}
+<section class="login-card" aria-labelledby="login-title">
+  <h1 id="login-title">
+    <svg class="icon icon--32" width="32" height="32" focusable="false" aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#sign-in-duotone"></use></svg>
+    {% translate "Sign in" %}
+  </h1>
+  {% if form.non_field_errors %}
+    <div class="form-banner form-banner--error" role="alert">{{ form.non_field_errors.0 }}</div>
+  {% endif %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <label for="id_username">{% translate "Username" %}</label>
+    <input id="id_username" name="username" autocomplete="username" required
+           value="{{ form.username.value|default_if_none:'' }}"
+           {% if form.username.errors %}aria-invalid="true" aria-describedby="err-username"{% endif %}>
+    {% if form.username.errors %}<p id="err-username" class="field-error">{{ form.username.errors.0 }}</p>{% endif %}
+    <label for="id_password">{% translate "Password" %}</label>
+    <input id="id_password" name="password" type="password" autocomplete="current-password" required
+           {% if form.password.errors %}aria-invalid="true" aria-describedby="err-password"{% endif %}>
+    {% if form.password.errors %}<p id="err-password" class="field-error">{{ form.password.errors.0 }}</p>{% endif %}
+    <button type="submit" class="button button--primary">{% translate "Sign in" %}</button>
+  </form>
+</section>
+{% endblock %}
