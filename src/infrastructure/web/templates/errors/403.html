@@ -1,0 +1,7 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Access denied" %}{% endblock %}
+{% block content %}
+  {% translate "Access denied" as title %}
+  {% include "errors/_error.html" with title=title icon="lock-simple" %}
+{% endblock %}

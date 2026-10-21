@@ -1,0 +1,7 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Already done" %}{% endblock %}
+{% block content %}
+  {% translate "Already done" as title %}
+  {% include "errors/_error.html" with title=title icon="warning-circle" %}
+{% endblock %}

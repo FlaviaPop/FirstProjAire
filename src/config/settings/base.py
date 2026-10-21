@@ -22,6 +22,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "infrastructure.web.common.middleware.RequestIdMiddleware",  # first: request id for all logs
     "django.middleware.security.SecurityMiddleware",
     "csp.middleware.CSPMiddleware",  # Story 1.2
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -30,6 +31,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "infrastructure.web.common.middleware.DomainErrorMiddleware",  # DomainError → 404/422/409/400
     "axes.middleware.AxesMiddleware",  # Story 1.2: must stay last
 ]
 
@@ -84,11 +86,31 @@ STATICFILES_DIRS = [BASE_DIR / "src/infrastructure/web/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 LOG_LEVEL = env_str("LOG_LEVEL", "INFO")
+# Story 1.1: JSON lines on stdout with request_id/user_id/role on every record (patterns §9).
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"console": {"class": "logging.StreamHandler"}},
-    "root": {"handlers": ["console"], "level": LOG_LEVEL},
+    "filters": {
+        "request_context": {"()": "infrastructure.logging.request_context.RequestContextFilter"}
+    },
+    "formatters": {"json": {"()": "infrastructure.logging.json_formatter.JsonFormatter"}},
+    "handlers": {
+        "stdout": {
+            "class": "infrastructure.logging.stdout_handler.StdoutHandler",
+            "formatter": "json",
+            "filters": ["request_context"],
+            "level": LOG_LEVEL,  # also caps loggers that propagate with their own level
+        },
+        "null": {"class": "logging.NullHandler"},
+    },
+    "loggers": {
+        # Drop Django's plain-text console handler so django.* records go to the JSON
+        # handler only. INFO stays fixed: DEBUG would emit SQL with parameters (personal data).
+        "django": {"handlers": [], "level": "INFO", "propagate": True},
+        # runserver's access line contains the query string; request.completed replaces it.
+        "django.server": {"handlers": ["null"], "propagate": False},
+    },
+    "root": {"handlers": ["stdout"], "level": LOG_LEVEL},
 }
 
 # --- Story 1.2: authentication, brute-force protection, sessions, security headers ---
@@ -124,6 +146,9 @@ AXES_HTTP_RESPONSE_CODE = 429
 # restart the 15 minutes (axes' default would).
 AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
 AXES_IPWARE_PROXY_COUNT = int(env_str("AXES_PROXY_COUNT", "0"))
+# Wave-2 integration: axes logs an INFO banner on every start. With Story 1.1's JSON logs on
+# stdout, that line polluted every management command's output (shell -c, scripts).
+AXES_VERBOSE = False
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 8 * 60 * 60

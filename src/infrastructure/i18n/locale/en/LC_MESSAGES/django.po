@@ -185,3 +185,46 @@ msgstr "Too many attempts"
 
 msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
 msgstr "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+
+# --- Story 1.1: error pages (infrastructure/web/common/errors.py, templates/errors/) ---
+msgid "Request could not be processed"
+msgstr "Request could not be processed"
+
+msgid "Access denied"
+msgstr "Access denied"
+
+msgid "Page not found"
+msgstr "Page not found"
+
+msgid "Already done"
+msgstr "Already done"
+
+msgid "Please check your input"
+msgstr "Please check your input"
+
+msgid "Something went wrong"
+msgstr "Something went wrong"
+
+msgid "Your request could not be processed. Please try again."
+msgstr "Your request could not be processed. Please try again."
+
+msgid "You do not have access to this page."
+msgstr "You do not have access to this page."
+
+msgid "We could not find this page."
+msgstr "We could not find this page."
+
+msgid "This has already been done and cannot be repeated."
+msgstr "This has already been done and cannot be repeated."
+
+msgid "Please fix the following:"
+msgstr "Please fix the following:"
+
+msgid "Something went wrong on our side. Please try again later."
+msgstr "Something went wrong on our side. Please try again later."
+
+msgid "Back to home"
+msgstr "Back to home"
+
+msgid "Reference"
+msgstr "Reference"
