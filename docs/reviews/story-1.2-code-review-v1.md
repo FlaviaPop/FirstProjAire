@@ -1,5 +1,12 @@
 # Code Review - Story 1.2: Login & Session Security
 
+> ## 🛠️ Remediation Status: 🟡 Partially Remediated (4/5)
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 4 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 3
+> - **Deferred (with user consent)**: 1 (ISS-005 → `aire-devops-discover` / architecture) — see Remediation Section
+> - **Tests**: 677/677 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -140,6 +147,13 @@ Both templates inline the icon markup (`<svg class="icon icon--32" … <use href
 
 **Why This Matters**: The primitive catalogue is the single place for accessibility and styling rules. Copies don't receive later fixes, such as Story 1.6's focus or loading changes.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: both templates use `{% ui_icon "sign-in"/"lock-simple" size=32 variant="duotone" %}`; the submit button is `{% translate "Sign in" as sign_in %}{% ui_button sign_in type="submit" variant="primary" %}`; no raw `<svg>` or `<button>` left in either template
+- Commit / change ref: `templates/accounts/login.html:2,7,26`; `templates/accounts/locked_out.html:2,7`
+- Test evidence: `tests/integration/web/accounts/test_templates_review_v1.py` (source uses primitives, no raw markup; rendered `button button--primary` with `button__label`; rendered `icon icon--32` with `aria-hidden`) — failed before the fix; all 102 original Story 1.2 tests still pass. `test_lockout_template_uses_the_lock_icon` was updated to assert the primitive call instead of raw markup
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: Lockout message hard-codes the cool-off duration 🟢 Low
@@ -151,6 +165,13 @@ Both templates inline the icon markup (`<svg class="icon icon--32" … <use href
 
 **Suggested Fix**: Pass `cooloff_minutes` to the template (axes' `AXES_LOCKOUT_TEMPLATE` context includes `cooloff_time`; or compute `int(settings.AXES_COOLOFF_TIME.total_seconds() // 60)`) and use `{% blocktranslate count minutes=cooloff_minutes %}…{{ minutes }} minute…{% plural %}…{{ minutes }} minutes…{% endblocktranslate %}`. Update the `.po` entries with `makemessages --no-wrap`.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: the lockout sentence is a `{% blocktranslate trimmed count minutes=cooloff_timedelta|minutes %}` plural message. `cooloff_timedelta` comes from axes' lockout context and therefore from `AXES_COOLOFF_TIME`; the new `durations.minutes` filter converts it. Catalogues gained `Plural-Forms` headers (RO: 3 forms *minut / minute / de minute*; EN: 2), and the fuzzy auto-match left by `makemessages` was replaced by real translations
+- Commit / change ref: `templates/accounts/locked_out.html:2,10`; `src/infrastructure/web/templatetags/durations.py`; both `django.po` (header + plural entry)
+- Test evidence: `test_lockout_message_uses_the_configured_cool_off[15|30|1 × en|ro]` (6 cases; the 30/1-minute and RO cases failed before the fix); `tests/unit/infrastructure/test_durations.py` (6); `test_translations.py::test_lockout_message_has_three_romanian_plural_forms`, `…_two_english_plural_forms`; real server RO "peste 15 minute", EN "in 15 minutes"
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-003: Hand-written username input drops `maxlength` 🟢 Low
@@ -161,6 +182,13 @@ Both templates inline the icon markup (`<svg class="icon icon--32" … <use href
 **Issue**: The form field has `max_length=150` (Django's `AuthenticationForm`), which Django renders as `maxlength="150"`. The hand-written `<input>` omits it (probe: `maxlength on username input: False`). Server-side validation still applies, so this is only a missing client-side hint and a small parity gap with Django's widget.
 
 **Suggested Fix**: Add `maxlength="{{ form.username.field.max_length }}"`, or render the field's widget attributes once Story 1.6's `form_field` primitive exists.
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `maxlength="{{ form.username.field.max_length }}"` on the username input (renders `150`)
+- Commit / change ref: `templates/accounts/login.html:18`
+- Test evidence: `test_username_input_has_maxlength_150` (failed before the fix); real server `maxlength="150"` on `/ro/` and `/en/`
+- Status: ✅ Resolved
 
 ---
 
@@ -179,6 +207,13 @@ def get_success_url(self) -> str:
 ```
 Keep the existing open-redirect tests, which already cover it.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `get_success_url` returns `self.get_redirect_url() or f"/{preferred_language}/"`; the duplicate `url_has_allowed_host_and_scheme` call and its import are removed, and a comment names the single place the check lives
+- Commit / change ref: `src/infrastructure/web/accounts/views.py:21-25`
+- Test evidence: refactor; the existing open-redirect tests (`test_login.py -k "next or redirect"`: 9 passed) prove behaviour is unchanged; `views.py` 100% statements + branches
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-005: Per-username+IP lockout doesn't slow password spraying 🟢 Low (design note)
@@ -189,6 +224,9 @@ Keep the existing open-redirect tests, which already cover it.
 **Issue**: As specified by the architecture ("per username+IP"), one IP can try one or two common passwords against every username without ever reaching 5 failures for any single pair. This is a known limit of username+IP keying, not a deviation from the story.
 
 **Suggested Fix** (DevOps / future story, no code change now): add an IP-level request rate limit at the reverse proxy for `POST /*/accounts/login/`, and/or an additional axes parameter set (`[["ip_address"]]` with a higher limit) after an architecture decision. Record it in `aire-devops-discover`.
+
+
+**Deferral** (2026-10-22, DEV): deferred with user consent to `aire-devops-discover` (IP-level rate limit at the reverse proxy) or a future architecture decision on an extra axes parameter set. This is a design question, not a code defect. Still open.
 
 ---
 
@@ -237,3 +275,92 @@ Keep the existing open-redirect tests, which already cover it.
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 Medium + 🟢 Low ISS-002/003/004 (no 🔴/🟠); scope confirmed by the user
+**Scenario**: Code Review
+**Stories Affected**: 1.2
+**Branch**: `feature/wave-2-dev-1` (after merging `feature/story-1.4-i18n` in `a5ce928`; wave 2 fully integrated)
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.2 | `login.html:7,26`, `locked_out.html:7` | Bypassed UI primitives | `ui_icon` / `ui_button` | `test_templates_review_v1.py` (4) ✅ |
+| ISS-002 | 🟢 Low | 1.2 | `locked_out.html:10`, `durations.py` | Hard-coded cool-off | Plural message from `AXES_COOLOFF_TIME`; RO 3 / EN 2 plural forms | 6 render cases + 6 filter unit + 2 catalogue ✅ |
+| ISS-003 | 🟢 Low | 1.2 | `login.html:18` | Missing `maxlength` | From the form field (150) | 1 ✅ |
+| ISS-004 | 🟢 Low | 1.2 | `views.py:21-25` | Duplicate `next` check | Single check via `get_redirect_url()` | existing open-redirect tests (9) ✅ |
+
+## Issues Deferred (with user consent)
+
+| ID | Severity | Story | Reason |
+|----|----------|-------|--------|
+| ISS-005 | 🟢 Low | 1.2 | Password spraying across usernames: proxy rate limit (DevOps) or an architecture decision |
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/templates/accounts/login.html` | Modified | Primitives; `maxlength` |
+| `src/infrastructure/web/templates/accounts/locked_out.html` | Modified | Icon primitive; plural, setting-driven message |
+| `src/infrastructure/web/templatetags/durations.py` | New | `minutes` filter |
+| `src/infrastructure/web/accounts/views.py` | Modified | ISS-004 |
+| `src/infrastructure/i18n/locale/{ro,en}/LC_MESSAGES/django.po` | Modified | `Plural-Forms` headers; plural lockout entry (regenerated with `--no-wrap`) |
+| `tests/integration/web/accounts/test_templates_review_v1.py` | New | 12 tests |
+| `tests/unit/infrastructure/test_durations.py` | New | 6 tests |
+| `tests/integration/web/accounts/test_templates.py` | Modified | `blocktranslate` bodies count as translated; lock-icon check asserts the primitive |
+| `tests/integration/web/accounts/test_translations.py` | Modified | Lockout sentence checked as a plural entry (RO 3 / EN 2 forms) |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| UI Primitive Catalogue §11.2 | sign-in and lockout pages | The single source for icon/button accessibility and styling |
+| i18n §11.3 | lockout message | Proper plural forms instead of a fixed number |
+| Configuration §10 | lockout text ← `AXES_COOLOFF_TIME` | The policy constant drives the UI |
+
+## Testing Summary
+
+- **Targeted tests added**: 18 (12 template/render, 6 filter) + 2 catalogue tests replacing one hard-coded entry
+- **Full suite**: 677/677 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); domain 100%; application 100%
+- **Gates**: ruff format/check clean · mypy 0 issues (92 files) · import-linter 2/2 kept · `makemigrations --check` no changes · `msgfmt --check`: 62/62 translated per language
+
+**Test Output** (verbatim, filtered):
+```
+collected 677 items
+tests/integration/web/accounts/test_templates_review_v1.py ............  [ 26%]
+tests/integration/web/accounts/test_translations.py ............         [ 55%]
+tests/unit/infrastructure/test_durations.py ......                       [ 97%]
+src/infrastructure/web/accounts/views.py                     16      0      2      0   100%
+src/infrastructure/web/templatetags/durations.py              8      0      2      0   100%
+TOTAL                                                       637      0     68      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+============================= 677 passed in 6.92s ==============================
+```
+
+**Real server** (`runserver`, real CSRF tokens):
+```
+/ro/ login button: Autentificare          username input: maxlength="150"
+/en/ login button: Sign in                username input: maxlength="150"
+/ro/ 5th failure -> 429: Prea multe încercări eșuate. Încearcă din nou peste 15 minute sau cere ajutorul administratorului.   #lock-simple-duotone
+/en/ 5th failure -> 429: Too many failed attempts. Try again in 15 minutes or ask the administrator.   #lock-simple-duotone
+```
+
+## Deviations from Report Suggestions
+
+- ISS-002: `makemessages` fuzzy-matched the new plural entry to the old sentence (copying "15") and flagged it `fuzzy`. That entry was replaced by hand with correct plural forms, never left fuzzy. Two Story 1.2 tests that encoded the old single sentence or raw icon markup were updated to assert the same requirement in its new form.
+
+## Lessons Learned
+
+1. After changing a msgid, check `makemessages` output for `#, fuzzy`: gettext's similarity matching can carry a stale translation (here a hard-coded number) into the new entry.
+2. Romanian needs three plural forms. Declaring `Plural-Forms` in the header is what makes `blocktranslate count` pick the right one.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
+- [ ] ISS-005 in `aire-devops-discover`

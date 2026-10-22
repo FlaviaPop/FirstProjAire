@@ -3,11 +3,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:57+0300\n"
+"POT-Creation-Date: 2026-10-22 14:35+0300\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/infrastructure/web/accounts/forms.py:9
 #: src/infrastructure/web/accounts/forms.py:10
@@ -68,13 +69,16 @@ msgid "Too many attempts"
 msgstr "Too many attempts"
 
 #: src/infrastructure/web/templates/accounts/locked_out.html:10
-msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
-msgstr "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+#, python-format
+msgid "Too many failed attempts. Try again in %(minutes)s minute or ask the administrator."
+msgid_plural "Too many failed attempts. Try again in %(minutes)s minutes or ask the administrator."
+msgstr[0] "Too many failed attempts. Try again in %(minutes)s minute or ask the administrator."
+msgstr[1] "Too many failed attempts. Try again in %(minutes)s minutes or ask the administrator."
 
 # --- Story 1.2: login and lockout ---
 #: src/infrastructure/web/templates/accounts/login.html:3
 #: src/infrastructure/web/templates/accounts/login.html:8
-#: src/infrastructure/web/templates/accounts/login.html:25
+#: src/infrastructure/web/templates/accounts/login.html:26
 msgid "Sign in"
 msgstr "Sign in"
 
@@ -82,7 +86,7 @@ msgstr "Sign in"
 msgid "Username"
 msgstr "Username"
 
-#: src/infrastructure/web/templates/accounts/login.html:21
+#: src/infrastructure/web/templates/accounts/login.html:22
 msgid "Password"
 msgstr "Password"
 

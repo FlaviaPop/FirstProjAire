@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse
-from django.utils.http import url_has_allowed_host_and_scheme
 
 from infrastructure.web.accounts.forms import PlatformLoginForm
 
@@ -20,15 +19,10 @@ class PlatformLoginView(LoginView):
         return super().form_valid(form)
 
     def get_success_url(self) -> str:
-        next_url = self.get_redirect_url()  # LoginView already validates host and scheme
-        if next_url and url_has_allowed_host_and_scheme(
-            next_url,
-            allowed_hosts={self.request.get_host()},
-            require_https=self.request.is_secure(),
-        ):
-            return next_url
-        # The target comes from the authenticated user, never from client input.
-        return f"/{self.request.user.preferred_language}/"  # type: ignore[union-attr]
+        # LoginView.get_redirect_url() returns "" unless `next` is same-host with a safe scheme
+        # (url_has_allowed_host_and_scheme), so it's the single place that check lives.
+        # Otherwise the target comes from the authenticated user, never from client input.
+        return self.get_redirect_url() or f"/{self.request.user.preferred_language}/"  # type: ignore[union-attr]
 
 
 class PlatformLogoutView(LogoutView):

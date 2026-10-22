@@ -31,7 +31,11 @@ def test_template_has_no_inline_style_script_or_safe(name):
 @pytest.mark.parametrize("name", TEMPLATE_NAMES)
 def test_every_visible_string_is_translated(name):
     source = (TEMPLATES / name).read_text()
-    without_tags = re.sub(r"{%.*?%}|{{.*?}}|<[^>]+>", "", source, flags=re.DOTALL)
+    # {% blocktranslate %}…{% endblocktranslate %} bodies are translated text: drop them first.
+    without_blocks = re.sub(
+        r"{%\s*blocktranslate.*?{%\s*endblocktranslate\s*%}", "", source, flags=re.DOTALL
+    )
+    without_tags = re.sub(r"{%.*?%}|{{.*?}}|<[^>]+>", "", without_blocks, flags=re.DOTALL)
 
     assert without_tags.strip() == ""
 
@@ -52,7 +56,8 @@ def test_login_page_markup_is_accessible(client):
 
 
 def test_lockout_template_uses_the_lock_icon():
+    # Review v1 ISS-001: rendered through the ui_icon primitive (decorative, aria-hidden);
+    # the rendered markup is asserted in test_templates_review_v1.py.
     source = (TEMPLATES / "locked_out.html").read_text()
 
-    assert "#lock-simple-duotone" in source
-    assert 'aria-hidden="true"' in source
+    assert '{% ui_icon "lock-simple" size=32 variant="duotone" %}' in source
