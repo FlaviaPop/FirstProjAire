@@ -31,3 +31,6 @@ staticfiles/
 
 # Claude Code agent worktrees (local only)
 .claude/worktrees/
+
+# Compiled gettext catalogues are build artefacts (compilemessages in CI/Docker)
+*.mo

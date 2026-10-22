@@ -20,18 +20,6 @@ urlpatterns = i18n_patterns(path("_styleguide/", include("infrastructure.web.sty
 TOKENS = (settings.BASE_DIR / "src/infrastructure/web/static/css/tokens.css").read_text("utf-8")
 
 
-@pytest.fixture(autouse=True)
-def locale_middleware(settings):
-    """Language activation from the URL prefix belongs to Story 1.4 (LocaleMiddleware, placed
-    right after SessionMiddleware per Story 1.2). Installed here so /en/ resolves as it will
-    once that story is merged; the base settings are not edited by this story."""
-    middleware = list(settings.MIDDLEWARE)
-    if "django.middleware.locale.LocaleMiddleware" not in middleware:
-        position = middleware.index("django.contrib.sessions.middleware.SessionMiddleware") + 1
-        middleware.insert(position, "django.middleware.locale.LocaleMiddleware")
-    settings.MIDDLEWARE = middleware
-
-
 @pytest.fixture
 def debug_urlconf() -> Iterator[None]:
     """Re-import the real root URLConf with DEBUG=True, then restore the production routing."""

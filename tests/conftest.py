@@ -6,6 +6,8 @@ declared in pyproject.toml ([tool.pytest.ini_options] markers, enforced by --str
 """
 
 # --- Story 1.2: role users and logged-in clients (patterns §12.3) ---
+from pathlib import Path
+
 import pytest
 from django.utils import translation
 
@@ -78,3 +80,22 @@ def _reset_active_language():
     """
     yield
     translation.deactivate()
+
+
+# --- Story 1.4: tests that need real (compiled) translations -------------------------------
+LOCALE_DIR = Path(__file__).resolve().parents[1] / "src/infrastructure/i18n/locale"
+
+
+@pytest.fixture
+def compiled_catalogues():
+    """Fail with an actionable message when the .mo files (build artefacts) are missing."""
+    missing = [
+        lang for lang in ("ro", "en") if not (LOCALE_DIR / lang / "LC_MESSAGES/django.mo").exists()
+    ]
+    if missing:
+        pytest.fail(
+            f"Compiled catalogues missing for {missing}: run "
+            "`uv run python manage.py compilemessages --ignore=.venv` "
+            "(needs GNU gettext; see README)",
+            pytrace=False,
+        )
