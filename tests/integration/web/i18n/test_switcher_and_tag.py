@@ -9,10 +9,10 @@ from django.utils import translation
 pytestmark = pytest.mark.django_db
 
 
-def _render_switcher(rf, path, lang):
+def _render_switcher(rf, path, lang, **context):
     request = rf.get(path)
     with translation.override(lang):
-        return render_to_string("components/language_switcher.html", request=request)
+        return render_to_string("components/language_switcher.html", context, request=request)
 
 
 @pytest.mark.parametrize("lang", ["ro", "en"])
@@ -45,6 +45,15 @@ def test_switcher_accessibility_attributes(rf):
 
 def test_switcher_label_is_translated_to_romanian(rf, compiled_catalogues):
     assert 'aria-label="Limba"' in _render_switcher(rf, "/ro/", "ro")
+
+
+# Review v1 ISS-003: regular icon for staff by default; the student layout passes duotone.
+@pytest.mark.parametrize(
+    ("context", "symbol"),
+    [({}, '#translate"'), ({"icon_variant": "duotone"}, '#translate-duotone"')],
+)
+def test_switcher_icon_variant(rf, context, symbol):
+    assert symbol in _render_switcher(rf, "/ro/", "ro", **context)
 
 
 def test_switcher_has_no_script_or_inline_style(rf):

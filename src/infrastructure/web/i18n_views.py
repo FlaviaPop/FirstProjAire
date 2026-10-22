@@ -4,7 +4,6 @@ from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
 from django.utils import translation
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
@@ -18,9 +17,16 @@ _SUPPORTED = frozenset(code for code, _name in settings.LANGUAGES)
 
 
 def _safe_next(request: HttpRequest) -> str | None:
+    """`next` if it's a same-site absolute path ("/ro/x/"); anything else falls back.
+
+    A bare value ("home") would be resolved as a URL name or followed relative to
+    /i18n/setlang/, so it's rejected too (review v1 ISS-001).
+    """
     next_url = request.POST.get("next", "")
     allowed = {request.get_host()}
-    if next_url and url_has_allowed_host_and_scheme(next_url, allowed, request.is_secure()):
+    if next_url.startswith("/") and url_has_allowed_host_and_scheme(
+        next_url, allowed, request.is_secure()
+    ):
         return next_url
     return None
 
@@ -31,7 +37,7 @@ def switch_language(request: HttpRequest) -> HttpResponse:
     language = request.POST.get("language", "")
     if language not in _SUPPORTED:
         # Django's set_language accepts any locale Django ships (e.g. "de"); only ro/en here.
-        return redirect(_safe_next(request) or f"/{content_language()}/")
+        return HttpResponseRedirect(_safe_next(request) or f"/{content_language()}/")
     next_url = _safe_next(request)
     # translate_url only resolves `next` in the *active* language, so activate the language of
     # next's own prefix; otherwise /en/x/ → ro stays /en/x/ when the cookie says "ro".

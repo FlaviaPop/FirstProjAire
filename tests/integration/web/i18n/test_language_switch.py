@@ -1,10 +1,11 @@
 import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import connection
+from django.db import DatabaseError, connection
 from django.test import Client
 from django.test.utils import CaptureQueriesContext
 
+from infrastructure.persistence.accounts.repositories import DjangoUserPreferences
 from infrastructure.web.common.decorators import PUBLIC_URL_NAMES
 from tests.factories.accounts import StudentFactory, UserFactory
 
@@ -143,6 +144,18 @@ def test_unsafe_or_missing_next_falls_back_to_language_root(client, next_url):
     assert response["Location"] == "/en/"
 
 
+# Review v1 ISS-001: only a same-site absolute path is a valid `next`. A bare value such as
+# "home" must never be resolved as a URL name (500) or followed relative to /i18n/setlang/.
+@pytest.mark.parametrize(
+    "next_url", ["home", "login", "set_language", "x.html", "ro/accounts/login/"]
+)
+@pytest.mark.parametrize(("code", "root"), [("de", "/ro/"), ("en", "/en/")])
+def test_relative_next_falls_back_to_language_root(client, code, root, next_url):
+    response = client.post(URL, {"language": code, "next": next_url})
+
+    assert (response.status_code, response["Location"]) == (302, root)
+
+
 def test_get_is_not_allowed(client):
     assert client.get(URL).status_code == 405
 
@@ -166,3 +179,20 @@ def test_saved_preference_drives_the_next_sign_in(client):
     response = client.post("/ro/accounts/login/", login)
 
     assert response["Location"] == "/en/"
+
+
+# Review v1 ISS-002: the preference is saved before the response leaves, so a failed save is a
+# 500 page and the browser never gets a cookie that disagrees with the account.
+def test_preference_write_failure_returns_500_without_cookie(client, monkeypatch):
+    client.raise_request_exception = False
+    client.force_login(UserFactory(preferred_language="ro"))
+
+    def unavailable(self, user_id, language):
+        raise DatabaseError("database unavailable")
+
+    monkeypatch.setattr(DjangoUserPreferences, "set_language", unavailable)
+
+    response = client.post(URL, {"language": "en", "next": "/ro/"})
+
+    assert response.status_code == 500
+    assert "django_language" not in response.cookies

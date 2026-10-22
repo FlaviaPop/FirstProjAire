@@ -1,5 +1,12 @@
 # Code Review - Story 1.4: Internationalization
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 757/757 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -211,6 +218,13 @@ def test_relative_next_falls_back_to_language_root(client, code, root, next_url)
 
 **Why This Matters**: a crafted form value must not produce a server error, and the redirect target should come only from the validated value, never from URL-name resolution.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `_safe_next` accepts only a same-site **absolute path** (`next_url.startswith("/")` + `url_has_allowed_host_and_scheme`); the invalid-language branch uses `HttpResponseRedirect` instead of `shortcuts.redirect`, so request input is never resolved as a URL name. As suggested
+- Commit / change ref: `src/infrastructure/web/i18n_views.py` (`_safe_next`, `switch_language`; `redirect` import removed)
+- Test evidence: `test_language_switch.py::test_relative_next_falls_back_to_language_root` (10 cases: `home`, `login`, `set_language`, `x.html`, `ro/accounts/login/` × `de`/`en`). All 10 failed before the fix (500 or a relative `Location`); they pass now. Real server: the same values → `302 /<lang>/`, 0 ERROR log lines
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: No test for the "DB unavailable → 500, cookie not set" row 🟢 Low
@@ -239,6 +253,13 @@ def test_preference_write_failure_returns_500_without_cookie(client, monkeypatch
     assert "django_language" not in response.cookies
 ```
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: test only (the behaviour was already correct; the test pins it down)
+- Commit / change ref: `tests/integration/web/i18n/test_language_switch.py::test_preference_write_failure_returns_500_without_cookie`
+- Test evidence: with `DjangoUserPreferences.set_language` raising `DatabaseError`, the response is 500 and there is no `django_language` cookie. It passed before and after (a characterisation test; it fails if the save ever moves after the response)
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-003: Switcher icon is always `regular`; the spec asks for duotone in the student theme 🟢 Low
@@ -255,6 +276,13 @@ def test_preference_write_failure_returns_500_without_cookie(client, monkeypatch
 {% ui_icon "translate" size=20 variant=icon_variant|default:"regular" %}
 ```
 Story 1.7's student layout then uses `{% include "components/language_switcher.html" with icon_variant="duotone" %}`. Add a test that the student variant references `#translate-duotone`.
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `{% ui_icon "translate" size=20 variant=icon_variant|default:"regular" %}`; Story 1.7's hand-off now says to include the switcher `with icon_variant="duotone"` in the student theme and to assert it
+- Commit / change ref: `templates/components/language_switcher.html:5`; `docs/plans/stories/epic-1-story-1.7-App-Shell-and-Role-Homes.md` (hand-off line)
+- Test evidence: `test_switcher_and_tag.py::test_switcher_icon_variant` (default → `#translate`, `icon_variant="duotone"` → `#translate-duotone`); the duotone case failed before the fix
+- Status: ✅ Resolved
 
 ---
 
@@ -302,3 +330,92 @@ Story 1.7's student layout then uses `{% include "components/language_switcher.h
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 + 🟢 ISS-003 (all findings; scope confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 1.4 (plus a hand-off line in Story 1.7)
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.4 | `web/i18n_views.py` | Bare or relative `next` → 500 or relative redirect | Absolute same-site paths only; `HttpResponseRedirect` | `test_relative_next_falls_back_to_language_root` (10) ✅ |
+| ISS-002 | 🟢 Low | 1.4 | `test_language_switch.py` | DB-failure row untested | Characterisation test | `test_preference_write_failure_returns_500_without_cookie` (1) ✅ |
+| ISS-003 | 🟢 Low | 1.4→1.7 | `components/language_switcher.html` | Student duotone icon | `icon_variant` parameter, `regular` by default | `test_switcher_icon_variant` (2) ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/i18n_views.py` | Modified | `_safe_next` requires a leading `/`; direct `HttpResponseRedirect` |
+| `src/infrastructure/web/templates/components/language_switcher.html` | Modified | `icon_variant` (default `regular`) |
+| `tests/integration/web/i18n/test_language_switch.py` | Modified | +11 tests |
+| `tests/integration/web/i18n/test_switcher_and_tag.py` | Modified | +2 tests; `_render_switcher` accepts context |
+| `docs/plans/stories/epic-1-story-1.7-App-Shell-and-Role-Homes.md` | Modified | Student switcher uses `icon_variant="duotone"` |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Error handling §8 | `switch_language` | Client input never produces a 5xx |
+| UI primitive §11.2 | switcher | Variant chosen by the includer; staff default unchanged |
+
+## Testing Summary
+
+- **Targeted tests added**: 13 (11 failed before the fixes; the ISS-002 characterisation test passed before and after)
+- **Full suite**: 757/757 passing (3 runs)
+- **Coverage**: 100% (target ≥85%)
+- **Gates**: ruff format/check clean · mypy 0 issues (95 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Before the fix** (targeted):
+```
+FAILED test_language_switch.py::test_relative_next_falls_back_to_language_root[de-/ro/-home]
+… (10 × test_relative_next_falls_back_to_language_root)
+FAILED test_switcher_and_tag.py::test_switcher_icon_variant[…#translate-duotone"]
+11 failed, 34 passed in 0.32s
+```
+
+**After the fix** (full suite):
+```
+src/infrastructure/web/i18n_views.py                         33      0      8      0   100%
+TOTAL                                                       680      0     74      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+757 passed in 7.06s
+```
+
+**Real server** (`runserver`, real CSRF token):
+```
+POST language=de next=home                  -> 302 /ro/
+POST language=de next=login                 -> 302 /ro/
+POST language=de next=set_language          -> 302 /ro/
+POST language=en next=home                  -> 302 /en/
+POST language=en next=x.html                -> 302 /en/
+POST language=en next=/ro/accounts/login/   -> 302 /en/accounts/login/
+POST language=ro next=/en/accounts/login/   -> 302 /ro/accounts/login/
+POST language=en next=https://evil.example/ -> 302 /en/
+ERROR lines in server log: 0
+```
+
+## Deviations from Report Suggestions
+
+None.
+
+## Lessons Learned
+
+1. `django.shortcuts.redirect` resolves URL names. Never pass request input to it; use `HttpResponseRedirect` with a validated path.
+2. "Safe" (same host) and "well-formed" (absolute path) are separate checks for a redirect target.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)
+- [ ] Story 1.7 applies the `icon_variant="duotone"` hand-off
