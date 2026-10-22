@@ -7,23 +7,27 @@ from django.conf import settings
 from django.test import Client
 
 pytestmark = pytest.mark.django_db
-LOGIN = "/ro/accounts/login/"
+LOGIN = "/ro/accounts/login/"  # HTMX test
 
 
 def test_csrf_failure_view_is_configured():
     assert settings.CSRF_FAILURE_VIEW == "infrastructure.web.common.errors.csrf_failure"
 
 
-def test_post_without_token_renders_the_403_page(caplog):
+@pytest.mark.parametrize(
+    ("url", "title"),
+    [("/ro/accounts/login/", "Acces interzis"), ("/en/accounts/login/", "Access denied")],
+)
+def test_post_without_token_renders_the_localized_403_page(caplog, url, title, compiled_catalogues):
     strict = Client(enforce_csrf_checks=True)
 
     with caplog.at_level(logging.WARNING, logger="infrastructure.web.common.errors"):
-        response = strict.post(LOGIN, {"username": "ana", "password": "x"})
+        response = strict.post(url, {"username": "ana", "password": "x"})
 
     content = response.content.decode()
     assert response.status_code == 403
     assert "errors/403.html" in [t.name for t in response.templates]
-    assert "Access denied" in content
+    assert title in content
     assert "CSRF verification failed" not in content  # Django's default page
     record = next(r for r in caplog.records if r.getMessage() == "csrf.failure")
     assert record.levelname == "WARNING"

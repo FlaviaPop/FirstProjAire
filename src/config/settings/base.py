@@ -28,6 +28,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "csp.middleware.CSPMiddleware",  # Story 1.2
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",  # Story 1.4: after sessions, before common
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -79,6 +80,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LANGUAGE_CODE = "ro"
 LANGUAGES = [("ro", "Română"), ("en", "English")]
 LOCALE_PATHS = [BASE_DIR / "src/infrastructure/i18n/locale"]
+# Story 1.4: language cookie written by /i18n/setlang/ (SECURE mirrored in prod.py).
+LANGUAGE_COOKIE_NAME = "django_language"
+LANGUAGE_COOKIE_AGE = 31_536_000  # one year, so children keep their language
+LANGUAGE_COOKIE_SAMESITE = "Lax"
+LANGUAGE_COOKIE_SECURE = False
 USE_I18N = True
 USE_TZ = True
 TIME_ZONE = "Europe/Bucharest"

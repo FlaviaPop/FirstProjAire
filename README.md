@@ -13,6 +13,7 @@ Design documents live in `docs/`. Start with
 
 - Python 3.12 (pinned in `.python-version`)
 - [uv](https://docs.astral.sh/uv/) 0.13 or newer. uv installs Python 3.12 for you if it's missing.
+- GNU gettext (`msgfmt`, `xgettext`) to compile translations. See [Translations](#translations).
 
 ## Setup
 
@@ -20,6 +21,7 @@ Design documents live in `docs/`. Start with
 uv sync --frozen                              # install the exact versions from uv.lock
 cp .env.example .env                          # optional: local overrides
 uv run python manage.py migrate               # creates ./data/db.sqlite3
+uv run python manage.py compilemessages --ignore=.venv   # RO/EN catalogues (needs gettext)
 uv run python manage.py createsuperuser       # first operator account, always role ADMIN
 ```
 
@@ -38,9 +40,13 @@ when the database can't be queried or its directory isn't writable.
 ## Testing
 
 ```bash
+uv run python manage.py compilemessages --ignore=.venv     # first: tests check real RO/EN text
 uv run pytest --cov=src --cov-branch --cov-fail-under=85    # unit + integration
 uv run pytest -m e2e                                        # browser journeys (Playwright)
 ```
+
+Without compiled catalogues, the tests that need real translations stop with
+"Compiled catalogues missing … run compilemessages".
 
 Quality gates (all must pass before merge):
 
@@ -51,6 +57,35 @@ uv run mypy
 PYTHONPATH=src uv run lint-imports
 uv run python manage.py makemigrations --check --dry-run
 ```
+
+## Translations
+
+The UI is in Romanian (default) and English. Every page lives under `/ro/…` and `/en/…`, and the
+RO | EN switcher posts to `/i18n/setlang/`. Catalogues are in
+`src/infrastructure/i18n/locale/{ro,en}/LC_MESSAGES/django.po`.
+
+**Install GNU gettext** (one of):
+
+| Where | How |
+|-------|-----|
+| macOS without admin rights (used on the pilot laptop) | `curl -fsSL -o mm.tar.bz2 https://micro.mamba.pm/api/micromamba/osx-arm64/latest && tar -xjf mm.tar.bz2 bin/micromamba && mv bin/micromamba ~/.local/bin/`, then `MAMBA_ROOT_PREFIX=~/.local/share/mamba micromamba create -y -n gettext -c conda-forge gettext` and `export PATH="$HOME/.local/share/mamba/envs/gettext/bin:$PATH"` |
+| macOS with Homebrew | `brew install gettext` |
+| Ubuntu / CI / Docker | `apt-get install -y gettext` |
+
+**After adding or changing a translatable string:**
+
+```bash
+uv run python manage.py makemessages -l ro -l en --no-wrap \
+  --ignore=.venv --ignore=.claude --ignore=docs --ignore=SPEC --ignore=tests
+# fill every new msgstr in ro/django.po (and en/django.po), then:
+uv run python manage.py compilemessages --ignore=.venv
+```
+
+- Always pass `--no-wrap`: catalogue tests read one entry per line. To unwrap a file that was
+  wrapped by mistake: `msgcat --no-wrap -o django.po django.po`.
+- `test_translations_complete` fails CI if any RO `msgstr` is empty or fuzzy. It doesn't need gettext.
+- Compiled `*.mo` files are **build artefacts**: git-ignored, and produced by `compilemessages`
+  in CI and the Docker build before tests run.
 
 ## Project structure
 

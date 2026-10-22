@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 from django.urls import get_resolver
+from django.utils import translation
 
 from infrastructure.web.common import errors
 
@@ -105,4 +106,8 @@ def test_romanian_translations_differ_from_the_english_source():
 
 
 def test_every_generic_message_is_in_the_catalogue():
-    assert {str(message) for message in errors.GENERIC_BY_STATUS.values()} <= set(STORY_MSGIDS)
+    # Compare msgids: with compiled catalogues (Story 1.4), str() would return the translation.
+    with translation.override(None):
+        msgids = {str(message) for message in errors.GENERIC_BY_STATUS.values()}
+
+    assert msgids <= set(STORY_MSGIDS)

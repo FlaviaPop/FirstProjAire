@@ -17,7 +17,9 @@ from django.http import HttpRequest, HttpResponse
 from domain.accounts.permissions import Permission, has_permission
 from domain.accounts.roles import parse_role
 
-PUBLIC_URL_NAMES: frozenset[str] = frozenset({"healthz", "accounts:login", "accounts:logout"})
+PUBLIC_URL_NAMES: frozenset[str] = frozenset(
+    {"healthz", "accounts:login", "accounts:logout", "set_language"}
+)
 
 # Not `View`, to avoid confusion with django.views.View (class-based views).
 ViewCallable = Callable[..., HttpResponse]

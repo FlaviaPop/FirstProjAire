@@ -6,7 +6,7 @@ from infrastructure.web.common.decorators import PUBLIC_URL_NAMES
 
 pytestmark = pytest.mark.django_db
 # Story 1.2: public routes that only accept POST (GET -> 405 by design).
-POST_ONLY_PUBLIC_URL_NAMES = frozenset({"accounts:logout"})
+POST_ONLY_PUBLIC_URL_NAMES = frozenset({"accounts:logout", "set_language"})  # + Story 1.4
 
 
 @pytest.mark.parametrize("url_name", sorted(PUBLIC_URL_NAMES - POST_ONLY_PUBLIC_URL_NAMES))

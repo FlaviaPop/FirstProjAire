@@ -1,0 +1,8 @@
+{% load i18n ui %}{% get_current_language as current %}
+<form class="lang-switch" action="{% url 'set_language' %}" method="post" aria-label="{% translate 'Language' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  {% ui_icon "translate" size=20 %}
+  <button type="submit" name="language" value="ro" lang="ro" title="{% translate "Română" %}" class="lang-switch__btn" aria-pressed="{% if current == 'ro' %}true{% else %}false{% endif %}">RO</button>
+  <button type="submit" name="language" value="en" lang="en" title="{% translate "English" %}" class="lang-switch__btn" aria-pressed="{% if current == 'en' %}true{% else %}false{% endif %}">EN</button>
+</form>

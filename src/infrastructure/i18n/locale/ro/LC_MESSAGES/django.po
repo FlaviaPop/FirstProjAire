@@ -2,229 +2,273 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:57+0300\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-# --- Story 1.5: design tokens & atom primitives ---
+#: src/infrastructure/web/accounts/forms.py:9
+#: src/infrastructure/web/accounts/forms.py:10
+msgid "Incorrect username or password."
+msgstr "Nume de utilizator sau parolă incorecte."
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "Active"
-msgstr "Activ"
+#: src/infrastructure/web/common/errors.py:16
+msgid "Your request could not be processed. Please try again."
+msgstr "Cererea dumneavoastră nu a putut fi procesată. Vă rugăm să încercați din nou."
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "Flagged"
-msgstr "Semnalat"
+#: src/infrastructure/web/common/errors.py:17
+msgid "You do not have access to this page."
+msgstr "Nu aveți acces la această pagină."
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "Blocked"
-msgstr "Blocat"
+#: src/infrastructure/web/common/errors.py:18
+msgid "We could not find this page."
+msgstr "Nu am găsit această pagină."
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "Resubmitted"
-msgstr "Retrimis"
+#: src/infrastructure/web/common/errors.py:19
+msgid "This has already been done and cannot be repeated."
+msgstr "Această acțiune a fost deja efectuată și nu poate fi repetată."
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "Draft"
-msgstr "Ciornă"
+#: src/infrastructure/web/common/errors.py:20
+msgid "Please fix the following:"
+msgstr "Vă rugăm să corectați următoarele:"
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "Published"
-msgstr "Publicat"
+#: src/infrastructure/web/common/errors.py:21
+msgid "Something went wrong on our side. Please try again later."
+msgstr "A apărut o problemă la noi. Vă rugăm să încercați din nou mai târziu."
 
-#: src/infrastructure/web/templatetags/ui.py
-msgid "User"
-msgstr "Utilizator"
+#: src/infrastructure/web/styleguide/views.py:64
+msgid "Save"
+msgstr "Salvează"
 
-#: src/infrastructure/web/templates/components/score.html
-#, python-format
-msgid "Score: %(value)s out of 100"
-msgstr "Punctaj: %(value)s din 100"
+#: src/infrastructure/web/styleguide/views.py:65
+msgid "Cancel"
+msgstr "Anulează"
 
-#: src/infrastructure/web/templates/components/progress_meter.html
+#: src/infrastructure/web/styleguide/views.py:66
+msgid "Delete"
+msgstr "Șterge"
+
+#: src/infrastructure/web/styleguide/views.py:67
+msgid "Learn more"
+msgstr "Află mai multe"
+
+#: src/infrastructure/web/styleguide/views.py:95
+msgid "unread notifications"
+msgstr "notificări necitite"
+
+#: src/infrastructure/web/styleguide/views.py:96
+msgid "Exercises"
+msgstr "Exerciții"
+
+#: src/infrastructure/web/templates/accounts/locked_out.html:3
+#: src/infrastructure/web/templates/accounts/locked_out.html:8
+msgid "Too many attempts"
+msgstr "Prea multe încercări"
+
+#: src/infrastructure/web/templates/accounts/locked_out.html:10
+msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
+msgstr "Prea multe încercări eșuate. Încearcă din nou peste 15 minute sau cere ajutorul administratorului."
+
+# --- Story 1.2: login and lockout ---
+#: src/infrastructure/web/templates/accounts/login.html:3
+#: src/infrastructure/web/templates/accounts/login.html:8
+#: src/infrastructure/web/templates/accounts/login.html:25
+msgid "Sign in"
+msgstr "Autentificare"
+
+#: src/infrastructure/web/templates/accounts/login.html:16
+msgid "Username"
+msgstr "Nume de utilizator"
+
+#: src/infrastructure/web/templates/accounts/login.html:21
+msgid "Password"
+msgstr "Parolă"
+
+#: src/infrastructure/web/templates/components/language_switcher.html:2
+msgid "Language"
+msgstr "Limba"
+
+#: src/infrastructure/web/templates/components/language_switcher.html:6
+msgid "Română"
+msgstr "Română"
+
+#: src/infrastructure/web/templates/components/language_switcher.html:7
+msgid "English"
+msgstr "English"
+
+#: src/infrastructure/web/templates/components/progress_meter.html:4
 #, python-format
 msgid "%(done)s of %(total)s"
 msgstr "%(done)s din %(total)s"
 
-#: src/infrastructure/web/styleguide/views.py
-msgid "Save"
-msgstr "Salvează"
-
-#: src/infrastructure/web/styleguide/views.py
-msgid "Cancel"
-msgstr "Anulează"
-
-#: src/infrastructure/web/styleguide/views.py
-msgid "Delete"
-msgstr "Șterge"
-
-#: src/infrastructure/web/styleguide/views.py
-msgid "Learn more"
-msgstr "Află mai multe"
-
-#: src/infrastructure/web/styleguide/views.py
-msgid "unread notifications"
-msgstr "notificări necitite"
-
-#: src/infrastructure/web/styleguide/views.py
-msgid "Exercises"
-msgstr "Exerciții"
-
-#: src/infrastructure/web/templates/styleguide/index.html
-msgid "Styleguide"
-msgstr "Ghid de stil"
-
-#: src/infrastructure/web/templates/styleguide/index.html
-msgid "Development-only visual reference for the shared UI primitives."
-msgstr "Referință vizuală, doar pentru dezvoltare, a componentelor UI comune."
-
-#: src/infrastructure/web/templates/styleguide/index.html
-msgid "Student theme"
-msgstr "Tema pentru elevi"
-
-#: src/infrastructure/web/templates/styleguide/index.html
-msgid "Staff theme"
-msgstr "Tema pentru personal"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Tokens"
-msgstr "Valori de design"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Colours"
-msgstr "Culori"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Spacing"
-msgstr "Spațiere"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Typography"
-msgstr "Tipografie"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Buttons"
-msgstr "Butoane"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Normal"
-msgstr "Normal"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Disabled"
-msgstr "Dezactivat"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Loading"
-msgstr "Se încarcă"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Without icon"
-msgstr "Fără pictogramă"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "With icon"
-msgstr "Cu pictogramă"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Icons"
-msgstr "Pictograme"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Regular"
-msgstr "Simplu"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Duotone"
-msgstr "Bicolor"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Badge"
-msgstr "Insignă"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "A zero count renders nothing."
-msgstr "Un număr zero nu afișează nimic."
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Status pills"
-msgstr "Etichete de stare"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Avatar"
-msgstr "Avatar"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Without a name"
-msgstr "Fără nume"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Score"
-msgstr "Punctaj"
-
-#: src/infrastructure/web/templates/styleguide/_atoms.html
-msgid "Progress"
-msgstr "Progres"
-
-# --- Story 1.2: login and lockout ---
-msgid "Sign in"
-msgstr "Autentificare"
-
-msgid "Username"
-msgstr "Nume de utilizator"
-
-msgid "Password"
-msgstr "Parolă"
-
-msgid "Incorrect username or password."
-msgstr "Nume de utilizator sau parolă incorecte."
-
-msgid "Too many attempts"
-msgstr "Prea multe încercări"
-
-msgid "Too many failed attempts. Try again in 15 minutes or ask the administrator."
-msgstr "Prea multe încercări eșuate. Încearcă din nou peste 15 minute sau cere ajutorul administratorului."
+#: src/infrastructure/web/templates/components/score.html:1
+#, python-format
+msgid "Score: %(value)s out of 100"
+msgstr "Punctaj: %(value)s din 100"
 
 # --- Story 1.1: error pages (infrastructure/web/common/errors.py, templates/errors/) ---
+#: src/infrastructure/web/templates/errors/400.html:3
+#: src/infrastructure/web/templates/errors/400.html:5
 msgid "Request could not be processed"
 msgstr "Cererea nu a putut fi procesată"
 
+#: src/infrastructure/web/templates/errors/403.html:3
+#: src/infrastructure/web/templates/errors/403.html:5
 msgid "Access denied"
 msgstr "Acces interzis"
 
+#: src/infrastructure/web/templates/errors/404.html:3
+#: src/infrastructure/web/templates/errors/404.html:5
 msgid "Page not found"
 msgstr "Pagina nu a fost găsită"
 
+#: src/infrastructure/web/templates/errors/409.html:3
+#: src/infrastructure/web/templates/errors/409.html:5
 msgid "Already done"
 msgstr "Deja finalizat"
 
+#: src/infrastructure/web/templates/errors/422.html:3
+#: src/infrastructure/web/templates/errors/422.html:5
 msgid "Please check your input"
 msgstr "Vă rugăm să verificați datele introduse"
 
+#: src/infrastructure/web/templates/errors/500.html:3
+#: src/infrastructure/web/templates/errors/500.html:5
 msgid "Something went wrong"
 msgstr "Ceva nu a funcționat"
 
-msgid "Your request could not be processed. Please try again."
-msgstr "Cererea dumneavoastră nu a putut fi procesată. Vă rugăm să încercați din nou."
+#: src/infrastructure/web/templates/errors/_error.html:9
+msgid "Reference"
+msgstr "Cod de referință"
 
-msgid "You do not have access to this page."
-msgstr "Nu aveți acces la această pagină."
-
-msgid "We could not find this page."
-msgstr "Nu am găsit această pagină."
-
-msgid "This has already been done and cannot be repeated."
-msgstr "Această acțiune a fost deja efectuată și nu poate fi repetată."
-
-msgid "Please fix the following:"
-msgstr "Vă rugăm să corectați următoarele:"
-
-msgid "Something went wrong on our side. Please try again later."
-msgstr "A apărut o problemă la noi. Vă rugăm să încercați din nou mai târziu."
-
+#: src/infrastructure/web/templates/errors/_error.html:10
 msgid "Back to home"
 msgstr "Înapoi la pagina principală"
 
-msgid "Reference"
-msgstr "Cod de referință"
+#: src/infrastructure/web/templates/styleguide/_atoms.html:2
+msgid "Tokens"
+msgstr "Valori de design"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:3
+msgid "Colours"
+msgstr "Culori"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:14
+msgid "Spacing"
+msgstr "Spațiere"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:20
+msgid "Typography"
+msgstr "Tipografie"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:30
+msgid "Buttons"
+msgstr "Butoane"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:33
+msgid "Normal"
+msgstr "Normal"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:33
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:33
+msgid "Loading"
+msgstr "Se încarcă"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:46
+msgid "Without icon"
+msgstr "Fără pictogramă"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:46
+msgid "With icon"
+msgstr "Cu pictogramă"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:48
+msgid "Icons"
+msgstr "Pictograme"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:51
+msgid "Regular"
+msgstr "Simplu"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:51
+msgid "Duotone"
+msgstr "Bicolor"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:63
+msgid "Badge"
+msgstr "Insignă"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:65
+msgid "A zero count renders nothing."
+msgstr "Un număr zero nu afișează nimic."
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:67
+msgid "Status pills"
+msgstr "Etichete de stare"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:70
+msgid "Avatar"
+msgstr "Avatar"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:71
+msgid "Without a name"
+msgstr "Fără nume"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:73
+msgid "Score"
+msgstr "Punctaj"
+
+#: src/infrastructure/web/templates/styleguide/_atoms.html:76
+msgid "Progress"
+msgstr "Progres"
+
+#: src/infrastructure/web/templates/styleguide/index.html:6
+#: src/infrastructure/web/templates/styleguide/index.html:19
+msgid "Styleguide"
+msgstr "Ghid de stil"
+
+#: src/infrastructure/web/templates/styleguide/index.html:20
+msgid "Development-only visual reference for the shared UI primitives."
+msgstr "Referință vizuală, doar pentru dezvoltare, a componentelor UI comune."
+
+#: src/infrastructure/web/templates/styleguide/index.html:24
+msgid "Student theme"
+msgstr "Tema pentru elevi"
+
+#: src/infrastructure/web/templates/styleguide/index.html:24
+msgid "Staff theme"
+msgstr "Tema pentru personal"
+
+# --- Story 1.5: design tokens & atom primitives ---
+#: src/infrastructure/web/templatetags/ui.py:49
+msgid "Active"
+msgstr "Activ"
+
+#: src/infrastructure/web/templatetags/ui.py:50
+msgid "Flagged"
+msgstr "Semnalat"
+
+#: src/infrastructure/web/templatetags/ui.py:51
+msgid "Blocked"
+msgstr "Blocat"
+
+#: src/infrastructure/web/templatetags/ui.py:52
+msgid "Resubmitted"
+msgstr "Retrimis"
+
+#: src/infrastructure/web/templatetags/ui.py:53
+msgid "Draft"
+msgstr "Ciornă"
+
+#: src/infrastructure/web/templatetags/ui.py:54
+msgid "Published"
+msgstr "Publicat"
+
+#: src/infrastructure/web/templatetags/ui.py:128
+msgid "User"
+msgstr "Utilizator"

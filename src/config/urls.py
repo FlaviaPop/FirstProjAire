@@ -3,10 +3,12 @@ from django.conf.urls.i18n import i18n_patterns
 from django.urls import URLPattern, URLResolver, include, path
 
 from infrastructure.web.common.health import healthz
+from infrastructure.web.i18n_views import switch_language
 
 # Operational endpoints stay outside the language prefix.
 urlpatterns: list[URLPattern | URLResolver] = [
     path("healthz", healthz, name="healthz"),
+    path("i18n/setlang/", switch_language, name="set_language"),  # Story 1.4
 ]
 
 urlpatterns += i18n_patterns(

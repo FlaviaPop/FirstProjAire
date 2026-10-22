@@ -167,7 +167,8 @@ def test_domain_error_logs_one_info_line_with_code_and_status(client, capfd):
 def test_unexpected_error_logs_error_with_exc_info_and_same_request_id(client, capfd):
     client.raise_request_exception = False
 
-    response = client.get("/boom")
+    # Story 1.4: LocaleMiddleware now localizes the page; ask for English to assert the label.
+    response = client.get("/boom", headers={"Accept-Language": "en"})
 
     lines = _json_lines(capfd)
     (error,) = [line for line in lines if line["level"] == "ERROR"]
