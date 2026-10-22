@@ -1,0 +1,75 @@
+/* Form field molecule — components/form_field.html · {% ui_field %} and the RO|EN pair
+   (components/field_pair.html). Also styles the Story 1.2 login hooks (.login-card inputs, .field-error). */
+.field { margin: 0 0 var(--space-4); }
+.field__label, .login-card label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-base, var(--font-16));
+  font-weight: var(--weight-semibold);
+}
+.field__required {
+  color: var(--color-muted);
+  font-weight: var(--weight-regular);
+}
+.field input, .field textarea, .field select, .login-card input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: var(--touch, var(--touch-min));
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius, var(--radius-staff));
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+.theme-student .field input, .theme-student .field textarea, .theme-student .field select, .theme-student .login-card input {
+  padding: var(--space-3) var(--space-4);
+}
+.field input[type="checkbox"], .field input[type="radio"] {
+  display: inline-block;
+  width: auto;
+  min-height: 0;
+}
+.login-card input { margin-bottom: var(--space-4); }
+.login-card input[aria-invalid="true"] { margin-bottom: var(--space-1); }
+[aria-invalid="true"], .field--invalid input, .field--invalid textarea, .field--invalid select {
+  border: 2px solid var(--color-error);
+}
+.field__help {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted);
+  font-size: var(--font-14);
+}
+.field__error, .field-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: var(--space-1) 0 0;
+  color: var(--color-error);
+  font-weight: var(--weight-semibold);
+}
+.login-card .field-error { margin-bottom: var(--space-4); }
+
+/* RO|EN pair: two equal columns (6+6 of the 12-column grid). */
+.field-pair {
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  border: none;
+}
+.field-pair__legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: var(--weight-bold);
+}
+.field-pair__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--grid-gutter);
+}
+.field-pair__column > .field { margin-bottom: 0; }
+.field-pair__lang {
+  margin-left: var(--space-2);
+  color: var(--color-muted);
+  font-weight: var(--weight-regular);
+}

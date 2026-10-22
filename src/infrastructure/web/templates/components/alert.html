@@ -1,0 +1,5 @@
+{% load i18n ui %}<div class="alert alert--{{ level }}" role="{{ role }}">
+  {% ui_icon icon 20 %}
+  <p class="alert__message">{{ message }}</p>
+  {% if dismissible %}<button type="button" class="alert__close" data-dismiss aria-label="{% translate "Close" %}">{% ui_icon "x-circle" 20 %}</button>{% endif %}
+</div>

@@ -1,0 +1,8 @@
+{% load ui %}{% if rows %}<div class="table-wrap"><table class="table">
+  <caption class="table__caption">{{ caption }}</caption>
+  <thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+  <tbody>
+    {% for row in rows %}<tr>{% for cell in row %}<td>{% if cell.pill is not None %}{% ui_status_pill cell.pill %}{% elif cell.href is not None %}<a href="{{ cell.href }}">{{ cell.text }}</a>{% else %}{{ cell.text }}{% endif %}</td>{% endfor %}</tr>
+    {% endfor %}
+  </tbody>
+</table></div>{% else %}{% ui_empty_state empty_message %}{% endif %}

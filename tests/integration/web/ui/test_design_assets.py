@@ -76,6 +76,8 @@ SPEC_TOKENS = {
     "--elevation-3": "0 12px 32px rgba(31, 41, 55, .24)",
     "--touch-min": "32px",
     "--touch-student": "44px",
+    # Story 1.6 Design Tokens — Dialog: "backdrop rgba(31,41,55,.5)" (the text colour at 50%).
+    "--color-backdrop": "rgba(31, 41, 55, .5)",
 }
 
 
@@ -357,6 +359,18 @@ def test_every_new_ui_string_is_in_the_catalogue(language):
         ("Published", "Publicat"),
         ("User", "Utilizator"),
         ("Score: %(value)s out of 100", "Punctaj: %(value)s din 100"),
+        # Story 1.6 AC 14 (molecules)
+        ("(required)", "(obligatoriu)"),
+        ("Close", "Închide"),
+        ("Unavailable", "Indisponibil"),
+        ("Cancel", "Anulează"),
+        ("Breadcrumb", "Fir de navigare"),
+        ("Română", "Română"),
+        ("English", "English"),
+        (
+            "JavaScript is required to confirm this action.",
+            "Este necesar JavaScript pentru a confirma această acțiune.",
+        ),
     ],
 )
 def test_romanian_translation_matches_the_story(msgid, romanian):

@@ -4,16 +4,29 @@ The coverage test is unmarked, so it walks the real ROOT_URLCONF. The decorator-
 tests use this module's own `urlpatterns` via @pytest.mark.urls(__name__).
 """
 
+import importlib
 import re
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 import pytest
 from django.contrib.sessions.models import Session
 from django.db import connection
 from django.http import HttpResponse
+from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
-from django.urls import URLPattern, URLResolver, get_resolver, path
+from django.urls import (
+    NoReverseMatch,
+    URLPattern,
+    URLResolver,
+    clear_url_caches,
+    get_resolver,
+    path,
+    reverse,
+)
 from django.views import View
 
+import config.urls
 from domain.accounts.permissions import P
 from infrastructure.web.common.decorators import (
     PUBLIC_URL_NAMES,
@@ -23,6 +36,10 @@ from infrastructure.web.common.decorators import (
 from tests.factories.accounts import UserFactory
 
 EXEMPT_NAMESPACES = {"admin"}  # Django admin: has_permission restricted to Admin role (Story 1.9)
+
+# Story 1.3 review ISS-004: routes registered only when DEBUG=True that are deliberately
+# unguarded. Every entry is a reviewed decision; never add these to PUBLIC_URL_NAMES.
+DEBUG_ONLY_URL_NAMES: frozenset[str] = frozenset({"styleguide:index"})
 
 
 def _leaves(patterns, namespace=""):
@@ -34,7 +51,7 @@ def _leaves(patterns, namespace=""):
             yield namespace, entry
 
 
-def _unprotected(patterns):
+def _unprotected(patterns, allowed: frozenset[str] = frozenset()):
     offenders = []
     for namespace, pattern in _leaves(patterns):
         if namespace in EXEMPT_NAMESPACES:
@@ -44,7 +61,7 @@ def _unprotected(patterns):
             continue
         full_name = f"{namespace}:{pattern.name}" if namespace else pattern.name
         guarded = hasattr(pattern.callback, "required_permissions")
-        if not guarded and full_name not in PUBLIC_URL_NAMES:
+        if not guarded and full_name not in PUBLIC_URL_NAMES | allowed:
             offenders.append(full_name)
     return offenders
 
@@ -53,6 +70,55 @@ def test_every_url_is_protected_or_public():
     offenders = _unprotected(get_resolver().url_patterns)
 
     assert offenders == [], f"Unprotected routes: {offenders}"
+
+
+@contextmanager
+def _debug_routing() -> Iterator[None]:
+    """Re-import the real root URLConf with DEBUG=True, then restore the production routing."""
+    try:
+        with override_settings(DEBUG=True):
+            importlib.reload(config.urls)
+            clear_url_caches()
+            yield
+    finally:
+        importlib.reload(config.urls)
+        clear_url_caches()
+
+
+@pytest.fixture
+def debug_urlconf() -> Iterator[None]:
+    with _debug_routing():
+        yield
+
+
+@pytest.mark.usefixtures("debug_urlconf")
+def test_every_debug_only_url_is_protected_public_or_allow_listed():
+    offenders = _unprotected(get_resolver().url_patterns, allowed=DEBUG_ONLY_URL_NAMES)
+
+    assert offenders == [], f"Unprotected DEBUG-only routes: {offenders}"
+
+
+@pytest.mark.parametrize("name", sorted(DEBUG_ONLY_URL_NAMES))
+def test_debug_only_allow_list_entries_exist_only_under_debug(name):
+    # A stale entry (route renamed or removed, or routed in production too) must fail.
+    with pytest.raises(NoReverseMatch):
+        reverse(name)
+
+    with _debug_routing():
+        debug_url = reverse(name)
+
+    assert debug_url
+    assert name not in PUBLIC_URL_NAMES
+
+
+def test_debug_only_allow_list_is_exactly_the_styleguide():
+    # Story 1.6 adds no routes; growing this set must be a reviewed change.
+    assert sorted(DEBUG_ONLY_URL_NAMES) == ["styleguide:index"]
+
+
+def test_production_routing_is_restored_after_the_debug_walk(client):
+    with pytest.raises(NoReverseMatch):
+        reverse("styleguide:index")
 
 
 @require_permission(P.CONTENT_EDIT)
@@ -219,3 +285,13 @@ def test_coverage_check_reports_unguarded_and_unnamed_routes():
     ]
 
     assert _unprotected(patterns) == ["open", "nameless"]
+
+
+def test_coverage_check_excuses_only_allow_listed_debug_routes():
+    patterns = [
+        path("dev-tool", _unguarded, name="dev-tool"),
+        path("dev-probe", _unguarded, name="dev-probe"),
+        path("guarded", _edit, name="guarded"),
+    ]
+
+    assert _unprotected(patterns, allowed=frozenset({"dev-tool"})) == ["dev-probe"]

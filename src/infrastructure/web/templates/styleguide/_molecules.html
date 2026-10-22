@@ -1,0 +1,43 @@
+{% load i18n ui %}<div class="sg-molecules">
+<h3>{% translate "Form field" %}</h3>
+<div class="sg-stack">
+  {% ui_field samples.clean_form.lesson %}
+  {% ui_field samples.clean_form.notes help=field_help %}
+  {% ui_field samples.error_form.lesson help=field_help %}
+</div>
+
+<h3>{% translate "RO | EN field pair" %}</h3>
+<div class="sg-wide">
+  {% ui_field_pair samples.clean_form.title_ro samples.clean_form.title_en %}
+  {% ui_field_pair samples.error_form.title_ro samples.error_form.title_en %}
+</div>
+
+<h3>{% translate "Alerts" %}</h3>
+<div class="sg-stack">
+  {% for level, message in alerts %}{% ui_alert level message %}{% endfor %}
+</div>
+
+<h3>{% translate "Cards" %}</h3>
+<div class="sg-grid">
+  {% ui_card card_title card_body meta=card_meta %}
+  {% ui_card card_title card_body href="#" icon="book-open" meta=card_meta %}
+</div>
+
+<h3>{% translate "Disabled tile" %}</h3>
+<div class="sg-stack">{% ui_disabled_tile tile_title tile_reason %}</div>
+
+<h3>{% translate "Empty state" %}</h3>
+{% ui_empty_state empty_message empty_action "#" %}
+
+<h3>{% translate "Page header" %}</h3>
+{% ui_page_header header_title breadcrumbs header_actions %}
+
+<h3>{% translate "Confirm dialog" %}</h3>
+<div class="sg-row">{% ui_dialog_trigger samples.dialog_id dialog_trigger "danger" %}</div>
+{% ui_confirm_dialog samples.dialog_id dialog_title dialog_body dialog_confirm "#" "danger" hidden=dialog_hidden %}
+
+<h3>{% translate "Table" %}</h3>
+{% ui_table table_columns table_rows table_caption table_empty %}
+<h4>{% translate "Empty table" %}</h4>
+{% ui_table table_columns no_rows table_caption table_empty %}
+</div>

@@ -1,0 +1,26 @@
+/* Disabled tile molecule — components/disabled_tile.html · {% ui_disabled_tile %}.
+   Not focusable and not a link: it only states that the feature is unavailable. */
+.tile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius, var(--radius-staff));
+}
+.tile--disabled {
+  background: var(--color-disabled);
+  color: var(--color-muted);
+  border: 1px dashed var(--color-border);
+  cursor: not-allowed;
+}
+.tile__title { font-weight: var(--weight-semibold); }
+.tile__status {
+  margin-left: auto;
+  font-size: var(--font-14);
+  font-weight: var(--weight-semibold);
+}
+.tile__reason {
+  flex-basis: 100%;
+  font-size: var(--font-14);
+}

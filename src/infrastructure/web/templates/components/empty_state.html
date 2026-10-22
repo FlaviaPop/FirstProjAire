@@ -1,0 +1,5 @@
+{% load ui %}<div class="empty-state">
+  {% ui_icon icon 32 icon_variant %}
+  <p class="empty-state__message">{{ message }}</p>
+  {% if action_url %}<a class="button button--primary empty-state__action" href="{{ action_url }}">{{ action_label }}</a>{% endif %}
+</div>

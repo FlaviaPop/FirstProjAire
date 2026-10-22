@@ -1,4 +1,4 @@
-"""DEBUG-only /_styleguide/ page (Story 1.5)."""
+"""DEBUG-only /_styleguide/ page (Story 1.5 atoms, Story 1.6 molecules)."""
 
 import importlib
 import re
@@ -7,6 +7,7 @@ from collections.abc import Iterator
 import pytest
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
+from django.contrib.staticfiles import finders
 from django.test import Client, override_settings
 from django.urls import NoReverseMatch, clear_url_caches, include, path, reverse
 from django.utils import translation
@@ -59,9 +60,19 @@ def test_styleguide_language_follows_the_url_prefix(client, lang):
     assert f'<html lang="{lang}">' in html
 
 
+def theme_sections(html: str) -> dict[str, str]:
+    """The markup of each `.theme-<name>` section, keyed by theme name."""
+    return dict(re.findall(r'<section class="theme-(\w+)".*?>(.*?)</section>', html, re.S))
+
+
+def without_molecules(html: str) -> str:
+    """The page minus the Story 1.6 molecule blocks, so the atom counts stay exact."""
+    return re.sub(r'<div class="sg-molecules">.*?</section>', "</section>", html, flags=re.S)
+
+
 @pytest.mark.urls(__name__)
 def test_styleguide_shows_every_variant_twice(client):
-    html = client.get("/en/_styleguide/").content.decode()
+    html = without_molecules(client.get("/en/_styleguide/").content.decode())
 
     for variant in ("primary", "secondary", "danger", "link"):
         assert html.count(f'class="button button--{variant}') == 2 * 3 * 2  # states x icon x theme
@@ -100,9 +111,15 @@ def test_styleguide_loads_only_same_origin_stylesheets(client):
 
 @pytest.mark.urls(__name__)
 def test_styleguide_is_deterministic(client):
-    first = client.get("/en/_styleguide/").content
+    """Identical apart from the CSRF token, which Django re-masks on every response (Story 1.6)."""
 
-    assert client.get("/en/_styleguide/").content == first
+    def page() -> str:
+        html = client.get("/en/_styleguide/").content.decode()
+        return re.sub(r'name="csrfmiddlewaretoken" value="[^"]+"', "CSRF", html)
+
+    first = page()
+
+    assert page() == first
 
 
 @pytest.mark.urls(__name__)
@@ -111,6 +128,183 @@ def test_styleguide_makes_no_database_queries(client):
     response = client.get("/en/_styleguide/")
 
     assert response.status_code == 200
+
+
+# --- Story 1.6: molecules ----------------------------------------------------------------------
+
+MOLECULE_STYLESHEETS = (
+    "form_field",
+    "alert",
+    "card",
+    "disabled_tile",
+    "empty_state",
+    "page_header",
+    "confirm_dialog",
+    "table",
+)
+# marker -> occurrences inside ONE theme's molecule block
+MOLECULE_MARKERS = {
+    '<fieldset class="field-pair">': 2,  # clean pair + pair with errors
+    'lang="ro" ': 2,
+    'lang="en" ': 2,
+    'class="field field--invalid"': 3,  # single field + both pair columns
+    'aria-invalid="true"': 3,
+    'class="field__help"': 2,
+    'class="alert alert--info" role="status"': 1,
+    'class="alert alert--success" role="status"': 1,
+    'class="alert alert--warning" role="alert"': 1,
+    'class="alert alert--error" role="alert"': 1,
+    'class="alert__close" data-dismiss': 4,
+    '<article class="card">': 1,
+    '<article class="card card--link">': 1,
+    'class="tile tile--disabled" aria-disabled="true"': 1,
+    'class="empty-state"': 2,  # empty state sample + empty table
+    "empty-state__action": 1,
+    '<nav class="breadcrumb"': 1,
+    'aria-current="page"': 1,
+    'class="page-header__actions"': 1,
+    "<dialog ": 1,
+    "data-dialog-open=": 1,
+    "data-dialog-close": 1,
+    'name="csrfmiddlewaretoken"': 1,
+    "<noscript>": 1,
+    "<table": 1,  # the empty table renders its empty state instead
+    "<caption": 1,
+    'scope="col"': 4,
+    "pill--active": 1,
+    "pill--flagged": 1,
+}
+
+
+def molecule_blocks(html: str) -> dict[str, str]:
+    return {
+        theme: section.split('<div class="sg-molecules">', 1)[1]
+        for theme, section in theme_sections(html).items()
+    }
+
+
+@pytest.mark.urls(__name__)
+@pytest.mark.parametrize("lang", ["ro", "en"])
+def test_styleguide_shows_every_molecule_in_both_themes(client, lang):
+    blocks = molecule_blocks(client.get(f"/{lang}/_styleguide/").content.decode())
+
+    assert set(blocks) == {"student", "staff"}
+    for theme, block in blocks.items():
+        for marker, count in MOLECULE_MARKERS.items():
+            assert block.count(marker) == count, (theme, marker)
+
+
+@pytest.mark.urls(__name__)
+def test_molecules_follow_the_atoms_in_each_theme(client):
+    sections = theme_sections(client.get("/en/_styleguide/").content.decode())
+    index = (
+        settings.BASE_DIR / "src/infrastructure/web/templates/styleguide/index.html"
+    ).read_text()
+
+    for section in sections.values():
+        assert 0 < section.index('class="pill pill--draft"') < section.index('class="sg-molecules"')
+    atoms_include = index.index('{% include "styleguide/_atoms.html" %}')
+    assert atoms_include < index.index('{% include "styleguide/_molecules.html"')
+
+
+@pytest.mark.urls(__name__)
+@pytest.mark.parametrize(
+    ("lang", "words"),
+    [
+        (
+            "ro",
+            [
+                "(obligatoriu)",
+                'aria-label="Închide"',
+                "Indisponibil",
+                "Anulează",
+                'aria-label="Fir de navigare"',
+                "Română",
+                "English",
+                "Este necesar JavaScript pentru a confirma această acțiune.",
+            ],
+        ),
+        (
+            "en",
+            [
+                "(required)",
+                'aria-label="Close"',
+                "Unavailable",
+                "Cancel",
+                'aria-label="Breadcrumb"',
+                "Română",
+                "English",
+                "JavaScript is required to confirm this action.",
+            ],
+        ),
+    ],
+)
+def test_molecule_strings_follow_the_url_language(client, lang, words):
+    html = client.get(f"/{lang}/_styleguide/").content.decode()
+
+    for word in words:
+        assert word in html, word
+
+
+@pytest.mark.urls(__name__)
+def test_styleguide_loads_ui_js_once_as_a_same_origin_module(client):
+    html = client.get("/en/_styleguide/").content.decode()
+
+    assert re.findall(r"<script\b[^>]*>", html) == ['<script type="module" src="/static/js/ui.js">']
+    assert html.index('src="/static/js/ui.js"') < html.index("</head>")
+    assert finders.find("js/ui.js")
+
+
+@pytest.mark.urls(__name__)
+@pytest.mark.parametrize("name", MOLECULE_STYLESHEETS)
+def test_styleguide_links_each_molecule_stylesheet(client, name):
+    html = client.get("/en/_styleguide/").content.decode()
+
+    assert f'<link rel="stylesheet" href="/static/css/components/{name}.css">' in html
+    assert finders.find(f"css/components/{name}.css")
+
+
+@pytest.mark.urls(__name__)
+def test_molecule_ids_are_unique_and_every_reference_resolves(client):
+    html = client.get("/en/_styleguide/").content.decode()
+    blocks = molecule_blocks(html)
+    page_ids = re.findall(r'\sid="([^"]+)"', html)
+
+    molecule_ids = [i for block in blocks.values() for i in re.findall(r'\sid="([^"]+)"', block)]
+    references = [
+        ref
+        for block in blocks.values()
+        for attr in re.findall(
+            r'(?:for|aria-labelledby|aria-describedby|data-dialog-open)="([^"]+)"', block
+        )
+        for ref in attr.split()
+    ]
+
+    assert molecule_ids
+    assert len(molecule_ids) == len(set(molecule_ids))
+    assert all(page_ids.count(i) == 1 for i in molecule_ids)
+    assert references
+    assert set(references) <= set(molecule_ids)
+
+
+@pytest.mark.urls(__name__)
+def test_dialog_ids_are_theme_suffixed(client):
+    blocks = molecule_blocks(client.get("/en/_styleguide/").content.decode())
+
+    for theme, block in blocks.items():
+        assert f'<dialog id="sg-dialog-{theme}"' in block
+        assert f'data-dialog-open="sg-dialog-{theme}"' in block
+
+
+@pytest.mark.urls(__name__)
+@pytest.mark.parametrize(("theme", "variant"), [("student", "duotone"), ("staff", "regular")])
+def test_empty_states_use_the_theme_icon_variant(client, theme, variant):
+    block = molecule_blocks(client.get("/en/_styleguide/").content.decode())[theme]
+
+    symbols = re.findall(r'class="empty-state">\s*<svg[^>]*><use href="[^"#]+#([\w-]+)"', block)
+
+    expected = "list-checks-duotone" if variant == "duotone" else "list-checks"
+    assert symbols == [expected, expected]
 
 
 def test_swatch_hex_values_match_tokens_css():

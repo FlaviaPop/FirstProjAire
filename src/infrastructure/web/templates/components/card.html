@@ -1,0 +1,6 @@
+{% load ui %}<article class="card{% if href %} card--link{% endif %}">
+  {% if icon %}{% ui_icon icon 24 %}{% endif %}
+  <h2 class="card__title">{% if href %}<a href="{{ href }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</h2>
+  {% if body %}<p class="card__body">{{ body }}</p>{% endif %}
+  {% if meta %}<p class="card__meta">{{ meta }}</p>{% endif %}
+</article>

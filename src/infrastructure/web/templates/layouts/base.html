@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Learning Platform{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  {# Story 1.6 (user decision 2026-10-22): the primitives the sign-in and error pages use. #}
+  {# Story 1.7 builds the full layout (top bar, flash messages, ui.js, htmx) on top of this. #}
+  <link rel="stylesheet" href="{% static 'css/components/icon.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/button.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/card.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/alert.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/form_field.css' %}">
 </head>
 <body>
   <main id="content">{% block content %}{% endblock %}</main>

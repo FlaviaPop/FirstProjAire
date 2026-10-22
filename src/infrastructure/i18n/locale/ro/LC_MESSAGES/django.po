@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 14:35+0300\n"
+"POT-Creation-Date: 2026-10-22 16:39+0300\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,51 +15,173 @@ msgstr ""
 msgid "Incorrect username or password."
 msgstr "Nume de utilizator sau parolă incorecte."
 
-#: src/infrastructure/web/common/errors.py:16
+#: src/infrastructure/web/common/errors.py:17
 msgid "Your request could not be processed. Please try again."
 msgstr "Cererea dumneavoastră nu a putut fi procesată. Vă rugăm să încercați din nou."
 
-#: src/infrastructure/web/common/errors.py:17
+#: src/infrastructure/web/common/errors.py:18
 msgid "You do not have access to this page."
 msgstr "Nu aveți acces la această pagină."
 
-#: src/infrastructure/web/common/errors.py:18
+#: src/infrastructure/web/common/errors.py:19
 msgid "We could not find this page."
 msgstr "Nu am găsit această pagină."
 
-#: src/infrastructure/web/common/errors.py:19
+#: src/infrastructure/web/common/errors.py:20
 msgid "This has already been done and cannot be repeated."
 msgstr "Această acțiune a fost deja efectuată și nu poate fi repetată."
 
-#: src/infrastructure/web/common/errors.py:20
+#: src/infrastructure/web/common/errors.py:21
 msgid "Please fix the following:"
 msgstr "Vă rugăm să corectați următoarele:"
 
-#: src/infrastructure/web/common/errors.py:21
+#: src/infrastructure/web/common/errors.py:22
 msgid "Something went wrong on our side. Please try again later."
 msgstr "A apărut o problemă la noi. Vă rugăm să încercați din nou mai târziu."
 
-#: src/infrastructure/web/styleguide/views.py:64
+#: src/infrastructure/web/styleguide/views.py:68
 msgid "Save"
 msgstr "Salvează"
 
-#: src/infrastructure/web/styleguide/views.py:65
+#: src/infrastructure/web/styleguide/views.py:69
+#: src/infrastructure/web/templates/components/confirm_dialog.html:9
 msgid "Cancel"
 msgstr "Anulează"
 
-#: src/infrastructure/web/styleguide/views.py:66
+#: src/infrastructure/web/styleguide/views.py:70
+#: src/infrastructure/web/styleguide/views.py:154
 msgid "Delete"
 msgstr "Șterge"
 
-#: src/infrastructure/web/styleguide/views.py:67
+#: src/infrastructure/web/styleguide/views.py:71
 msgid "Learn more"
 msgstr "Află mai multe"
 
-#: src/infrastructure/web/styleguide/views.py:95
+#: src/infrastructure/web/styleguide/views.py:89
+msgid "Lesson name"
+msgstr "Numele lecției"
+
+#: src/infrastructure/web/styleguide/views.py:91
+msgid "Notes"
+msgstr "Note"
+
+#: src/infrastructure/web/styleguide/views.py:93
+#: src/infrastructure/web/styleguide/views.py:94
+msgid "Title"
+msgstr "Titlu"
+
+#: src/infrastructure/web/styleguide/views.py:119
+msgid "A new chapter is available."
+msgstr "Un capitol nou este disponibil."
+
+#: src/infrastructure/web/styleguide/views.py:120
+msgid "Your changes were saved."
+msgstr "Modificările au fost salvate."
+
+#: src/infrastructure/web/styleguide/views.py:121
+msgid "This test has unanswered questions."
+msgstr "Acest test are întrebări fără răspuns."
+
+#: src/infrastructure/web/styleguide/views.py:122
+msgid "Please check the highlighted fields."
+msgstr "Verifică câmpurile marcate."
+
+#: src/infrastructure/web/styleguide/views.py:124
+msgid "Student"
+msgstr "Elev"
+
+#: src/infrastructure/web/styleguide/views.py:124
+#: src/infrastructure/web/templates/styleguide/_atoms.html:73
+msgid "Score"
+msgstr "Punctaj"
+
+#: src/infrastructure/web/styleguide/views.py:124
+msgid "Status"
+msgstr "Stare"
+
+#: src/infrastructure/web/styleguide/views.py:124
+msgid "Details"
+msgstr "Detalii"
+
+#: src/infrastructure/web/styleguide/views.py:129
+msgid "Open"
+msgstr "Deschide"
+
+#: src/infrastructure/web/styleguide/views.py:139
+msgid "Shown to students on the lesson page."
+msgstr "Afișat elevilor pe pagina lecției."
+
+#: src/infrastructure/web/styleguide/views.py:141
+msgid "Chapter 1: Numbers to 100"
+msgstr "Capitolul 1: Numerele până la 100"
+
+#: src/infrastructure/web/styleguide/views.py:142
+msgid "Lessons, exercises and a final test."
+msgstr "Lecții, exerciții și un test final."
+
+#: src/infrastructure/web/styleguide/views.py:143
+#: src/infrastructure/web/styleguide/views.py:149
+msgid "Grade 2"
+msgstr "Clasa a II-a"
+
+#: src/infrastructure/web/styleguide/views.py:144
+msgid "Grade 5"
+msgstr "Clasa a V-a"
+
+#: src/infrastructure/web/styleguide/views.py:145
+msgid "Only grade 2 is available in the pilot."
+msgstr "În pilot este disponibilă doar clasa a II-a."
+
+#: src/infrastructure/web/styleguide/views.py:146
+msgid "No lessons yet."
+msgstr "Încă nu există lecții."
+
+#: src/infrastructure/web/styleguide/views.py:147
+msgid "Add a lesson"
+msgstr "Adaugă o lecție"
+
+#: src/infrastructure/web/styleguide/views.py:148
+#: src/infrastructure/web/styleguide/views.py:149
+msgid "Chapter 1"
+msgstr "Capitolul 1"
+
+#: src/infrastructure/web/styleguide/views.py:149
+msgid "Catalogue"
+msgstr "Catalog"
+
+#: src/infrastructure/web/styleguide/views.py:150
+msgid "Edit"
+msgstr "Editează"
+
+#: src/infrastructure/web/styleguide/views.py:150
+msgid "Publish"
+msgstr "Publică"
+
+#: src/infrastructure/web/styleguide/views.py:151
+msgid "Delete sample"
+msgstr "Șterge exemplul"
+
+#: src/infrastructure/web/styleguide/views.py:152
+msgid "Delete this sample?"
+msgstr "Ștergi acest exemplu?"
+
+#: src/infrastructure/web/styleguide/views.py:153
+msgid "This only demonstrates the dialog; nothing is deleted."
+msgstr "Aceasta doar demonstrează dialogul; nu se șterge nimic."
+
+#: src/infrastructure/web/styleguide/views.py:158
+msgid "Test scores"
+msgstr "Punctaje la test"
+
+#: src/infrastructure/web/styleguide/views.py:159
+msgid "No scores yet."
+msgstr "Încă nu există punctaje."
+
+#: src/infrastructure/web/styleguide/views.py:178
 msgid "unread notifications"
 msgstr "notificări necitite"
 
-#: src/infrastructure/web/styleguide/views.py:96
+#: src/infrastructure/web/styleguide/views.py:179
 msgid "Exercises"
 msgstr "Exerciții"
 
@@ -91,17 +213,39 @@ msgstr "Nume de utilizator"
 msgid "Password"
 msgstr "Parolă"
 
-#: src/infrastructure/web/templates/components/language_switcher.html:2
-msgid "Language"
-msgstr "Limba"
+#: src/infrastructure/web/templates/components/alert.html:4
+msgid "Close"
+msgstr "Închide"
 
+#: src/infrastructure/web/templates/components/dialog_trigger.html:2
+msgid "JavaScript is required to confirm this action."
+msgstr "Este necesar JavaScript pentru a confirma această acțiune."
+
+#: src/infrastructure/web/templates/components/disabled_tile.html:4
+msgid "Unavailable"
+msgstr "Indisponibil"
+
+#: src/infrastructure/web/templates/components/form_field.html:2
 #: src/infrastructure/web/templates/components/language_switcher.html:6
 msgid "Română"
 msgstr "Română"
 
+#: src/infrastructure/web/templates/components/form_field.html:2
 #: src/infrastructure/web/templates/components/language_switcher.html:7
 msgid "English"
 msgstr "English"
+
+#: src/infrastructure/web/templates/components/form_field.html:3
+msgid "(required)"
+msgstr "(obligatoriu)"
+
+#: src/infrastructure/web/templates/components/language_switcher.html:2
+msgid "Language"
+msgstr "Limba"
+
+#: src/infrastructure/web/templates/components/page_header.html:2
+msgid "Breadcrumb"
+msgstr "Fir de navigare"
 
 #: src/infrastructure/web/templates/components/progress_meter.html:4
 #, python-format
@@ -224,56 +368,92 @@ msgstr "Avatar"
 msgid "Without a name"
 msgstr "Fără nume"
 
-#: src/infrastructure/web/templates/styleguide/_atoms.html:73
-msgid "Score"
-msgstr "Punctaj"
-
 #: src/infrastructure/web/templates/styleguide/_atoms.html:76
 msgid "Progress"
 msgstr "Progres"
 
+#: src/infrastructure/web/templates/styleguide/_molecules.html:2
+msgid "Form field"
+msgstr "Câmp de formular"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:9
+msgid "RO | EN field pair"
+msgstr "Pereche de câmpuri RO | EN"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:15
+msgid "Alerts"
+msgstr "Alerte"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:20
+msgid "Cards"
+msgstr "Carduri"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:26
+msgid "Disabled tile"
+msgstr "Dală dezactivată"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:29
+msgid "Empty state"
+msgstr "Stare goală"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:32
+msgid "Page header"
+msgstr "Antet de pagină"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:35
+msgid "Confirm dialog"
+msgstr "Dialog de confirmare"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:39
+msgid "Table"
+msgstr "Tabel"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:41
+msgid "Empty table"
+msgstr "Tabel gol"
+
 #: src/infrastructure/web/templates/styleguide/index.html:6
-#: src/infrastructure/web/templates/styleguide/index.html:19
+#: src/infrastructure/web/templates/styleguide/index.html:29
 msgid "Styleguide"
 msgstr "Ghid de stil"
 
-#: src/infrastructure/web/templates/styleguide/index.html:20
+#: src/infrastructure/web/templates/styleguide/index.html:30
 msgid "Development-only visual reference for the shared UI primitives."
 msgstr "Referință vizuală, doar pentru dezvoltare, a componentelor UI comune."
 
-#: src/infrastructure/web/templates/styleguide/index.html:24
+#: src/infrastructure/web/templates/styleguide/index.html:34
 msgid "Student theme"
 msgstr "Tema pentru elevi"
 
-#: src/infrastructure/web/templates/styleguide/index.html:24
+#: src/infrastructure/web/templates/styleguide/index.html:34
 msgid "Staff theme"
 msgstr "Tema pentru personal"
 
 # --- Story 1.5: design tokens & atom primitives ---
-#: src/infrastructure/web/templatetags/ui.py:49
+#: src/infrastructure/web/templatetags/ui.py:55
 msgid "Active"
 msgstr "Activ"
 
-#: src/infrastructure/web/templatetags/ui.py:50
+#: src/infrastructure/web/templatetags/ui.py:56
 msgid "Flagged"
 msgstr "Semnalat"
 
-#: src/infrastructure/web/templatetags/ui.py:51
+#: src/infrastructure/web/templatetags/ui.py:57
 msgid "Blocked"
 msgstr "Blocat"
 
-#: src/infrastructure/web/templatetags/ui.py:52
+#: src/infrastructure/web/templatetags/ui.py:58
 msgid "Resubmitted"
 msgstr "Retrimis"
 
-#: src/infrastructure/web/templatetags/ui.py:53
+#: src/infrastructure/web/templatetags/ui.py:59
 msgid "Draft"
 msgstr "Ciornă"
 
-#: src/infrastructure/web/templatetags/ui.py:54
+#: src/infrastructure/web/templatetags/ui.py:60
 msgid "Published"
 msgstr "Publicat"
 
-#: src/infrastructure/web/templatetags/ui.py:128
+#: src/infrastructure/web/templatetags/ui.py:159
 msgid "User"
 msgstr "Utilizator"

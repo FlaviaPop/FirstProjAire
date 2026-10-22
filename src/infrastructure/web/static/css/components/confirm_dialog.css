@@ -1,0 +1,31 @@
+/* Confirm dialog molecule — components/confirm_dialog.html + dialog_trigger.html.
+   Native <dialog>; opened by static/js/ui.js. No display rule here: the UA hides a closed dialog. */
+.dialog {
+  box-sizing: border-box;
+  width: calc(100% - 2 * var(--space-4));
+  max-width: 480px;
+  padding: var(--space-6);
+  border: none;
+  border-radius: var(--radius, var(--radius-staff));
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--elevation-3);
+}
+.dialog::backdrop { background: var(--color-backdrop); }
+.dialog__form { margin: 0; }
+.dialog__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-20);
+  font-weight: var(--weight-bold);
+}
+.dialog__body { margin: 0 0 var(--space-6); }
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+.dialog-noscript {
+  margin: var(--space-2) 0 0;
+  color: var(--color-muted);
+  font-size: var(--font-14);
+}

@@ -1,10 +1,12 @@
 # Code Review - Story 1.3: RBAC Core
 
-> ## 🛠️ Remediation Status: 🟡 Partially Remediated (4/5)
-> - **Remediated**: 2026-10-21 by DEV Agent
-> - **Fixed**: 4 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 3
-> - **Deferred (with user consent)**: 1 (ISS-004 → Story 1.6) — see Remediation Section
-> - **Tests**: 598/598 passing | **Coverage**: 100% | **Linter**: clean
+> ## 🛠️ Remediation Status: ✅ Fully Remediated (5/5)
+> - **Remediated**: 2026-10-21 by DEV Agent; ISS-004 on 2026-10-22 with Story 1.6
+> - **Fixed**: 5 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 4
+> - **Deferred**: 0 (ISS-004, deferred to Story 1.6 on 2026-10-21, resolved in Story 1.6 on 2026-10-22)
+> - **Tests**: 598/598 passing | **Coverage**: 100% | **Linter**: clean (2026-10-21 full suite)
+> - **Tests (2026-10-22, ISS-004)**: `test_url_protection.py` 32/32 + `ui/test_styleguide.py` 16/16 = 48/48 passing (targeted, before integration)
+> - **Tests (2026-10-22, Story 1.6 integration, full suite)**: 980/980 passing (3 consecutive runs) | **Coverage**: 100% (lines + branches) | **Linter**: ruff/mypy/lint-imports clean
 > - **Scenario**: Code Review
 
 **Date**: 2026-10-21
@@ -196,6 +198,12 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 
 **Deferral** (2026-10-21, DEV): deferred with user consent to **Story 1.6** (Molecule Primitives), which adds more DEBUG-only styleguide routes and is the natural place to introduce `DEBUG_ONLY_URL_NAMES` and the `DEBUG=True` walk. Still open.
 
+**Resolution** (2026-10-22, DEV):
+- Fix: `DEBUG_ONLY_URL_NAMES = frozenset({"styleguide:index"})` added to the test module; `_unprotected` takes an `allowed` set; a local `_debug_routing()` context manager / `debug_urlconf` fixture reloads `config.urls` under `override_settings(DEBUG=True)` + `clear_url_caches()` and restores production routing in `finally`. The new walk asserts every DEBUG-only route is guarded, public or allow-listed; each allow-list entry must resolve under `DEBUG=True` and NOT under `DEBUG=False` (stale entries fail); the styleguide stays out of `PUBLIC_URL_NAMES`. The existing `DEBUG=False` test and synthetic-list test are unchanged. No `src/` changes, no new routes
+- Commit / change ref: `tests/integration/web/test_url_protection.py:42` (`DEBUG_ONLY_URL_NAMES`), `:54-64` (`_unprotected(..., allowed)`), `:75-121` (`_debug_routing`, `debug_urlconf`, `test_every_debug_only_url_is_protected_public_or_allow_listed`, `test_debug_only_allow_list_entries_exist_only_under_debug`, `test_debug_only_allow_list_is_exactly_the_styleguide`, `test_production_routing_is_restored_after_the_debug_walk`), `:290-297` (`test_coverage_check_excuses_only_allow_listed_debug_routes`); branch `feature/story-1.6-molecules`
+- Test evidence: before (allow-list temporarily empty): `test_every_debug_only_url_is_protected_public_or_allow_listed` failed with `Unprotected DEBUG-only routes: ['styleguide:index']` (2 failed, 29 passed); stale-entry probe (`"styleguide:stale"` temporarily added) failed `test_debug_only_allow_list_entries_exist_only_under_debug[styleguide:stale]` with `NoReverseMatch`; after: `test_url_protection.py` + `ui/test_styleguide.py` 48/48 passed (routing restored: `test_styleguide_returns_404_in_production`, `test_production_routing_is_restored_after_the_debug_reload` green); ruff format/check clean, `uv run mypy` 0 issues; all green
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-005: Self-review describes the fixture stand-ins as still present 🟢 Low
@@ -281,12 +289,11 @@ Add a test: `with pytest.raises(ValueError): require_permission("content:edt")`.
 | ISS-002 | 🟢 Low | 1.3 | `decorators.py:36-38` | Async views silently broken | `TypeError` at decoration | `test_url_protection.py:189` (×2) ✅ |
 | ISS-003 | 🟢 Low | 1.3 | `decorators.py:22-23` | `View` alias ambiguous | Renamed `ViewCallable` | n/a (rename) |
 | ISS-005 | 🟢 Low | 1.3 | `story-1.3-review.md` | Stale stand-in note | Post-merge note appended | n/a (docs) |
+| ISS-004 | 🟢 Low | 1.3 → resolved in 1.6 (`feature/story-1.6-molecules`, 2026-10-22) | `test_url_protection.py:42-121` | DEBUG-only routes never walked | `DEBUG=True` URLConf walk + `DEBUG_ONLY_URL_NAMES` allow-list (non-vacuous, stale-checked) | `test_url_protection.py:95`, `:102`, `:114`, `:119`, `:290` ✅ |
 
 ## Issues Deferred (with user consent)
 
-| ID | Severity | Story | Reason |
-|----|----------|-------|--------|
-| ISS-004 | 🟢 Low | 1.3 | DEBUG-only URL walk → Story 1.6 (adds more styleguide routes) |
+None remain. ISS-004 (originally deferred to Story 1.6 on 2026-10-21) was resolved on 2026-10-22; see the ISS-004 Resolution and the addendum below.
 
 ## Files Changed
 
@@ -332,4 +339,8 @@ Required test coverage of 85% reached. Total coverage: 100.00%
 ## Next Steps
 
 - [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
-- [ ] ISS-004 with Story 1.6
+- [x] ISS-004 with Story 1.6
+
+## Addendum — Remediated with Story 1.6 (2026-10-22)
+
+ISS-004 was resolved on `feature/story-1.6-molecules`. `tests/integration/web/test_url_protection.py` now also walks the root URLConf reloaded with `DEBUG=True` and allows only the explicit `DEBUG_ONLY_URL_NAMES = {"styleguide:index"}`. Production routing is restored in `finally`. Evidence: the DEBUG walk failed with `['styleguide:index']` while the allow-list was empty, and a stale allow-list entry failed with `NoReverseMatch`. With the fix, 48/48 tests pass across `test_url_protection.py` and `ui/test_styleguide.py`. Only the test file changed (it was already listed under Files Changed); `src/` is untouched. At Story 1.6 integration (2026-10-22), the full suite passed 980/980 in each of 3 consecutive runs (`uv run pytest -q --cov=src --cov-branch --cov-fail-under=85`), with 100% coverage.

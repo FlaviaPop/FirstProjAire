@@ -1,0 +1,6 @@
+{% load i18n ui %}<div class="tile tile--disabled" aria-disabled="true">
+  {% ui_icon "lock-simple" 20 %}
+  <span class="tile__title">{{ title }}</span>
+  <span class="tile__status">{% translate "Unavailable" %}</span>
+  {% if reason %}<span class="tile__reason">{{ reason }}</span>{% endif %}
+</div>

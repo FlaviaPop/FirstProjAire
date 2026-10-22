@@ -1,0 +1,8 @@
+<fieldset class="field-pair">
+  <legend class="field-pair__legend">{{ legend }}</legend>
+  <div class="field-pair__columns">
+    {% for lang, column in columns %}<div class="field-pair__column">
+      {% include "components/form_field.html" with field=column.field widget=column.widget help=column.help id=column.id label=column.label lang=lang only %}
+    </div>{% endfor %}
+  </div>
+</fieldset>

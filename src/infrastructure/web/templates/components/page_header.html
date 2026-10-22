@@ -1,0 +1,12 @@
+{% load i18n ui %}<header class="page-header">
+  {% if breadcrumbs %}<nav class="breadcrumb" aria-label="{% translate "Breadcrumb" %}">
+    <ol class="breadcrumb__list">
+      {% for label, url in breadcrumbs %}<li class="breadcrumb__item"{% if forloop.last %} aria-current="page"{% endif %}>{% if not forloop.first %}{% ui_icon "caret-right" 20 %}{% endif %}{% if url and not forloop.last %}<a href="{{ url }}">{{ label }}</a>{% else %}{{ label }}{% endif %}</li>
+      {% endfor %}
+    </ol>
+  </nav>{% endif %}
+  <h1 class="page-header__title">{{ title }}</h1>
+  {% if actions %}<div class="page-header__actions">
+    {% for label, url, variant in actions %}<a class="button button--{{ variant }}" href="{{ url }}">{{ label }}</a>{% endfor %}
+  </div>{% endif %}
+</header>

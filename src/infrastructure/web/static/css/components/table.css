@@ -1,0 +1,28 @@
+/* Table molecule — components/table.html · {% ui_table %}. Full width (within the staff 1200px column). */
+.table-wrap {
+  max-width: var(--content-max-staff);
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+}
+.table__caption {
+  padding: 0 0 var(--space-2);
+  text-align: left;
+  font-size: var(--font-16);
+  font-weight: var(--weight-semibold);
+}
+.table th, .table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-disabled);
+  text-align: left;
+  vertical-align: middle;
+}
+.table th {
+  background: var(--color-bg-staff);
+  font-weight: var(--weight-semibold);
+}
+.table td a { color: var(--color-primary); }
+.table td a:hover { color: var(--color-primary-hover); }

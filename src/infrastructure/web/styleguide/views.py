@@ -1,12 +1,16 @@
-"""GET /<lang>/_styleguide/ — every atom and variant in both themes (DEBUG only, never deployed)."""
+"""GET /<lang>/_styleguide/ — every primitive and variant in both themes (DEBUG only)."""
 
 from dataclasses import dataclass
 
+from django import forms
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from infrastructure.web.templatetags.ui import ICON_NAMES, ICON_SIZES, STATUS_LABELS
+from infrastructure.web.templatetags.ui import ICON_NAMES, ICON_SIZES, STATUS_LABELS, Cell
+
+THEMES = ("student", "staff")
 
 
 @dataclass(frozen=True)
@@ -79,10 +83,89 @@ def _contrast(first: str, second: str) -> float:
     return (lighter + 0.05) / (darker + 0.05)
 
 
+class SampleForm(forms.Form):
+    """Plain (DB-free) form behind the form-field samples."""
+
+    lesson = forms.CharField(label=_("Lesson name"))
+    notes = forms.CharField(
+        label=_("Notes"), required=False, widget=forms.Textarea(attrs={"rows": 3})
+    )
+    title_ro = forms.CharField(label=_("Title"))
+    title_en = forms.CharField(label=_("Title"))
+
+
+@dataclass(frozen=True)
+class MoleculeSamples:
+    """Per-theme samples; the theme prefix keeps every element id unique on the page."""
+
+    clean_form: SampleForm
+    error_form: SampleForm
+    dialog_id: str
+    icon_variant: str
+
+
+def _molecule_samples(theme: str) -> MoleculeSamples:
+    error_form = SampleForm(data={}, prefix=f"{theme}-invalid")
+    error_form.is_valid()  # bound and empty: every required field shows its error
+    return MoleculeSamples(
+        clean_form=SampleForm(prefix=theme),
+        error_form=error_form,
+        dialog_id=f"sg-dialog-{theme}",
+        icon_variant="duotone" if theme == "student" else "regular",
+    )
+
+
+ALERTS = (
+    ("info", _("A new chapter is available.")),
+    ("success", _("Your changes were saved.")),
+    ("warning", _("This test has unanswered questions.")),
+    ("error", _("Please check the highlighted fields.")),
+)
+TABLE_COLUMNS = (_("Student"), _("Score"), _("Status"), _("Details"))
+
+
+def _table_rows() -> tuple[tuple[object, ...], ...]:
+    """Text, int, pill and link cells; built per request because Cell.text is a plain str."""
+    open_label = gettext("Open")
+    return (
+        ("Ana Popescu", 87, Cell("ACTIVE", pill="ACTIVE"), Cell(open_label, href="#")),
+        ("Mihai Ionescu", 64, Cell("FLAGGED", pill="FLAGGED"), Cell(open_label, href="#")),
+    )
+
+
+def _molecule_context() -> dict[str, object]:
+    return {
+        "theme_sections": [(theme, _molecule_samples(theme)) for theme in THEMES],
+        "field_help": _("Shown to students on the lesson page."),
+        "alerts": ALERTS,
+        "card_title": _("Chapter 1: Numbers to 100"),
+        "card_body": _("Lessons, exercises and a final test."),
+        "card_meta": _("Grade 2"),
+        "tile_title": _("Grade 5"),
+        "tile_reason": _("Only grade 2 is available in the pilot."),
+        "empty_message": _("No lessons yet."),
+        "empty_action": _("Add a lesson"),
+        "header_title": _("Chapter 1"),
+        "breadcrumbs": ((_("Catalogue"), "#"), (_("Grade 2"), "#"), (_("Chapter 1"), "")),
+        "header_actions": ((_("Edit"), "#", "secondary"), (_("Publish"), "#", "primary")),
+        "dialog_trigger": _("Delete sample"),
+        "dialog_title": _("Delete this sample?"),
+        "dialog_body": _("This only demonstrates the dialog; nothing is deleted."),
+        "dialog_confirm": _("Delete"),
+        "dialog_hidden": (("sample", "1"),),
+        "table_columns": TABLE_COLUMNS,
+        "table_rows": _table_rows(),
+        "table_caption": _("Test scores"),
+        "table_empty": _("No scores yet."),
+        "no_rows": (),
+    }
+
+
 def index(request: HttpRequest) -> HttpResponse:
     """Render the reference page; LocaleMiddleware (Story 1.4) activates the prefix language."""
     context = {
-        "themes": ["student", "staff"],
+        **_molecule_context(),
+        "themes": list(THEMES),
         "swatches": SWATCHES,
         "spaces": SPACES,
         "type_scale": TYPE_SCALE,

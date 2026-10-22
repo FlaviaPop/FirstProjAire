@@ -12,17 +12,28 @@
   <link rel="stylesheet" href="{% static 'css/components/avatar.css' %}">
   <link rel="stylesheet" href="{% static 'css/components/score.css' %}">
   <link rel="stylesheet" href="{% static 'css/components/progress_meter.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/form_field.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/alert.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/card.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/disabled_tile.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/empty_state.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/page_header.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/confirm_dialog.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/table.css' %}">
   <link rel="stylesheet" href="{% static 'css/styleguide.css' %}">
+  {# Same-origin ES module (CSP script-src 'self'); modules are deferred by default. #}
+  <script type="module" src="{% static 'js/ui.js' %}"></script>
 </head>
 <body>
   <main class="sg">
     <h1>{% translate "Styleguide" %}</h1>
     <p>{% translate "Development-only visual reference for the shared UI primitives." %}</p>
-    {% for theme in themes %}
+    {% for theme, samples in theme_sections %}
     <section class="theme-{{ theme }}" aria-labelledby="sg-{{ theme }}">
       <div class="sg-theme">
         <h2 id="sg-{{ theme }}">{% if theme == "student" %}{% translate "Student theme" %}{% else %}{% translate "Staff theme" %}{% endif %}</h2>
         {% include "styleguide/_atoms.html" %}
+        {% include "styleguide/_molecules.html" with samples=samples icon_variant=samples.icon_variant %}
       </div>
     </section>
     {% endfor %}

@@ -59,6 +59,7 @@
   --elevation-1: 0 1px 2px rgba(31, 41, 55, .08), 0 1px 3px rgba(31, 41, 55, .12);
   --elevation-2: 0 4px 8px rgba(31, 41, 55, .12);
   --elevation-3: 0 12px 32px rgba(31, 41, 55, .24);
+  --color-backdrop: rgba(31, 41, 55, .5); /* dialog backdrop (Story 1.6 Design Tokens) */
 
   /* Layout and interaction */
   --touch-min: 32px;

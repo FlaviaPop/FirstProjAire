@@ -1,0 +1,8 @@
+{% load i18n ui %}<div class="field{% if field.errors %} field--invalid{% endif %}">
+  <label class="field__label" for="{{ id }}">{{ label }}{% if lang == "ro" %}<span class="field-pair__lang">{% translate "Română" %}</span>{% elif lang == "en" %}<span class="field-pair__lang">{% translate "English" %}</span>{% endif %}{% if field.field.required %}
+    <span class="field__required">{% translate "(required)" %}</span>{% endif %}</label>
+  {{ widget }}
+  {% if help %}<p class="field__help" id="{{ id }}_help">{{ help }}</p>{% endif %}
+  {% if field.errors %}<p class="field__error field-error" id="{{ id }}_error">
+    {% ui_icon "warning-circle" 20 %}{{ field.errors.0 }}</p>{% endif %}
+</div>

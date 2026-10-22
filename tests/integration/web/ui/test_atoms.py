@@ -335,13 +335,21 @@ def test_sprite_only_mentions_the_svg_namespace_url():
     assert urls == {"http://www.w3.org/2000/svg"}
 
 
-@pytest.mark.parametrize("pattern", [r"\bstyle=", r"<style", r"<script", r"\|\s*safe", "mark_safe"])
-def test_component_and_styleguide_templates_have_no_inline_style_script_or_safe(pattern):
-    templates = [
+def primitive_templates() -> list:
+    return [
         *(WEB_DIR / "templates/components").glob("*.html"),
         *(WEB_DIR / "templates/styleguide").glob("*.html"),
     ]
+
+
+@pytest.mark.parametrize("pattern", [r"\bstyle=", r"<style", r"\|\s*safe", "mark_safe"])
+def test_component_and_styleguide_templates_have_no_inline_style_or_safe(pattern):
+    templates = primitive_templates()
     offenders = [str(p) for p in templates if re.search(pattern, p.read_text(encoding="utf-8"))]
 
     assert templates
     assert offenders == []
+
+
+# The `<script` rule moved to test_inline_script.py (Story 1.6): it now forbids INLINE scripts
+# only, because AC 12 loads ui.js in the styleguide as an external same-origin module.

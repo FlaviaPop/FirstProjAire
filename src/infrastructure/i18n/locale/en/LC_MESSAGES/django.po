@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 14:35+0300\n"
+"POT-Creation-Date: 2026-10-22 16:39+0300\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,51 +15,173 @@ msgstr ""
 msgid "Incorrect username or password."
 msgstr "Incorrect username or password."
 
-#: src/infrastructure/web/common/errors.py:16
+#: src/infrastructure/web/common/errors.py:17
 msgid "Your request could not be processed. Please try again."
 msgstr "Your request could not be processed. Please try again."
 
-#: src/infrastructure/web/common/errors.py:17
+#: src/infrastructure/web/common/errors.py:18
 msgid "You do not have access to this page."
 msgstr "You do not have access to this page."
 
-#: src/infrastructure/web/common/errors.py:18
+#: src/infrastructure/web/common/errors.py:19
 msgid "We could not find this page."
 msgstr "We could not find this page."
 
-#: src/infrastructure/web/common/errors.py:19
+#: src/infrastructure/web/common/errors.py:20
 msgid "This has already been done and cannot be repeated."
 msgstr "This has already been done and cannot be repeated."
 
-#: src/infrastructure/web/common/errors.py:20
+#: src/infrastructure/web/common/errors.py:21
 msgid "Please fix the following:"
 msgstr "Please fix the following:"
 
-#: src/infrastructure/web/common/errors.py:21
+#: src/infrastructure/web/common/errors.py:22
 msgid "Something went wrong on our side. Please try again later."
 msgstr "Something went wrong on our side. Please try again later."
 
-#: src/infrastructure/web/styleguide/views.py:64
+#: src/infrastructure/web/styleguide/views.py:68
 msgid "Save"
 msgstr "Save"
 
-#: src/infrastructure/web/styleguide/views.py:65
+#: src/infrastructure/web/styleguide/views.py:69
+#: src/infrastructure/web/templates/components/confirm_dialog.html:9
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/infrastructure/web/styleguide/views.py:66
+#: src/infrastructure/web/styleguide/views.py:70
+#: src/infrastructure/web/styleguide/views.py:154
 msgid "Delete"
 msgstr "Delete"
 
-#: src/infrastructure/web/styleguide/views.py:67
+#: src/infrastructure/web/styleguide/views.py:71
 msgid "Learn more"
 msgstr "Learn more"
 
-#: src/infrastructure/web/styleguide/views.py:95
+#: src/infrastructure/web/styleguide/views.py:89
+msgid "Lesson name"
+msgstr "Lesson name"
+
+#: src/infrastructure/web/styleguide/views.py:91
+msgid "Notes"
+msgstr "Notes"
+
+#: src/infrastructure/web/styleguide/views.py:93
+#: src/infrastructure/web/styleguide/views.py:94
+msgid "Title"
+msgstr "Title"
+
+#: src/infrastructure/web/styleguide/views.py:119
+msgid "A new chapter is available."
+msgstr "A new chapter is available."
+
+#: src/infrastructure/web/styleguide/views.py:120
+msgid "Your changes were saved."
+msgstr "Your changes were saved."
+
+#: src/infrastructure/web/styleguide/views.py:121
+msgid "This test has unanswered questions."
+msgstr "This test has unanswered questions."
+
+#: src/infrastructure/web/styleguide/views.py:122
+msgid "Please check the highlighted fields."
+msgstr "Please check the highlighted fields."
+
+#: src/infrastructure/web/styleguide/views.py:124
+msgid "Student"
+msgstr "Student"
+
+#: src/infrastructure/web/styleguide/views.py:124
+#: src/infrastructure/web/templates/styleguide/_atoms.html:73
+msgid "Score"
+msgstr "Score"
+
+#: src/infrastructure/web/styleguide/views.py:124
+msgid "Status"
+msgstr "Status"
+
+#: src/infrastructure/web/styleguide/views.py:124
+msgid "Details"
+msgstr "Details"
+
+#: src/infrastructure/web/styleguide/views.py:129
+msgid "Open"
+msgstr "Open"
+
+#: src/infrastructure/web/styleguide/views.py:139
+msgid "Shown to students on the lesson page."
+msgstr "Shown to students on the lesson page."
+
+#: src/infrastructure/web/styleguide/views.py:141
+msgid "Chapter 1: Numbers to 100"
+msgstr "Chapter 1: Numbers to 100"
+
+#: src/infrastructure/web/styleguide/views.py:142
+msgid "Lessons, exercises and a final test."
+msgstr "Lessons, exercises and a final test."
+
+#: src/infrastructure/web/styleguide/views.py:143
+#: src/infrastructure/web/styleguide/views.py:149
+msgid "Grade 2"
+msgstr "Grade 2"
+
+#: src/infrastructure/web/styleguide/views.py:144
+msgid "Grade 5"
+msgstr "Grade 5"
+
+#: src/infrastructure/web/styleguide/views.py:145
+msgid "Only grade 2 is available in the pilot."
+msgstr "Only grade 2 is available in the pilot."
+
+#: src/infrastructure/web/styleguide/views.py:146
+msgid "No lessons yet."
+msgstr "No lessons yet."
+
+#: src/infrastructure/web/styleguide/views.py:147
+msgid "Add a lesson"
+msgstr "Add a lesson"
+
+#: src/infrastructure/web/styleguide/views.py:148
+#: src/infrastructure/web/styleguide/views.py:149
+msgid "Chapter 1"
+msgstr "Chapter 1"
+
+#: src/infrastructure/web/styleguide/views.py:149
+msgid "Catalogue"
+msgstr "Catalogue"
+
+#: src/infrastructure/web/styleguide/views.py:150
+msgid "Edit"
+msgstr "Edit"
+
+#: src/infrastructure/web/styleguide/views.py:150
+msgid "Publish"
+msgstr "Publish"
+
+#: src/infrastructure/web/styleguide/views.py:151
+msgid "Delete sample"
+msgstr "Delete sample"
+
+#: src/infrastructure/web/styleguide/views.py:152
+msgid "Delete this sample?"
+msgstr "Delete this sample?"
+
+#: src/infrastructure/web/styleguide/views.py:153
+msgid "This only demonstrates the dialog; nothing is deleted."
+msgstr "This only demonstrates the dialog; nothing is deleted."
+
+#: src/infrastructure/web/styleguide/views.py:158
+msgid "Test scores"
+msgstr "Test scores"
+
+#: src/infrastructure/web/styleguide/views.py:159
+msgid "No scores yet."
+msgstr "No scores yet."
+
+#: src/infrastructure/web/styleguide/views.py:178
 msgid "unread notifications"
 msgstr "unread notifications"
 
-#: src/infrastructure/web/styleguide/views.py:96
+#: src/infrastructure/web/styleguide/views.py:179
 msgid "Exercises"
 msgstr "Exercises"
 
@@ -90,17 +212,39 @@ msgstr "Username"
 msgid "Password"
 msgstr "Password"
 
-#: src/infrastructure/web/templates/components/language_switcher.html:2
-msgid "Language"
-msgstr "Language"
+#: src/infrastructure/web/templates/components/alert.html:4
+msgid "Close"
+msgstr "Close"
 
+#: src/infrastructure/web/templates/components/dialog_trigger.html:2
+msgid "JavaScript is required to confirm this action."
+msgstr "JavaScript is required to confirm this action."
+
+#: src/infrastructure/web/templates/components/disabled_tile.html:4
+msgid "Unavailable"
+msgstr "Unavailable"
+
+#: src/infrastructure/web/templates/components/form_field.html:2
 #: src/infrastructure/web/templates/components/language_switcher.html:6
 msgid "Română"
 msgstr "Română"
 
+#: src/infrastructure/web/templates/components/form_field.html:2
 #: src/infrastructure/web/templates/components/language_switcher.html:7
 msgid "English"
 msgstr "English"
+
+#: src/infrastructure/web/templates/components/form_field.html:3
+msgid "(required)"
+msgstr "(required)"
+
+#: src/infrastructure/web/templates/components/language_switcher.html:2
+msgid "Language"
+msgstr "Language"
+
+#: src/infrastructure/web/templates/components/page_header.html:2
+msgid "Breadcrumb"
+msgstr "Breadcrumb"
 
 #: src/infrastructure/web/templates/components/progress_meter.html:4
 #, python-format
@@ -223,56 +367,92 @@ msgstr "Avatar"
 msgid "Without a name"
 msgstr "Without a name"
 
-#: src/infrastructure/web/templates/styleguide/_atoms.html:73
-msgid "Score"
-msgstr "Score"
-
 #: src/infrastructure/web/templates/styleguide/_atoms.html:76
 msgid "Progress"
 msgstr "Progress"
 
+#: src/infrastructure/web/templates/styleguide/_molecules.html:2
+msgid "Form field"
+msgstr "Form field"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:9
+msgid "RO | EN field pair"
+msgstr "RO | EN field pair"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:15
+msgid "Alerts"
+msgstr "Alerts"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:20
+msgid "Cards"
+msgstr "Cards"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:26
+msgid "Disabled tile"
+msgstr "Disabled tile"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:29
+msgid "Empty state"
+msgstr "Empty state"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:32
+msgid "Page header"
+msgstr "Page header"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:35
+msgid "Confirm dialog"
+msgstr "Confirm dialog"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:39
+msgid "Table"
+msgstr "Table"
+
+#: src/infrastructure/web/templates/styleguide/_molecules.html:41
+msgid "Empty table"
+msgstr "Empty table"
+
 #: src/infrastructure/web/templates/styleguide/index.html:6
-#: src/infrastructure/web/templates/styleguide/index.html:19
+#: src/infrastructure/web/templates/styleguide/index.html:29
 msgid "Styleguide"
 msgstr "Styleguide"
 
-#: src/infrastructure/web/templates/styleguide/index.html:20
+#: src/infrastructure/web/templates/styleguide/index.html:30
 msgid "Development-only visual reference for the shared UI primitives."
 msgstr "Development-only visual reference for the shared UI primitives."
 
-#: src/infrastructure/web/templates/styleguide/index.html:24
+#: src/infrastructure/web/templates/styleguide/index.html:34
 msgid "Student theme"
 msgstr "Student theme"
 
-#: src/infrastructure/web/templates/styleguide/index.html:24
+#: src/infrastructure/web/templates/styleguide/index.html:34
 msgid "Staff theme"
 msgstr "Staff theme"
 
 # --- Story 1.5: design tokens & atom primitives ---
-#: src/infrastructure/web/templatetags/ui.py:49
+#: src/infrastructure/web/templatetags/ui.py:55
 msgid "Active"
 msgstr "Active"
 
-#: src/infrastructure/web/templatetags/ui.py:50
+#: src/infrastructure/web/templatetags/ui.py:56
 msgid "Flagged"
 msgstr "Flagged"
 
-#: src/infrastructure/web/templatetags/ui.py:51
+#: src/infrastructure/web/templatetags/ui.py:57
 msgid "Blocked"
 msgstr "Blocked"
 
-#: src/infrastructure/web/templatetags/ui.py:52
+#: src/infrastructure/web/templatetags/ui.py:58
 msgid "Resubmitted"
 msgstr "Resubmitted"
 
-#: src/infrastructure/web/templatetags/ui.py:53
+#: src/infrastructure/web/templatetags/ui.py:59
 msgid "Draft"
 msgstr "Draft"
 
-#: src/infrastructure/web/templatetags/ui.py:54
+#: src/infrastructure/web/templatetags/ui.py:60
 msgid "Published"
 msgstr "Published"
 
-#: src/infrastructure/web/templatetags/ui.py:128
+#: src/infrastructure/web/templatetags/ui.py:159
 msgid "User"
 msgstr "User"

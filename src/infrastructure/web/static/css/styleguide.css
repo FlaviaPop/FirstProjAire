@@ -21,6 +21,9 @@
 .sg-list { padding: 0; list-style: none; }
 .sg-row, .sg-stack { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
 .sg-stack { flex-direction: column; align-items: stretch; max-width: 480px; }
+.sg-wide { max-width: var(--content-max-student); }
+.sg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--grid-gutter); max-width: var(--content-max-student); }
+.sg-molecules { margin-top: var(--space-12); padding-top: var(--space-6); border-top: 1px solid var(--color-border); }
 .sg-table { border-collapse: collapse; }
 .sg-table th, .sg-table td { padding: var(--space-2); text-align: start; border-bottom: 1px solid var(--color-disabled); }
 .sg-space { display: inline-block; height: var(--space-4); background: var(--color-primary); vertical-align: middle; }
