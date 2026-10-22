@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-22 15:03
+**Last Updated**: 2026-10-22 15:11
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: DEV
+**Updated By**: REVIEWER
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -35,7 +35,7 @@
 | Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
-| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 5/45 stories reviewed (1.0, 1.1, 1.2, 1.3, 1.8) | 2026-10-22 14:58 |
+| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 6/45 stories reviewed (1.0, 1.1, 1.2, 1.3, 1.4, 1.8) | 2026-10-22 15:11 |
 | QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 
 ---
@@ -82,6 +82,7 @@
 - [x] Remediation from `story-1.8-code-review-v1.md`: ISS-001 (metadata guard), ISS-002 (SQLite append-only triggers), ISS-003 (owner decision: failed sign-ins store only real usernames, else a keyed fingerprint); ISS-004 → DevOps; 717/717 tests
 - [x] Story 1.1 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 3 🟢 (`docs/reviews/story-1.1-code-review-v1.md`)
 - [x] Remediation from `story-1.1-code-review-v1.md`: ISS-001 (shared redaction rule for logs + audit), ISS-002 (missing message param no longer 500s), ISS-003 (binding hand-off in Story 1.7); ISS-004 → DevOps; 744/744 tests
+- [x] Story 1.4 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 2 🟢 (`docs/reviews/story-1.4-code-review-v1.md`)
 
 ### Implementation Plan
 
@@ -174,7 +175,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%) | ✅ | 2026-10-21 16:20 |
 | Integration Tests | 100% pass | 100% (744/744 on `main`) | ✅ | 2026-10-22 15:03 |
-| Code Review | All stories | 5/45 | 🟡 | 2026-10-22 14:58 |
+| Code Review | All stories | 6/45 | 🟡 | 2026-10-22 15:11 |
 | Documentation | All stories | 8/45 | 🟡 | 2026-10-22 14:30 |
 
 ---
@@ -234,11 +235,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.1-code-review-v1.md` — 114/114 story tests + 717/717 suite re-run; probes: JSON formatter serialises password/DOB/full_name extras (ISS-001 🟡), missing violation param → 500 (ISS-002 🟢); notes for Story 1.7 (ISS-003) and DevOps (ISS-004)
 - [x] **Remediation — Story 1.1 (review v1)**: 🟡 Partially Remediated (3/4) — 2026-10-22
   - Evidence: `docs/reviews/story-1.1-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 744/744 tests, coverage 100%, gates clean; real-server check (CSRF reason kept, posted password in 0 log lines)
+- [x] **Code Review — Story 1.4 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-22
+  - Evidence: `docs/reviews/story-1.4-code-review-v1.md` — 744/744 suite re-run, coverage 100%, gates clean; 13/13 AC (AC 2 `/` case handed off to 1.7); probes: bare/relative `next` on an invalid code → 500 (ISS-001 🟡), signed-in switch = one scoped UPDATE; DB-failure row untested (ISS-002 🟢), student duotone icon (ISS-003 🟢)
 ---
 
 ## Upcoming
 
-1. **aire-review-code** for 1.4, 1.5, 2.1
+1. **aire-dev-remediate** for 1.4 review ISS-001 (relative `next`) before 1.7 places the switcher; **aire-review-code** for 1.5, 2.1
 2. **Wave 3** (`aire-dev-implement`): Dev 1 → 1.6 Molecule Primitives (+ 1.3 ISS-004 DEBUG-only URL walk); Dev 2 → 1.9 Admin Accounts & Parent–Child Links — 1.7 carries binding hand-offs (error pages without DB, `/` redirect tests, switcher in the top bar)
 3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
@@ -256,5 +259,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated story 1.1 (story-1.1-code-review-v1.md) | Idle | 2026-10-22 | 2026-10-22 15:03 |
-| REVIEWER | Reviewed story 1.1 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 14:58 |
+| REVIEWER | Reviewed story 1.4 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 15:11 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
