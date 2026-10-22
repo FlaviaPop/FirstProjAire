@@ -18,6 +18,12 @@ class GradeModel(models.Model):
     class Meta:
         db_table = "catalogue_grade"
         ordering: ClassVar[list[str]] = ["sort_order"]
+        constraints: ClassVar[list[models.BaseConstraint]] = [
+            models.CheckConstraint(
+                condition=~models.Q(name_ro="") & ~models.Q(name_en=""),
+                name="grade_names_not_empty",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.code
@@ -42,7 +48,13 @@ class SubjectModel(models.Model):
             models.UniqueConstraint(
                 fields=["grade", "sort_order"], name="uniq_subject_order_per_grade"
             ),
+            # Both languages always present (ADR-006); also guards later data migrations.
+            models.CheckConstraint(
+                condition=~models.Q(name_ro="") & ~models.Q(name_en=""),
+                name="subject_names_not_empty",
+            ),
         ]
 
     def __str__(self) -> str:
-        return f"{self.grade_id}:{self.code}"
+        # Grade *code* ("2:EN"), not its id: grade 2's id is 4 (review v1 ISS-002).
+        return f"{self.grade.code}:{self.code}"

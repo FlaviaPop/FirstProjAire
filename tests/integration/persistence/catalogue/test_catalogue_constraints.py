@@ -60,6 +60,25 @@ def test_new_subject_is_inactive_by_default():
     assert subject.is_active is False
 
 
+# Review v1 ISS-003: a blank name would render as an empty heading through localized().
+@pytest.mark.parametrize("blank", ["name_ro", "name_en"])
+def test_grade_with_an_empty_name_is_rejected(blank):
+    names = {"name_ro": "Clasa a IX-a", "name_en": "Grade 9"} | {blank: ""}
+
+    with pytest.raises(IntegrityError), transaction.atomic():
+        GradeModel.objects.create(code="9", sort_order=10, **names)
+
+
+@pytest.mark.parametrize("blank", ["name_ro", "name_en"])
+def test_subject_with_an_empty_name_is_rejected(blank):
+    names = {"name_ro": "Fizică", "name_en": "Physics"} | {blank: ""}
+
+    with pytest.raises(IntegrityError), transaction.atomic():
+        SubjectModel.objects.create(
+            grade=GradeModel.objects.get(code="2"), code="NEW", sort_order=50, **names
+        )
+
+
 def _field(model: type[models.Model], name: str) -> models.Field:
     return model._meta.get_field(name)  # type: ignore[return-value]
 
@@ -95,7 +114,11 @@ def test_subject_model_schema_matches_the_story_contract():
 
 
 def test_subject_unique_constraints_are_named_as_specified():
-    constraints = {c.name: tuple(c.fields) for c in SubjectModel._meta.constraints}
+    constraints = {
+        c.name: tuple(c.fields)
+        for c in SubjectModel._meta.constraints
+        if isinstance(c, models.UniqueConstraint)
+    }
 
     assert constraints == {
         "uniq_subject_code_per_grade": ("grade", "code"),

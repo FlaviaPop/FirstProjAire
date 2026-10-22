@@ -1,5 +1,12 @@
 # Code Review - Story 2.1: Catalogue Data
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 787/787 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -188,6 +195,13 @@ def test_subject_factory_still_returns_the_seeded_active_mem_subject():
     assert SubjectFactory().is_active is True
 ```
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: both factories use `sort_order = factory.Sequence(lambda n: 100 + n)` (above every seeded order), and `SubjectFactory.is_active` defaults to `False`. `get_or_create` still returns seeded rows untouched, so `SubjectFactory()` is the seeded, active grade-2 MEM. As suggested
+- Commit / change ref: `tests/factories/catalogue.py`
+- Test evidence: `test_catalogue_factories.py::test_factories_create_new_rows_without_explicit_sort_order` (grade 9, a new grade-2 subject and a grade-9 subject with no `sort_order`; the new subject is inactive; still exactly 3 active) failed before the fix with `UNIQUE constraint failed: catalogue_grade.sort_order`. `test_subject_factory_returns_the_seeded_active_mem_subject` still passes
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: `SubjectModel.__str__` shows the grade's database id, which reads as a different grade 🟢 Low
@@ -212,6 +226,13 @@ def __str__(self) -> str:
 ```
 Update the test to `assert str(subject) == "2:EN"`.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `__str__` returns `f"{self.grade.code}:{self.code}"`
+- Commit / change ref: `src/infrastructure/persistence/catalogue/models.py` (`SubjectModel.__str__`)
+- Test evidence: `test_string_form_identifies_grade_and_subject_by_code` now asserts `"2:EN"`; it failed before the fix (`'4:EN' != '2:EN'`). Real DB: `str 2:EN`
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-003: Empty bilingual names are prevented only by tests of the seed, not by the database 🟢 Low
@@ -234,6 +255,13 @@ constraints = [
 ]
 ```
 Add the same `grade_names_not_empty` constraint on `GradeModel`, with tests that an empty name raises `IntegrityError`.
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `CheckConstraint(~Q(name_ro="") & ~Q(name_en=""))` on both models (`grade_names_not_empty`, `subject_names_not_empty`), added by the generated, reversible schema migration `0003_name_not_empty` (`AddConstraint` ×2). The seeded data already satisfies it
+- Commit / change ref: `catalogue/models.py` (`Meta.constraints`), `catalogue/migrations/0003_name_not_empty.py`
+- Test evidence: `test_grade_with_an_empty_name_is_rejected[name_ro|name_en]` and `test_subject_with_an_empty_name_is_rejected[name_ro|name_en]` failed before the fix (DID NOT RAISE) and pass now. `test_subject_unique_constraints_are_named_as_specified` now filters to `UniqueConstraint`. Real DB: `CHECK constraint failed: subject_names_not_empty`; migrate, rollback to 0002, rollback to zero, then migrate all OK
+- Status: ✅ Resolved
 
 ---
 
@@ -279,3 +307,98 @@ Add the same `grade_names_not_empty` constraint on `GradeModel`, with tests that
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 + 🟢 ISS-003 (all findings; scope confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 2.1
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 2.1 | `tests/factories/catalogue.py` | `sort_order` collisions; new subjects active | `Sequence` from 100; `is_active=False` | 1 ✅ |
+| ISS-002 | 🟢 Low | 2.1 | `catalogue/models.py` | `__str__` showed the grade id | Grade code | 1 updated ✅ |
+| ISS-003 | 🟢 Low | 2.1 | `catalogue/models.py`, `migrations/0003_name_not_empty.py` | Empty names accepted | DB check constraints | 4 ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `tests/factories/catalogue.py` | Modified | Sequenced `sort_order`; inactive by default |
+| `src/infrastructure/persistence/catalogue/models.py` | Modified | Two check constraints; `__str__` by grade code |
+| `src/infrastructure/persistence/catalogue/migrations/0003_name_not_empty.py` | New | Generated `AddConstraint` ×2 (reversible) |
+| `tests/integration/persistence/catalogue/test_catalogue_constraints.py` | Modified | +4 tests; unique-constraint test filters by type |
+| `tests/integration/persistence/catalogue/test_catalogue_seed.py` | Modified | `__str__` expectation `"2:EN"` |
+| `tests/integration/persistence/catalogue/test_catalogue_factories.py` | Modified | +1 test |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| §6.2 models (named `Meta.constraints`) | catalogue models | Integrity enforced in the DB, not only by tests |
+| §6.4 migrations | `0003` | Schema change in its own generated migration; `0002` untouched |
+| §12.3 factories | catalogue factories | Valid by default for new rows; seeded rows reused unchanged |
+
+## Testing Summary
+
+- **Targeted tests added or updated**: 6 (all failed before the fixes)
+- **Full suite**: 787/787 passing (3 runs)
+- **Coverage**: 100% (target ≥85%)
+- **Gates**: ruff format/check clean · mypy 0 issues (96 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Before the fix** (targeted):
+```
+E       django.db.utils.IntegrityError: UNIQUE constraint failed: catalogue_grade.sort_order
+FAILED test_catalogue_constraints.py::test_grade_with_an_empty_name_is_rejected[name_ro]
+FAILED test_catalogue_constraints.py::test_grade_with_an_empty_name_is_rejected[name_en]
+FAILED test_catalogue_constraints.py::test_subject_with_an_empty_name_is_rejected[name_ro]
+FAILED test_catalogue_constraints.py::test_subject_with_an_empty_name_is_rejected[name_en]
+FAILED test_catalogue_factories.py::test_factories_create_new_rows_without_explicit_sort_order
+FAILED test_catalogue_seed.py::test_string_form_identifies_grade_and_subject_by_code
+6 failed, 45 passed in 2.65s
+```
+
+**After the fix** (full suite):
+```
+src/infrastructure/persistence/catalogue/models.py           26      0      0      0   100%
+TOTAL                                                       702      0     82      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+787 passed in 7.20s
+```
+
+**Real database** (fresh SQLite file, `config.settings.dev`):
+```
+Applying catalogue.0001_initial... OK
+Applying catalogue.0002_seed_catalogue... OK
+Applying catalogue.0003_name_not_empty... OK
+Unapplying catalogue.0003_name_not_empty... OK          (migrate catalogue 0002)
+Unapplying catalogue.0002_seed_catalogue... OK          (migrate catalogue zero)
+Unapplying catalogue.0001_initial... OK
+Applying catalogue.0001_initial / 0002 / 0003... OK     (migrate)
+counts 10 111 active [('2', 'CLR'), ('2', 'EN'), ('2', 'MEM')]
+str 2:EN
+empty name -> CHECK constraint failed: subject_names_not_empty
+```
+
+## Deviations from Report Suggestions
+
+None.
+
+## Lessons Learned
+
+1. With `django_get_or_create`, factory defaults matter only for *new* rows. Make them valid for new rows (unique orders, safe flags), because the seeded rows are returned unchanged.
+2. A `__str__` built on a surrogate id can read as a domain value (`4:EN`). Use the natural key.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)

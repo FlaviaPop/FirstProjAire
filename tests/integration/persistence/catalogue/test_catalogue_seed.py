@@ -224,4 +224,5 @@ def test_string_form_identifies_grade_and_subject_by_code():
     subject = SubjectModel.objects.get(grade__code="2", code="EN")
 
     assert str(subject.grade) == "2"
-    assert str(subject) == f"{subject.grade_id}:EN"
+    # Review v1 ISS-002: the grade *code*, not its id (grade 2's id is 4, which read as "4:EN").
+    assert str(subject) == "2:EN"

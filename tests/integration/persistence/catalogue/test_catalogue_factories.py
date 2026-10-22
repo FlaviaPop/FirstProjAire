@@ -30,3 +30,14 @@ def test_factories_create_new_rows_for_unseeded_codes():
 
     assert (subject.grade.code, subject.code) == ("9", "PHY")
     assert SubjectModel.objects.count() == 112
+
+
+# Review v1 ISS-001: new codes need no explicit sort_order, and new subjects start inactive.
+def test_factories_create_new_rows_without_explicit_sort_order():
+    grade = GradeFactory(code="9", name_ro="Clasa a IX-a", name_en="Grade 9")
+    extra = SubjectFactory(grade=GradeModel.objects.get(code="2"), code="NEW")
+    another = SubjectFactory(grade=grade, code="PHY")
+
+    assert (grade.code, extra.code, another.code) == ("9", "NEW", "PHY")
+    assert extra.is_active is False
+    assert SubjectModel.objects.filter(is_active=True).count() == 3
