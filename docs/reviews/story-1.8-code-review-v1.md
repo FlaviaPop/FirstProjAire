@@ -1,5 +1,12 @@
 # Code Review - Story 1.8: Audit Log
 
+> ## 🛠️ Remediation Status: 🟡 Partially Remediated (3/4)
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
+> - **Deferred (with user consent)**: 1 (ISS-004 → `aire-devops-discover`) — see Remediation Section
+> - **Tests**: 717/717 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -146,6 +153,13 @@ Add parametrised tests for case, prefix and suffix variants (`Password`, `new_pa
 
 **Why This Matters**: The audit log is append-only by design, so a leak can't be undone by the platform. A defence that only matches exact strings gives a false sense of safety.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `is_sensitive_metadata_key()` case-folds the key, treats `-` as `_`, and rejects any key **containing** `password`, `passwd`, `secret`, `token`, `birth`, `dob`, `answer` or `response`
+- Commit / change ref: `src/infrastructure/persistence/audit/repositories.py` (`FORBIDDEN_METADATA_FRAGMENTS`, `is_sensitive_metadata_key`, `record`)
+- Test evidence: `test_audit_log.py::test_forbidden_metadata_is_rejected` (19 keys: the original 7 plus 12 variants such as `Password`, `new_password`, `user_dob`, `Date-Of-Birth`, `answer_text`, `refresh_token`, `client_secret`; the 12 failed before the fix) and `test_ordinary_metadata_keys_are_allowed` (6 keys, guards against over-blocking)
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: `_base_manager` can update audit rows; no guard against application use 🟢 Low
@@ -158,6 +172,13 @@ Add parametrised tests for case, prefix and suffix variants (`Password`, `new_pa
 **Suggested Fix** (either or both):
 - A negative-space test that fails if `_base_manager` or `.raw(` is referenced on `AuditLogModel` anywhere in `src/` outside `models.py`.
 - DB-level enforcement with a reversible `RunSQL` migration adding SQLite triggers: `BEFORE DELETE ON audit_log … RAISE(ABORT, 'append-only')`, and `BEFORE UPDATE` that aborts unless the only change is `actor_id` → `NULL`. That covers raw SQL and `dbshell` too.
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: reversible migration `audit 0002_append_only_triggers`, with SQLite triggers `audit_log_append_only_delete` (aborts every DELETE) and `audit_log_append_only_update` (aborts every UPDATE unless the only change is `actor_id` → NULL, i.e. account deletion)
+- Commit / change ref: `src/infrastructure/persistence/audit/migrations/0002_append_only_triggers.py`
+- Test evidence: `tests/integration/persistence/audit/test_append_only_db.py` (9: raw SQL UPDATE/DELETE, `_base_manager` update, 3 "smuggling" cases alongside the unlink, unlink-only allowed, account deletion still works, migration reversible); real `sqlite3` CLI: `Error: stepping, audit_log is append-only (19)` for both UPDATE and DELETE. `test_unit_of_work.py` now runs in the per-test transaction (savepoint), because `transaction=True` teardown DELETEs the table, which the triggers forbid
+- Status: ✅ Resolved
 
 ---
 
@@ -172,6 +193,13 @@ Add parametrised tests for case, prefix and suffix variants (`Password`, `new_pa
 - Store the typed username only when it **matches an existing account**. Otherwise store `"(unknown)"` plus a short non-reversible fingerprint (e.g. the first 8 hex chars of an HMAC with `SECRET_KEY`), so repeated attempts can still be correlated.
 - Record the decision in the architecture's Security Design and amend Story 1.8 AC 2.
 
+
+**Resolution** (2026-10-22, DEV; product decision by the owner: "Only real accounts"):
+- Fix: `RecordSecurityEvent` takes `UsernameDirectory` + `Fingerprint` ports. For events without a `user_id`, the typed username is kept only if `directory.exists()`; otherwise `(unknown):<8-hex HMAC-SHA256(SECRET_KEY)>`. Empty input → `(empty)`. Signed-in events never look anything up. Adapters: `DjangoUsernameDirectory`, `username_fingerprint`; wired in `container.record_security_event()`
+- Commit / change ref: `src/application/accounts/record_security_event.py` (`_actor_username`), `src/infrastructure/persistence/accounts/repositories.py`, `src/infrastructure/persistence/audit/fingerprint.py`, `src/infrastructure/container.py`; Story 1.8 spec + architecture Security Design updated
+- Test evidence: unit `test_record_security_event.py` (16, incl. unknown → fingerprint only, real account kept, signed-in never looked up, same text → same fingerprint); `test_username_fingerprint.py` (4: hex/deterministic, input-sensitive, keyed by `SECRET_KEY`, doesn't contain input); integration `test_audit_log.py` + `test_audit_login_flow.py` (unknown `ghost` stored nowhere); real server `(unknown):74b10eda` ×2 and `0` rows containing the typed secret
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-004: Audit rows grow without bound under repeated failed or locked-out attempts 🟢 Low
@@ -182,6 +210,9 @@ Add parametrised tests for case, prefix and suffix variants (`Password`, `new_pa
 **Issue**: Each failed attempt, and each attempt during a cool-off, writes a row. That's correct for an audit trail, but an attacker can generate rows at request rate. Story 1.8 puts retention and log shipping out of scope (DevOps), and Story 1.2's review already defers a login rate limit (1.2 ISS-005).
 
 **Suggested Fix**: Track it together with 1.2 ISS-005 in `aire-devops-discover`: a reverse-proxy rate limit on `POST /*/accounts/login/`, plus a retention/archiving policy for `audit_log`. No code change in this story.
+
+
+**Deferral** (2026-10-22, DEV): deferred with user consent to `aire-devops-discover`, together with Story 1.2 ISS-005 (login rate limit) and an `audit_log` retention policy. A retention job will need to drop and re-create the 0002 triggers explicitly. Still open.
 
 ---
 
@@ -230,3 +261,105 @@ Add parametrised tests for case, prefix and suffix variants (`Password`, `new_pa
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 (user: "add triggers") + 🟢 ISS-003 (user product decision: "only real accounts"); ISS-004 deferred
+**Scenario**: Code Review
+**Stories Affected**: 1.8
+**Branch**: `main` (the only branch)
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.8 | `audit/repositories.py` | Literal metadata guard | Fragment match on case-folded keys | 19 rejected + 6 allowed ✅ |
+| ISS-002 | 🟢 Low | 1.8 | `audit/migrations/0002_append_only_triggers.py` | `_base_manager`/raw SQL bypass | SQLite triggers; unlink-only UPDATE allowed | 9 ✅ + CLI check |
+| ISS-003 | 🟢 Low | 1.8 | `record_security_event.py`, `fingerprint.py`, `accounts/repositories.py`, `container.py` | Verbatim failed usernames | Real accounts only; else keyed fingerprint | 16 unit + 4 fingerprint + integration ✅ |
+
+## Issues Deferred (with user consent)
+
+| ID | Severity | Story | Reason |
+|----|----------|-------|--------|
+| ISS-004 | 🟢 Low | 1.8 | Audit growth under attack: proxy rate limit + retention policy (DevOps) |
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/persistence/audit/repositories.py` | Modified | Fragment-based sensitive-key guard |
+| `src/infrastructure/persistence/audit/migrations/0002_append_only_triggers.py` | New | DB-level append-only |
+| `src/application/accounts/record_security_event.py` | Modified | `UsernameDirectory`, `Fingerprint`, `_actor_username` |
+| `src/infrastructure/persistence/audit/fingerprint.py` | New | HMAC-SHA256 fingerprint |
+| `src/infrastructure/persistence/accounts/repositories.py` | Modified | `DjangoUsernameDirectory` |
+| `src/infrastructure/container.py` | Modified | Wiring |
+| `tests/integration/persistence/audit/test_append_only_db.py` | New | 9 tests |
+| `tests/unit/infrastructure/test_username_fingerprint.py` | New | 4 tests |
+| `tests/unit/application/accounts/test_record_security_event.py` | Modified | 16 tests (new ports) |
+| `tests/integration/persistence/audit/test_audit_log.py`, `test_audit_login_flow.py`, `test_unit_of_work.py` | Modified | New expectations; savepoint-based UoW test |
+| `docs/plans/stories/epic-1-story-1.8-Audit-Log.md`, `docs/architecture/design/00-system-architecture-greenfield.md` | Modified | Owner decision recorded |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Ports & adapters §5/§15 | `UsernameDirectory`, `Fingerprint` | The policy stays in the application; data lookups and crypto in infrastructure |
+| Logging §9 never-log list | metadata guard, username masking | Passwords never reach the append-only table |
+| Migrations §6.4 | 0002 | Reversible (`reverse_sql`), proven by test |
+
+## Testing Summary
+
+- **Targeted tests added/changed**: 12 metadata variants + 6 allowed keys; 9 DB-level; 16 use case; 4 fingerprint; integration expectations
+- **Full suite**: 717/717 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); `src/application` 100%; `src/domain` 100%
+- **Gates**: ruff format/check clean · mypy 0 issues (94 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Test Output** (verbatim, filtered):
+```
+collected 717 items
+tests/integration/persistence/audit/test_append_only_db.py .........     [  2%]
+tests/integration/persistence/audit/test_audit_log.py .................. [  4%]
+tests/integration/persistence/audit/test_audit_login_flow.py ......      [  8%]
+tests/integration/persistence/audit/test_unit_of_work.py ..              [  9%]
+tests/unit/application/accounts/test_record_security_event.py .......... [ 85%]
+tests/unit/infrastructure/test_username_fingerprint.py ....              [100%]
+src/application/accounts/record_security_event.py            38      0      6      0   100%
+src/infrastructure/persistence/audit/fingerprint.py           7      0      0      0   100%
+src/infrastructure/persistence/audit/repositories.py         16      0      2      0   100%
+TOTAL                                                       665      0     74      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+============================= 717 passed in 7.37s ==============================
+```
+
+**Real server + sqlite3 CLI**:
+```
+wrong password for ana -> 200 · password typed as username -> 200 · same text again -> 200 · ana correct -> 302
+auth.login_failed            ana
+auth.login_failed            (unknown):74b10eda
+auth.login_failed            (unknown):74b10eda
+auth.login         1         ana
+== secret text stored anywhere?  0
+== sqlite3 CLI tampering
+Error: stepping, audit_log is append-only (19)      (UPDATE)
+Error: stepping, audit_log is append-only (19)      (DELETE)
+4 rows still present
+== account deletion still works → auth.login_failed|NULL|ana · auth.login|NULL|ana
+```
+
+## Deviations from Report Suggestions
+
+- ISS-002: both suggestions were considered; the DB triggers alone cover raw SQL, `_base_manager` and dbshell, so the extra grep test wasn't needed.
+- ISS-003: also applied to `auth.lockout`. Axes passes the same typed username, so the same leak existed there.
+
+## Lessons Learned
+
+1. "Append-only in Python" is a convention; triggers make it a guarantee. Account deletion's `SET NULL` must be explicitly allowed.
+2. Defence-in-depth guards should match on meaning (fragments, case-folded), not on exact strings.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
+- [ ] ISS-004 in `aire-devops-discover`

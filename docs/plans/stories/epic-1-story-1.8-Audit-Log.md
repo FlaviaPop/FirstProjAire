@@ -27,7 +27,7 @@
 
 **Authz & preconditions:** none to *record* (system actor); nothing is readable through any route in this story. **Edge & idempotency:**
 - Each event fires once per real occurrence (no dedup is needed; a second login is a second row).
-- A failed login for an unknown username records the attempted username with no actor id.
+- A failed login for an unknown username records `(unknown):<fingerprint>` with no actor id, never the typed text (owner decision 2026-10-22).
 - The password is never read (Django passes cleansed credentials; only `username` is used).
 - When the audit write fails (e.g. a locked DB), the auth flow continues and an `ERROR` `audit.write_failed` log line is emitted. Authentication events are best-effort by decision; business actions in later stories audit inside their own transaction (fail-closed).
 
@@ -115,6 +115,8 @@ sequenceDiagram
 
 > **Best-effort vs fail-closed decision:** authentication signals fire inside Django's auth flow. A transient audit failure (SQLite busy beyond the 20 s timeout) must not stop a child from signing in or out, so receivers catch `DatabaseError`, log `ERROR audit.write_failed` with the event name (no PII), and continue. The exception isn't swallowed silently: it becomes an alertable log line. Business use cases (moderation, submissions, links) call `AuditPort.record` **inside** their own UoW, so a failure rolls the business change back.
 
+> **Owner decision (2026-10-22, review v1 ISS-003):** a failed sign-in or lockout stores the typed username **only if it belongs to an existing account**; otherwise `(unknown):<8-hex HMAC-SHA256 fingerprint keyed with SECRET_KEY>`, so a password mistyped into the username field is never stored, while repeated attempts with the same text stay correlatable. `RecordSecurityEvent` takes two extra ports for this: `UsernameDirectory.exists()` and a `Fingerprint` callable. Also from review v1: sensitive metadata keys are matched as case-insensitive fragments (ISS-001), and SQLite triggers (migration `audit 0002`) make `audit_log` append-only in the database itself (ISS-002).
+
 **Acceptance Criteria**:
 1. `application/common/unit_of_work.py` defines `UnitOfWork(Protocol)` with `__enter__`/`__exit__`. `application/common/audit.py` defines `AuditPort(Protocol)` with the `record` signature above, where `target: tuple[str, str] | None` is `(target_type, target_id)` and `metadata: Mapping[str, str | int | bool] | None`.
 2. `RecordSecurityEvent(audit, uow).execute(cmd)` with `SecurityEventCommand(event: SecurityEvent, username: str, user_id: int | None, ip_address: str | None)` writes exactly one `audit.record(event.value, actor_id=…, actor_username=…, ip_address=…)` inside the UoW. An empty `username` for `LOGIN_FAILED` and `LOCKOUT` is recorded as `"(empty)"`. Usernames are truncated to 150 chars.
@@ -150,7 +152,7 @@ sequenceDiagram
 
 **RBAC Enforcement**:
 No role-differentiated access — single actor.
-- No route reads or writes the audit log in this story. The actor identity recorded is taken from the signal's `user` (server-side auth) or, for failures, the attempted username string; it's never inferred from other request input. Read access for the Admin role is Story 1.9.
+- No route reads or writes the audit log in this story. The actor identity recorded is taken from the signal's `user` (server-side auth) or, for failures, the attempted username only when it matches an existing account (otherwise a keyed fingerprint); it's never inferred from other request input. Read access for the Admin role is Story 1.9.
 
 **System responses + error cases**:
 
@@ -161,7 +163,7 @@ No role-differentiated access — single actor.
 | Logout | unchanged (302) | +1 row `auth.logout` |
 | Logout when signal sends `user=None` | unchanged | no row |
 | Wrong password for existing user | unchanged (200 form) | +1 row `auth.login_failed`, actor NULL, `actor_username` = typed username |
-| Unknown username | unchanged (200) | +1 row `auth.login_failed`, `actor_username` = typed value |
+| Unknown username | unchanged (200) | +1 row `auth.login_failed`, `actor_username` = `(unknown):<8-hex fingerprint>` (typed text never stored) |
 | 5th failure → lockout | unchanged (429) | +1 `auth.login_failed` **and** +1 `auth.lockout` |
 | Audit insert raises `DatabaseError` | login response unchanged | no row; `ERROR audit.write_failed` JSON log line with `audit_action` |
 | Code calls `entry.save()` on an existing row | `PermissionError` | none |

@@ -69,7 +69,10 @@ def test_wrong_password_and_unknown_user_record_failures(client):
     assert _post_login(client, "ghost", WRONG).status_code == 200
 
     assert _actions("ana") == ["auth.login_failed"]
-    assert _actions("ghost") == ["auth.login_failed"]
+    # Review v1 ISS-003: an unknown name is stored only as a fingerprint.
+    assert not AuditLogModel.objects.filter(actor_username__contains="ghost").exists()
+    unknown = AuditLogModel.objects.filter(actor_username__startswith="(unknown):")
+    assert list(unknown.values_list("action", flat=True)) == ["auth.login_failed"]
     assert not AuditLogModel.objects.filter(actor_id__isnull=False).exists()
 
 

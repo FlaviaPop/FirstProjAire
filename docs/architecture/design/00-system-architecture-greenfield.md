@@ -586,7 +586,7 @@ This is a server-rendered app, so the "API" is a set of HTML routes plus HTMX pa
 | Secrets | `SECRET_KEY` and the DB path come from environment variables; nothing is committed. `DEBUG=False` outside development. |
 | Data protection | Minimal personal data: name, date of birth, username. No third-party scripts, fonts or CDNs; HTMX is served locally. The SQLite file sits on an encrypted volume (DevOps). Backups are encrypted and access-restricted. |
 | Data retention | Records are kept until an admin deletes the account. Deletion cascades (see Integrity rules). |
-| Audit | `AUDIT_LOG` records: logins and failures, lockouts, account create/update/delete, role changes, parent links, moderation transitions and test submissions. Append-only from the application; there is no edit UI. |
+| Audit | `AUDIT_LOG` records: logins and failures, lockouts, account create/update/delete, role changes, parent links, moderation transitions and test submissions. Append-only from the application; there is no edit UI. Failed sign-ins store the typed username only for existing accounts, otherwise a keyed fingerprint (owner decision 2026-10-22). Sensitive metadata keys are rejected, and SQLite triggers enforce append-only in the database too. |
 
 > **Compliance note (not in the requirements):** the platform processes minors' personal data in Romania/EU. GDPR obligations such as a lawful basis/consent from parents, a privacy notice and handling of data-subject requests are organisational matters outside this architecture. The design above minimises collection and keeps the data first-party. Flagged as a risk for the project owner.
 

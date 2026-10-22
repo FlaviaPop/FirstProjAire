@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import UTC
 
 import pytest
@@ -7,7 +8,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out, user_lo
 from django.db import DatabaseError
 
 from infrastructure.persistence.audit.models import AuditLogModel
-from infrastructure.persistence.audit.repositories import FORBIDDEN_METADATA_KEYS, DjangoAuditPort
+from infrastructure.persistence.audit.repositories import DjangoAuditPort
 from tests.factories.accounts import UserFactory
 from tests.fakes import FixedClock
 
@@ -41,7 +42,8 @@ def test_logout_without_user_writes_no_row(rf):
     assert AuditLogModel.objects.count() == 0
 
 
-def test_failed_login_records_attempted_username_never_password(rf):
+def test_failed_login_for_an_unknown_name_stores_only_a_fingerprint(rf):
+    # Review v1 ISS-003: the typed text may be a mistyped password, so it is never stored.
     user_login_failed.send(
         sender=None,
         credentials={"username": "ghost", "password": "********"},
@@ -49,9 +51,19 @@ def test_failed_login_records_attempted_username_never_password(rf):
     )
 
     row = AuditLogModel.objects.get()
-    assert (row.action, row.actor_id, row.actor_username) == ("auth.login_failed", None, "ghost")
+    assert (row.action, row.actor_id) == ("auth.login_failed", None)
+    assert re.fullmatch(r"\(unknown\):[0-9a-f]{8}", row.actor_username)
+    assert "ghost" not in row.actor_username
     assert row.ip_address == "10.1.2.3"
     assert row.metadata == {}
+
+
+def test_failed_login_for_a_real_account_keeps_the_username(rf):
+    UserFactory(username="ana")
+
+    user_login_failed.send(sender=None, credentials={"username": "ana"}, request=rf.post("/"))
+
+    assert AuditLogModel.objects.get().actor_username == "ana"
 
 
 def test_failed_login_without_request_or_username_is_still_recorded():
@@ -66,6 +78,7 @@ def test_failed_login_without_request_or_username_is_still_recorded():
 
 
 def test_lockout_signal_records_lockout(rf):
+    UserFactory(username="ana")
     user_locked_out.send(
         sender="axes",
         request=rf.post("/", REMOTE_ADDR="127.0.0.1"),
@@ -80,6 +93,14 @@ def test_lockout_signal_records_lockout(rf):
         "ana",
         "127.0.0.1",
     )
+
+
+def test_lockout_for_an_unknown_name_stores_only_a_fingerprint(rf):
+    user_locked_out.send(sender="axes", request=rf.post("/"), username="Ana2018!secret")
+
+    stored = AuditLogModel.objects.get().actor_username
+    assert stored.startswith("(unknown):")
+    assert "Ana2018" not in stored
 
 
 def test_each_signal_is_connected_exactly_once(rf):
@@ -116,12 +137,27 @@ def test_deleting_user_keeps_rows_with_username():
     assert (row.actor_id, row.actor_username) == (None, "ana")
 
 
-@pytest.mark.parametrize("key", sorted(FORBIDDEN_METADATA_KEYS))
+# Story 1.8 AC 5 keys, plus case/prefix/suffix variants (review v1 ISS-001).
+SENSITIVE_KEYS = [
+    "password", "date_of_birth", "dob", "answer", "answers", "response", "token",
+    "Password", "PASSWORD", "new_password", "passwd", "user_dob", "Date-Of-Birth", "birthdate",
+    "answer_text", "Token", "refresh_token", "client_secret", "test_responses",
+]  # fmt: skip
+
+
+@pytest.mark.parametrize("key", SENSITIVE_KEYS)
 def test_forbidden_metadata_is_rejected(key):
-    with pytest.raises(ValueError, match=key):
+    with pytest.raises(ValueError, match="Forbidden audit metadata keys"):
         DjangoAuditPort(FixedClock()).record("x", metadata={key: "secret"})
 
     assert AuditLogModel.objects.count() == 0
+
+
+@pytest.mark.parametrize("key", ["score", "language", "status", "grade", "chapter_id", "count"])
+def test_ordinary_metadata_keys_are_allowed(key):
+    DjangoAuditPort(FixedClock()).record("x", metadata={key: 1})
+
+    assert AuditLogModel.objects.get().metadata == {key: 1}
 
 
 def test_target_and_metadata_are_stored():

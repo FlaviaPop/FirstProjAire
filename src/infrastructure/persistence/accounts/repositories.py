@@ -3,6 +3,13 @@
 from infrastructure.persistence.accounts.models import UserModel
 
 
+class DjangoUsernameDirectory:
+    """Implements `application.accounts.record_security_event.UsernameDirectory`."""
+
+    def exists(self, username: str) -> bool:
+        return UserModel.objects.filter(username=username).exists()
+
+
 class DjangoUserPreferences:
     """Implements `application.accounts.update_preferred_language.UserPreferencePort`."""
 

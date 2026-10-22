@@ -5,7 +5,9 @@ from infrastructure.persistence.audit.repositories import DjangoAuditPort
 from infrastructure.persistence.common.unit_of_work import DjangoUnitOfWork
 from tests.fakes import FixedClock
 
-pytestmark = pytest.mark.django_db(transaction=True)
+# The UoW runs inside the per-test transaction (as a savepoint). transaction=True isn't
+# usable here: its teardown flush DELETEs audit_log, which the append-only triggers forbid.
+pytestmark = pytest.mark.django_db
 
 
 def _audit_then_fail():
