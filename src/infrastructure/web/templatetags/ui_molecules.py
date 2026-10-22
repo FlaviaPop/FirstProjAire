@@ -65,7 +65,7 @@ def _field_context(field: object, help: str = "", legend: str = "", lang: str = 
     described = [f"{widget_id}_help"] if help else []
     if field.errors:
         described.append(f"{widget_id}_error")
-    aria = {"aria-describedby": " ".join(described)} if described else {}
+    aria: dict[str, str | bool] = {"aria-describedby": " ".join(described)} if described else {}
     if field.errors:
         aria["aria-invalid"] = "true"
     attrs: dict[str, str | bool] = {"lang": lang} if lang else {}

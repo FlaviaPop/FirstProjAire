@@ -377,7 +377,7 @@ None.
 - **Targeted tests added**: 20 (17 failed before the fixes; 3 guard behaviour that must not change)
 - **Full suite**: 1001/1001 passing (3 runs)
 - **Coverage**: 100% (target ≥85%); `ui.py` 81/81 + 26/26 branches, `ui_molecules.py` 116/116 + 32/32 branches
-- **Gates**: ruff format/check clean · mypy 0 issues (98 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+- **Gates**: ruff format/check clean · mypy ~~0 issues (98 files)~~ **see erratum below** · import-linter 2/2 kept · `makemigrations --check` no changes
 
 **Before the fix** (targeted):
 ```
@@ -424,3 +424,11 @@ card headings: ['h2'] · duplicate ids: [] · for="" / id="_help" / id="_error":
 
 - [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)
 - [ ] Story 1.10 asserts the alert-dismiss focus in a browser (hand-off added)
+
+### ⚠️ Erratum (2026-10-22, DEV)
+
+The "mypy 0 issues" claim above was wrong. The gate run printed `Found 1 error in 1 file (checked 98 source files)`: mypy rejected `attrs | aria` in `_field_context` (`ui_molecules.py:72`, `dict[str, str | bool] | dict[str, str]`). That line was misread as a ruff result, and mypy wasn't re-run after the ruff fixes. The Story 1.9 build agent caught it on the next run. Tests were unaffected (it's a typing error only).
+
+- Fix: annotate `aria: dict[str, str | bool]` in `_field_context` (no behaviour change)
+- Evidence: `uv run mypy --no-incremental` → `Success: no issues found in 98 source files`; `uv run ruff check .` → `All checks passed!`; `uv run pytest -q` → `1001 passed`
+- Process fix: each gate's own output line is checked individually before reporting it clean
