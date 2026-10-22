@@ -3,9 +3,12 @@
 One factory function per use case, grouped in one block per context (alphabetical).
 """
 
+from application.accounts.link_parent import LinkParent, UnlinkParent
+from application.accounts.manage_account import AuditAccountChange
 from application.accounts.record_security_event import RecordSecurityEvent
 from application.accounts.update_preferred_language import UpdatePreferredLanguage
 from infrastructure.persistence.accounts.repositories import (
+    DjangoParentLinks,
     DjangoUsernameDirectory,
     DjangoUserPreferences,
 )
@@ -17,6 +20,18 @@ from infrastructure.system_clock import SystemClock
 # --- accounts ------------------------------------------------------------------------------
 
 
+def audit_account_change() -> AuditAccountChange:
+    """Story 1.9: audit the Admin's account changes (field names only)."""
+    return AuditAccountChange(DjangoAuditPort(SystemClock()), DjangoUnitOfWork())
+
+
+def link_parent() -> LinkParent:
+    """Story 1.9: link a Parent/Guardian to a Student (admin)."""
+    return LinkParent(
+        DjangoParentLinks(), DjangoAuditPort(SystemClock()), DjangoUnitOfWork(), SystemClock()
+    )
+
+
 def record_security_event() -> RecordSecurityEvent:
     """Story 1.8: audit sign-in, sign-out, failed sign-in and lockout events."""
     return RecordSecurityEvent(
@@ -25,6 +40,11 @@ def record_security_event() -> RecordSecurityEvent:
         DjangoUsernameDirectory(),
         username_fingerprint,
     )
+
+
+def unlink_parent() -> UnlinkParent:
+    """Story 1.9: remove a parent-child link (admin); a missing link is a no-op."""
+    return UnlinkParent(DjangoParentLinks(), DjangoAuditPort(SystemClock()), DjangoUnitOfWork())
 
 
 def update_preferred_language() -> UpdatePreferredLanguage:

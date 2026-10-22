@@ -105,3 +105,56 @@ def test_sqlite_runs_in_wal_mode_with_immediate_transactions():
     assert connection.settings_dict["OPTIONS"]["transaction_mode"] == "IMMEDIATE"
     assert connection.settings_dict["OPTIONS"]["timeout"] == 20
     assert settings.DATABASES["default"]["ATOMIC_REQUESTS"] is False
+
+
+# --- Story 1.9 AC 1: Django admin access follows the platform role -------------------------
+@pytest.mark.parametrize(
+    ("role", "is_admin"),
+    [("STUDENT", False), ("TEACHER", False), ("PARENT", False), ("ADMIN", True)],
+)
+def test_staff_flags_are_derived_from_the_role_on_create(role, is_admin):
+    user = UserFactory(role=role, is_staff=not is_admin, is_superuser=not is_admin)
+
+    user.refresh_from_db()
+    assert (user.is_staff, user.is_superuser) == (is_admin, is_admin)
+
+
+@pytest.mark.parametrize("new_role", ["STUDENT", "TEACHER", "PARENT"])
+def test_leaving_the_admin_role_revokes_the_staff_flags(new_role):
+    user = UserFactory(role="ADMIN")
+
+    user.role = new_role
+    user.save()
+
+    user.refresh_from_db()
+    assert (user.is_staff, user.is_superuser) == (False, False)
+
+
+def test_becoming_admin_grants_the_staff_flags():
+    user = UserFactory(role="TEACHER")
+
+    user.role = "ADMIN"
+    user.save()
+
+    user.refresh_from_db()
+    assert (user.is_staff, user.is_superuser) == (True, True)
+
+
+def test_partial_save_of_the_role_also_saves_the_staff_flags():
+    user = UserFactory(role="ADMIN")
+
+    user.role = "PARENT"
+    user.save(update_fields=["role"])
+
+    user.refresh_from_db()
+    assert (user.role, user.is_staff, user.is_superuser) == ("PARENT", False, False)
+
+
+def test_partial_save_of_other_fields_leaves_the_staff_flags_alone():
+    user = UserFactory(role="ADMIN")
+
+    user.full_name = "Renamed"
+    user.save(update_fields=["full_name"])
+
+    user.refresh_from_db()
+    assert (user.full_name, user.is_staff) == ("Renamed", True)

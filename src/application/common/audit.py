@@ -3,6 +3,10 @@
 from collections.abc import Mapping
 from typing import Protocol
 
+# Story 1.9: a list of strings is allowed so account changes can record field NAMES
+# ({"fields": ["date_of_birth", "full_name"]}); values never go into metadata.
+MetadataValue = str | int | bool | list[str]
+
 
 class AuditPort(Protocol):
     """Appends one entry to the audit log. Implementations never update or delete entries."""
@@ -14,7 +18,7 @@ class AuditPort(Protocol):
         actor_id: int | None = None,
         actor_username: str = "",
         target: tuple[str, str] | None = None,
-        metadata: Mapping[str, str | int | bool] | None = None,
+        metadata: Mapping[str, MetadataValue] | None = None,
         ip_address: str | None = None,
     ) -> None:
         """Record one action.

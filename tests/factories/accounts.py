@@ -2,7 +2,7 @@ import datetime
 
 import factory
 
-from infrastructure.persistence.accounts.models import UserModel
+from infrastructure.persistence.accounts.models import ParentChildLinkModel, UserModel
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -35,7 +35,15 @@ class ParentFactory(UserFactory):
 
 
 class AdminFactory(UserFactory):
-    role = "ADMIN"
+    role = "ADMIN"  # is_staff/is_superuser are derived from the role (Story 1.9)
     date_of_birth = datetime.date(1980, 1, 10)
-    is_staff = True
-    is_superuser = True
+
+
+# --- Story 1.9: parent-child links ---
+class ParentChildLinkFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ParentChildLinkModel
+
+    parent = factory.SubFactory(ParentFactory)
+    student = factory.SubFactory(StudentFactory)
+    created_at = datetime.datetime(2026, 10, 20, 8, 0, tzinfo=datetime.UTC)

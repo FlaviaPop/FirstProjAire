@@ -22,7 +22,13 @@ GENERIC_BY_STATUS: dict[int, Promise] = {
     500: _("Something went wrong on our side. Please try again later."),
 }
 # Extended by later stories with their own error codes (e.g. "test_already_submitted").
-ERROR_MESSAGES: dict[str, str | Promise] = {}
+ERROR_MESSAGES: dict[str, str | Promise] = {
+    # --- Story 1.9: parent-child link rules (LinkParent); the admin link form shows these too.
+    "link_exists": _("This parent is already linked to this student."),
+    "parent_not_parent_role": _("The selected parent account isn't a Parent/Guardian."),
+    "student_not_student_role": _("The selected child account isn't a Student."),
+    "self_link": _("A person can't be linked to themselves."),
+}
 
 
 class _KeepMissingParams(dict[str, object]):

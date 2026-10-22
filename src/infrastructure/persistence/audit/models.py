@@ -4,6 +4,7 @@ from typing import Any, NoReturn
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 APPEND_ONLY = "audit_log is append-only"
 
@@ -20,21 +21,28 @@ class AuditLogModel(models.Model):
     # SET_NULL keeps history when an account is deleted; actor_username preserves who it was.
     # Django's deletion collector uses `_base_manager` (a plain Manager), so that update bypasses
     # _AppendOnlyQuerySet. Do NOT set Meta.base_manager_name.
+    # Story 1.9: translated labels for the read-only admin screen (no schema change).
     actor = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+        settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name=_("actor"),
     )
-    actor_username = models.CharField(max_length=150)
-    action = models.CharField(max_length=64, db_index=True)
-    target_type = models.CharField(max_length=32, blank=True)
-    target_id = models.CharField(max_length=64, blank=True)
-    metadata = models.JSONField(default=dict)
-    ip_address = models.GenericIPAddressField(null=True)
-    created_at = models.DateTimeField(db_index=True)
+    actor_username = models.CharField(_("actor username"), max_length=150)
+    action = models.CharField(_("action"), max_length=64, db_index=True)
+    target_type = models.CharField(_("target type"), max_length=32, blank=True)
+    target_id = models.CharField(_("target id"), max_length=64, blank=True)
+    metadata = models.JSONField(_("metadata"), default=dict)
+    ip_address = models.GenericIPAddressField(_("IP address"), null=True)
+    created_at = models.DateTimeField(_("time"), db_index=True)
 
     objects = _AppendOnlyQuerySet.as_manager()
 
     class Meta:
         db_table = "audit_log"
+        verbose_name = _("audit log entry")
+        verbose_name_plural = _("audit log entries")
         ordering = ("-created_at",)
         indexes = (
             models.Index(fields=["action", "created_at"], name="audit_action_created_idx"),

@@ -2,6 +2,7 @@
 
 from tests.fakes.audit import FakeAuditPort
 from tests.fakes.clock import FixedClock
+from tests.fakes.parent_links import FakeParentLinks
 from tests.fakes.uow import FakeUnitOfWork
 
-__all__ = ["FakeAuditPort", "FakeUnitOfWork", "FixedClock"]
+__all__ = ["FakeAuditPort", "FakeParentLinks", "FakeUnitOfWork", "FixedClock"]

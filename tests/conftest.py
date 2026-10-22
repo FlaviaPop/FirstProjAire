@@ -13,6 +13,7 @@ from django.utils import translation
 
 from tests.factories.accounts import (
     AdminFactory,
+    ParentChildLinkFactory,
     ParentFactory,
     StudentFactory,
     TeacherFactory,
@@ -36,12 +37,26 @@ def teacher(db):
 
 @pytest.fixture
 def parent(db):
-    return ParentFactory(username="parent1")  # linked to `student` by Story 1.9's fixture
+    return ParentFactory(username="parent1")  # unlinked; `linked_parent` links it to `student`
 
 
 @pytest.fixture
 def admin_user(db):
     return AdminFactory(username="admin1")
+
+
+# --- Story 1.9: parent-child links (CYCLE-3 scoping tests use these) ---
+@pytest.fixture
+def linked_parent(parent, student):
+    """`parent` linked to `student`; returns the parent."""
+    ParentChildLinkFactory(parent=parent, student=student)
+    return parent
+
+
+@pytest.fixture
+def unlinked_parent(db):
+    """A second Parent/Guardian with no linked children."""
+    return ParentFactory(username="parent2")
 
 
 def _logged_in(client, user):

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import URLPattern, URLResolver, include, path
 
+from infrastructure.persistence.accounts.admin import platform_admin_site
 from infrastructure.web.common.health import healthz
 from infrastructure.web.i18n_views import switch_language
 
@@ -14,6 +15,8 @@ urlpatterns: list[URLPattern | URLResolver] = [
 urlpatterns += i18n_patterns(
     # Context URL includes are appended here, one block per context, alphabetically.
     path("", include("infrastructure.web.accounts.urls")),  # Story 1.2: login, logout
+    # Story 1.9: platform admin, Admin role only (PlatformAdminSite.has_permission).
+    path("admin/", platform_admin_site.urls),
     prefix_default_language=True,
 )
 

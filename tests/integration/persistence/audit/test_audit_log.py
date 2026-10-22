@@ -210,3 +210,44 @@ def test_str_names_action_actor_and_time():
     DjangoAuditPort(FixedClock()).record("auth.login", actor_username="ana")
 
     assert str(AuditLogModel.objects.get()) == "auth.login by ana at 2026-11-02 09:00"
+
+
+# --- Story 1.9: list-valued metadata (field names) and actor_username fill-in -------------
+def test_field_name_lists_are_stored_as_metadata():
+    DjangoAuditPort(FixedClock()).record(
+        "accounts.updated", metadata={"fields": ["date_of_birth", "full_name"]}
+    )
+
+    assert AuditLogModel.objects.get().metadata == {"fields": ["date_of_birth", "full_name"]}
+
+
+def test_actor_username_is_filled_from_the_actor_when_not_given():
+    admin = UserFactory(username="boss", role="ADMIN")
+
+    DjangoAuditPort(FixedClock()).record("accounts.created", actor_id=admin.pk)
+
+    assert AuditLogModel.objects.get().actor_username == "boss"
+
+
+def test_given_actor_username_is_kept():
+    admin = UserFactory(username="boss", role="ADMIN")
+
+    DjangoAuditPort(FixedClock()).record("auth.login", actor_id=admin.pk, actor_username="other")
+
+    assert AuditLogModel.objects.get().actor_username == "other"
+
+
+def test_actor_username_stays_empty_without_an_actor():
+    DjangoAuditPort(FixedClock()).record("system.event")
+
+    assert AuditLogModel.objects.get().actor_username == ""
+
+
+def test_filled_actor_username_survives_the_actor_deletion():
+    admin = UserFactory(username="boss", role="ADMIN")
+    DjangoAuditPort(FixedClock()).record("accounts.created", actor_id=admin.pk)
+
+    admin.delete()
+
+    row = AuditLogModel.objects.get()
+    assert (row.actor_id, row.actor_username) == (None, "boss")

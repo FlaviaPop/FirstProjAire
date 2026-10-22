@@ -3,12 +3,157 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 16:39+0300\n"
+"POT-Creation-Date: 2026-10-22 17:43+0300\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/infrastructure/persistence/accounts/admin.py:53
+msgid "Sign-in lockouts"
+msgstr "Sign-in lockouts"
+
+#: src/infrastructure/persistence/accounts/admin.py:59
+msgid "Learning Platform administration"
+msgstr "Learning Platform administration"
+
+#: src/infrastructure/persistence/accounts/admin.py:60
+msgid "Accounts and links"
+msgstr "Accounts and links"
+
+#: src/infrastructure/persistence/accounts/admin.py:157
+msgid "Personal info"
+msgstr "Personal info"
+
+#: src/infrastructure/persistence/accounts/admin.py:158
+msgid "Access"
+msgstr "Access"
+
+#: src/infrastructure/persistence/accounts/admin.py:159
+msgid "Important dates"
+msgstr "Important dates"
+
+#: src/infrastructure/persistence/accounts/admin_forms.py:24
+msgid "There must be at least one active administrator."
+msgstr "There must be at least one active administrator."
+
+#: src/infrastructure/persistence/accounts/admin_forms.py:25
+msgid "Remove this student's parent links before changing the role."
+msgstr "Remove this student's parent links before changing the role."
+
+#: src/infrastructure/persistence/accounts/admin_forms.py:27
+msgid "Remove this parent's child links before changing the role."
+msgstr "Remove this parent's child links before changing the role."
+
+#: src/infrastructure/persistence/accounts/admin_forms.py:101
+#: src/infrastructure/persistence/accounts/models.py:13
+#: src/infrastructure/persistence/accounts/models.py:66
+msgid "Parent/Guardian"
+msgstr "Parent/Guardian"
+
+#: src/infrastructure/persistence/accounts/admin_forms.py:106
+#: src/infrastructure/persistence/accounts/models.py:11
+#: src/infrastructure/persistence/accounts/models.py:72
+#: src/infrastructure/web/styleguide/views.py:125
+msgid "Student"
+msgstr "Student"
+
+#: src/infrastructure/persistence/accounts/apps.py:9
+msgid "Accounts"
+msgstr "Accounts"
+
+#: src/infrastructure/persistence/accounts/models.py:12
+msgid "Teacher"
+msgstr "Teacher"
+
+#: src/infrastructure/persistence/accounts/models.py:14
+msgid "Admin"
+msgstr "Admin"
+
+#: src/infrastructure/persistence/accounts/models.py:24
+msgid "full name"
+msgstr "full name"
+
+#: src/infrastructure/persistence/accounts/models.py:25
+msgid "date of birth"
+msgstr "date of birth"
+
+#: src/infrastructure/persistence/accounts/models.py:26
+msgid "role"
+msgstr "role"
+
+#: src/infrastructure/persistence/accounts/models.py:28
+msgid "preferred language"
+msgstr "preferred language"
+
+#: src/infrastructure/persistence/accounts/models.py:36
+msgid "account"
+msgstr "account"
+
+#: src/infrastructure/persistence/accounts/models.py:37
+msgid "accounts"
+msgstr "accounts"
+
+#: src/infrastructure/persistence/accounts/models.py:79
+msgid "created by"
+msgstr "created by"
+
+#: src/infrastructure/persistence/accounts/models.py:81
+msgid "created at"
+msgstr "created at"
+
+#: src/infrastructure/persistence/accounts/models.py:85
+msgid "parent-child link"
+msgstr "parent-child link"
+
+#: src/infrastructure/persistence/accounts/models.py:86
+msgid "parent-child links"
+msgstr "parent-child links"
+
+#: src/infrastructure/persistence/audit/apps.py:9
+msgid "Audit log"
+msgstr "Audit log"
+
+#: src/infrastructure/persistence/audit/models.py:30
+msgid "actor"
+msgstr "actor"
+
+#: src/infrastructure/persistence/audit/models.py:32
+msgid "actor username"
+msgstr "actor username"
+
+#: src/infrastructure/persistence/audit/models.py:33
+msgid "action"
+msgstr "action"
+
+#: src/infrastructure/persistence/audit/models.py:34
+msgid "target type"
+msgstr "target type"
+
+#: src/infrastructure/persistence/audit/models.py:35
+msgid "target id"
+msgstr "target id"
+
+#: src/infrastructure/persistence/audit/models.py:36
+msgid "metadata"
+msgstr "metadata"
+
+#: src/infrastructure/persistence/audit/models.py:37
+msgid "IP address"
+msgstr "IP address"
+
+#: src/infrastructure/persistence/audit/models.py:38
+msgid "time"
+msgstr "time"
+
+#: src/infrastructure/persistence/audit/models.py:44
+msgid "audit log entry"
+msgstr "audit log entry"
+
+#: src/infrastructure/persistence/audit/models.py:45
+msgid "audit log entries"
+msgstr "audit log entries"
 
 #: src/infrastructure/web/accounts/forms.py:9
 #: src/infrastructure/web/accounts/forms.py:10
@@ -39,149 +184,161 @@ msgstr "Please fix the following:"
 msgid "Something went wrong on our side. Please try again later."
 msgstr "Something went wrong on our side. Please try again later."
 
-#: src/infrastructure/web/styleguide/views.py:68
+#: src/infrastructure/web/common/errors.py:27
+msgid "This parent is already linked to this student."
+msgstr "This parent is already linked to this student."
+
+#: src/infrastructure/web/common/errors.py:28
+msgid "The selected parent account isn't a Parent/Guardian."
+msgstr "The selected parent account isn't a Parent/Guardian."
+
+#: src/infrastructure/web/common/errors.py:29
+msgid "The selected child account isn't a Student."
+msgstr "The selected child account isn't a Student."
+
+#: src/infrastructure/web/common/errors.py:30
+msgid "A person can't be linked to themselves."
+msgstr "A person can't be linked to themselves."
+
+#: src/infrastructure/web/styleguide/views.py:69
 msgid "Save"
 msgstr "Save"
 
-#: src/infrastructure/web/styleguide/views.py:69
+#: src/infrastructure/web/styleguide/views.py:70
 #: src/infrastructure/web/templates/components/confirm_dialog.html:9
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/infrastructure/web/styleguide/views.py:70
-#: src/infrastructure/web/styleguide/views.py:154
+#: src/infrastructure/web/styleguide/views.py:71
+#: src/infrastructure/web/styleguide/views.py:155
 msgid "Delete"
 msgstr "Delete"
 
-#: src/infrastructure/web/styleguide/views.py:71
+#: src/infrastructure/web/styleguide/views.py:72
 msgid "Learn more"
 msgstr "Learn more"
 
-#: src/infrastructure/web/styleguide/views.py:89
+#: src/infrastructure/web/styleguide/views.py:90
 msgid "Lesson name"
 msgstr "Lesson name"
 
-#: src/infrastructure/web/styleguide/views.py:91
+#: src/infrastructure/web/styleguide/views.py:92
 msgid "Notes"
 msgstr "Notes"
 
-#: src/infrastructure/web/styleguide/views.py:93
 #: src/infrastructure/web/styleguide/views.py:94
+#: src/infrastructure/web/styleguide/views.py:95
 msgid "Title"
 msgstr "Title"
 
-#: src/infrastructure/web/styleguide/views.py:119
+#: src/infrastructure/web/styleguide/views.py:120
 msgid "A new chapter is available."
 msgstr "A new chapter is available."
 
-#: src/infrastructure/web/styleguide/views.py:120
+#: src/infrastructure/web/styleguide/views.py:121
 msgid "Your changes were saved."
 msgstr "Your changes were saved."
 
-#: src/infrastructure/web/styleguide/views.py:121
+#: src/infrastructure/web/styleguide/views.py:122
 msgid "This test has unanswered questions."
 msgstr "This test has unanswered questions."
 
-#: src/infrastructure/web/styleguide/views.py:122
+#: src/infrastructure/web/styleguide/views.py:123
 msgid "Please check the highlighted fields."
 msgstr "Please check the highlighted fields."
 
-#: src/infrastructure/web/styleguide/views.py:124
-msgid "Student"
-msgstr "Student"
-
-#: src/infrastructure/web/styleguide/views.py:124
+#: src/infrastructure/web/styleguide/views.py:125
 #: src/infrastructure/web/templates/styleguide/_atoms.html:73
 msgid "Score"
 msgstr "Score"
 
-#: src/infrastructure/web/styleguide/views.py:124
+#: src/infrastructure/web/styleguide/views.py:125
 msgid "Status"
 msgstr "Status"
 
-#: src/infrastructure/web/styleguide/views.py:124
+#: src/infrastructure/web/styleguide/views.py:125
 msgid "Details"
 msgstr "Details"
 
-#: src/infrastructure/web/styleguide/views.py:129
+#: src/infrastructure/web/styleguide/views.py:130
 msgid "Open"
 msgstr "Open"
 
-#: src/infrastructure/web/styleguide/views.py:139
+#: src/infrastructure/web/styleguide/views.py:140
 msgid "Shown to students on the lesson page."
 msgstr "Shown to students on the lesson page."
 
-#: src/infrastructure/web/styleguide/views.py:141
+#: src/infrastructure/web/styleguide/views.py:142
 msgid "Chapter 1: Numbers to 100"
 msgstr "Chapter 1: Numbers to 100"
 
-#: src/infrastructure/web/styleguide/views.py:142
+#: src/infrastructure/web/styleguide/views.py:143
 msgid "Lessons, exercises and a final test."
 msgstr "Lessons, exercises and a final test."
 
-#: src/infrastructure/web/styleguide/views.py:143
-#: src/infrastructure/web/styleguide/views.py:149
+#: src/infrastructure/web/styleguide/views.py:144
+#: src/infrastructure/web/styleguide/views.py:150
 msgid "Grade 2"
 msgstr "Grade 2"
 
-#: src/infrastructure/web/styleguide/views.py:144
+#: src/infrastructure/web/styleguide/views.py:145
 msgid "Grade 5"
 msgstr "Grade 5"
 
-#: src/infrastructure/web/styleguide/views.py:145
+#: src/infrastructure/web/styleguide/views.py:146
 msgid "Only grade 2 is available in the pilot."
 msgstr "Only grade 2 is available in the pilot."
 
-#: src/infrastructure/web/styleguide/views.py:146
+#: src/infrastructure/web/styleguide/views.py:147
 msgid "No lessons yet."
 msgstr "No lessons yet."
 
-#: src/infrastructure/web/styleguide/views.py:147
+#: src/infrastructure/web/styleguide/views.py:148
 msgid "Add a lesson"
 msgstr "Add a lesson"
 
-#: src/infrastructure/web/styleguide/views.py:148
 #: src/infrastructure/web/styleguide/views.py:149
+#: src/infrastructure/web/styleguide/views.py:150
 msgid "Chapter 1"
 msgstr "Chapter 1"
 
-#: src/infrastructure/web/styleguide/views.py:149
+#: src/infrastructure/web/styleguide/views.py:150
 msgid "Catalogue"
 msgstr "Catalogue"
 
-#: src/infrastructure/web/styleguide/views.py:150
+#: src/infrastructure/web/styleguide/views.py:151
 msgid "Edit"
 msgstr "Edit"
 
-#: src/infrastructure/web/styleguide/views.py:150
+#: src/infrastructure/web/styleguide/views.py:151
 msgid "Publish"
 msgstr "Publish"
 
-#: src/infrastructure/web/styleguide/views.py:151
+#: src/infrastructure/web/styleguide/views.py:152
 msgid "Delete sample"
 msgstr "Delete sample"
 
-#: src/infrastructure/web/styleguide/views.py:152
+#: src/infrastructure/web/styleguide/views.py:153
 msgid "Delete this sample?"
 msgstr "Delete this sample?"
 
-#: src/infrastructure/web/styleguide/views.py:153
+#: src/infrastructure/web/styleguide/views.py:154
 msgid "This only demonstrates the dialog; nothing is deleted."
 msgstr "This only demonstrates the dialog; nothing is deleted."
 
-#: src/infrastructure/web/styleguide/views.py:158
+#: src/infrastructure/web/styleguide/views.py:159
 msgid "Test scores"
 msgstr "Test scores"
 
-#: src/infrastructure/web/styleguide/views.py:159
+#: src/infrastructure/web/styleguide/views.py:160
 msgid "No scores yet."
 msgstr "No scores yet."
 
-#: src/infrastructure/web/styleguide/views.py:178
+#: src/infrastructure/web/styleguide/views.py:179
 msgid "unread notifications"
 msgstr "unread notifications"
 
-#: src/infrastructure/web/styleguide/views.py:179
+#: src/infrastructure/web/styleguide/views.py:180
 msgid "Exercises"
 msgstr "Exercises"
 
@@ -212,6 +369,20 @@ msgstr "Username"
 msgid "Password"
 msgstr "Password"
 
+#: src/infrastructure/web/templates/components/_field_label_text.html:1
+#: src/infrastructure/web/templates/components/language_switcher.html:6
+msgid "Română"
+msgstr "Română"
+
+#: src/infrastructure/web/templates/components/_field_label_text.html:1
+#: src/infrastructure/web/templates/components/language_switcher.html:7
+msgid "English"
+msgstr "English"
+
+#: src/infrastructure/web/templates/components/_field_label_text.html:2
+msgid "(required)"
+msgstr "(required)"
+
 #: src/infrastructure/web/templates/components/alert.html:4
 msgid "Close"
 msgstr "Close"
@@ -223,20 +394,6 @@ msgstr "JavaScript is required to confirm this action."
 #: src/infrastructure/web/templates/components/disabled_tile.html:4
 msgid "Unavailable"
 msgstr "Unavailable"
-
-#: src/infrastructure/web/templates/components/form_field.html:2
-#: src/infrastructure/web/templates/components/language_switcher.html:6
-msgid "Română"
-msgstr "Română"
-
-#: src/infrastructure/web/templates/components/form_field.html:2
-#: src/infrastructure/web/templates/components/language_switcher.html:7
-msgid "English"
-msgstr "English"
-
-#: src/infrastructure/web/templates/components/form_field.html:3
-msgid "(required)"
-msgstr "(required)"
 
 #: src/infrastructure/web/templates/components/language_switcher.html:2
 msgid "Language"
@@ -429,30 +586,30 @@ msgid "Staff theme"
 msgstr "Staff theme"
 
 # --- Story 1.5: design tokens & atom primitives ---
-#: src/infrastructure/web/templatetags/ui.py:55
+#: src/infrastructure/web/templatetags/ui.py:52
 msgid "Active"
 msgstr "Active"
 
-#: src/infrastructure/web/templatetags/ui.py:56
+#: src/infrastructure/web/templatetags/ui.py:53
 msgid "Flagged"
 msgstr "Flagged"
 
-#: src/infrastructure/web/templatetags/ui.py:57
+#: src/infrastructure/web/templatetags/ui.py:54
 msgid "Blocked"
 msgstr "Blocked"
 
-#: src/infrastructure/web/templatetags/ui.py:58
+#: src/infrastructure/web/templatetags/ui.py:55
 msgid "Resubmitted"
 msgstr "Resubmitted"
 
-#: src/infrastructure/web/templatetags/ui.py:59
+#: src/infrastructure/web/templatetags/ui.py:56
 msgid "Draft"
 msgstr "Draft"
 
-#: src/infrastructure/web/templatetags/ui.py:60
+#: src/infrastructure/web/templatetags/ui.py:57
 msgid "Published"
 msgstr "Published"
 
-#: src/infrastructure/web/templatetags/ui.py:159
+#: src/infrastructure/web/templatetags/ui.py:156
 msgid "User"
 msgstr "User"
