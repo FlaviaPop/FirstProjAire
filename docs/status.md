@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-22 17:55
+**Last Updated**: 2026-10-22 18:02
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: DEV
+**Updated By**: REVIEWER
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -35,7 +35,7 @@
 | Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
-| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 9/45 stories reviewed (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 2.1) | 2026-10-22 16:56 |
+| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 10/45 stories reviewed (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 1.9, 2.1) | 2026-10-22 18:02 |
 | QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 
 ---
@@ -93,6 +93,7 @@
 - [x] Remediation from `story-1.6-code-review-v1.md`: ISS-001 (choice groups as fieldset/legend, `auto_id`-based ids, fail loudly without ids), ISS-002 (focus to `<main>` before alert removal; 1.10 hand-off), ISS-003 (card heading level; molecule tags moved to `ui_molecules.py`); 1001/1001 tests
 - [x] Fix: mypy error from the 1.6 remediation (`ui_molecules.py:72`), caught by the 1.9 build; erratum in `story-1.6-code-review-v1.md` (`1cb6215`)
 - [x] Wave 3 Dev 2 (in one go, atomic story-agent, worktree `feature/story-1.9-admin-accounts`): Story 1.9 Admin Accounts & Parent–Child Links; 1273/1273 tests, coverage 100%, 15/15 AC, DoD gates passed; merged to `main` @ `61ce5aa`. Owner decisions: role change → 2 audit rows; lockout-cleared target = user id or `(unknown):<fingerprint>`; parent guard message (7 messages); last active Admin can't be deleted → **wave 3 complete (2/2)**
+- [x] Story 1.9 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 1 🟢 (`docs/reviews/story-1.9-code-review-v1.md`)
 
 ### Implementation Plan
 
@@ -185,7 +186,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
 | Integration Tests | 100% pass | 100% (1273/1273 on `main`) | ✅ | 2026-10-22 17:55 |
-| Code Review | All stories | 9/45 | 🟡 | 2026-10-22 16:56 |
+| Code Review | All stories | 10/45 | 🟡 | 2026-10-22 18:02 |
 | Documentation | All stories | 10/45 | 🟡 | 2026-10-22 17:55 |
 
 ---
@@ -265,11 +266,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.6-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1001/1001 tests ×3, coverage 100%, gates clean; module move proven behaviour-neutral (980/980) before the fixes; real server: styleguide/login 200, 0 orphan labels or `_help`/`_error` ids, 0 duplicate ids, 0 ERROR lines
 - [x] **Story 1.9 Admin Accounts & Parent–Child Links**: Done — 2026-10-22
   - Evidence: `docs/stories-implemented/story-1.9-review.md` (DoD Evidence: Gate 1 spec echo 15/15 AC + steps + Must Read + 4 owner decisions; Gates 2–3) — 1273/1273 tests ×3 in the worktree and re-run on merged `main`, coverage 100% (domain/application 100%), ruff/mypy/import-linter/makemigrations clean; real server on a fresh DB: admin flows OK, 0 ERROR lines, no passwords/DOB/names in logs. Open: browser/CSP/screen-reader check of the admin pages
+- [x] **Code Review — Story 1.9 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-22
+  - Evidence: `docs/reviews/story-1.9-code-review-v1.md` — 1273/1273 suite re-run (each gate read from its own line), coverage 100%; probes: 35 admin routes × GET/POST × 4 roles → anonymous 302 / others 403 (70/70 each); 9 admin pages CSP-clean (0 inline script/style); real server: no DOB/password/name in logs, audit = field names only; unlock → next login 302; deactivation ends the session. Findings: story file not updated with the 4 owner decisions (ISS-001 🟡, QA would test the old contract), lockout list shows raw typed usernames (ISS-002 🟢)
 ---
 
 ## Upcoming
 
-1. **aire-review-code** for 1.9; manual browser pass of the styleguide and the admin pages (both themes, dialog keyboard/VoiceOver, admin under CSP)
+1. **aire-dev-remediate** for 1.9 review ISS-001 (record the owner decisions in the story file) before any Epic 1 QA test plan; manual browser pass of the styleguide and the admin pages (both themes, dialog keyboard/VoiceOver, admin under CSP)
 2. **Wave 4** (`aire-dev-implement`): Dev 1 → 1.7 App Shell & Role Homes (binding hand-offs: error pages without DB, `/` redirect tests, switcher + `icon_variant` in the top bar); Dev 2 → 2.2 Catalogue pages (use `ui_card level=3` under grade headings)
 3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
@@ -285,5 +288,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Story 1.9 complete (in one go) — wave 3 done | Idle | 2026-10-22 | 2026-10-22 17:55 |
-| REVIEWER | Reviewed story 1.6 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 16:56 |
+| REVIEWER | Reviewed story 1.9 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 18:02 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
