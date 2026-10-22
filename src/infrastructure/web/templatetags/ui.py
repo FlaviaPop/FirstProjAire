@@ -5,6 +5,9 @@ template fails the tests instead of shipping a blank or misleading element. All 
 the templates unmarked, so Django's autoescaping applies to every attribute and label.
 """
 
+import math
+import re
+from decimal import Decimal
 from typing import Any
 
 from django import template
@@ -54,8 +57,23 @@ STATUS_LABELS = {
     "PUBLISHED": _("Published"),
 }
 SCORE_RANGE = range(1, 101)
+# HTMX evaluates JavaScript in hx-vars, and in hx-vals / hx-headers values prefixed "js:".
+HX_SCRIPT_KEYS = frozenset({"hx_vars"})
+HX_JSON_KEYS = frozenset({"hx_vals", "hx_headers"})
+HX_SCRIPT_PREFIXES = ("js:", "javascript:")
 
 TagContext = dict[str, Any]
+
+
+def _whole_number(value: object, what: str) -> int:
+    """`value` as an int; 87.6, True or None is a caller bug, never shown as 87 (ISS-001)."""
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    if isinstance(value, str) and re.fullmatch(r"-?\d+", value.strip()):
+        return int(value)
+    if isinstance(value, float | Decimal) and math.isfinite(value) and value == int(value):
+        return int(value)
+    raise ValueError(f"{what} must be a whole number, got {value!r}")
 
 
 @register.inclusion_tag("components/icon.html")
@@ -67,10 +85,19 @@ def ui_icon(name: str, size: int = 24, variant: str = "regular", label: str = ""
     return {"symbol": symbol, "size": int(size), "label": label}
 
 
+def _runs_script(key: str, value: object) -> bool:
+    if key.startswith("hx_on") or key in HX_SCRIPT_KEYS:
+        return True
+    return key in HX_JSON_KEYS and str(value).lstrip().startswith(HX_SCRIPT_PREFIXES)
+
+
 def _hx_attributes(hx: dict[str, str]) -> list[tuple[str, str]]:
-    """`hx_post="/x"` -> `("hx-post", "/x")`. Only HTMX attributes pass, never inline handlers."""
-    if bad := sorted(key for key in hx if not key.startswith("hx_") or key.startswith("hx_on")):
-        raise template.TemplateSyntaxError(f"ui_button accepts only hx_* attributes, got {bad}")
+    """`hx_post="/x"` -> `("hx-post", "/x")`. Only HTMX attributes pass, never script."""
+    bad = sorted(k for k, v in hx.items() if not k.startswith("hx_") or _runs_script(k, v))
+    if bad:
+        raise template.TemplateSyntaxError(
+            f"ui_button accepts only non-script hx_* attributes, got {bad}"
+        )
     return [(key.replace("_", "-"), value) for key, value in sorted(hx.items())]
 
 
@@ -107,9 +134,10 @@ def ui_button(
 @register.inclusion_tag("components/badge.html")
 def ui_badge(value: int, label: str) -> TagContext:
     """A count badge; zero renders nothing, the label gives screen readers the full meaning."""
-    if int(value) < 0:
+    count = _whole_number(value, "Badge value")
+    if count < 0:
         raise ValueError(f"Badge value must be >= 0, got {value}")
-    return {"value": int(value), "label": label}
+    return {"value": count, "label": label}
 
 
 @register.inclusion_tag("components/status_pill.html")
@@ -131,15 +159,16 @@ def ui_avatar(user: object = None) -> TagContext:
 @register.inclusion_tag("components/score.html")
 def ui_score(value: int) -> TagContext:
     """A final score shown as "N / 100"."""
-    if int(value) not in SCORE_RANGE:
+    score = _whole_number(value, "Score")
+    if score not in SCORE_RANGE:
         raise ValueError(f"Score must be 1-100, got {value}")
-    return {"value": int(value)}
+    return {"value": score}
 
 
 @register.inclusion_tag("components/progress_meter.html")
 def ui_progress(done: int, total: int, label: str) -> TagContext:
     """A labelled <progress> plus "done/total" text; total 0 shows 0/0 without dividing."""
-    done, total = int(done), int(total)
+    done, total = _whole_number(done, "Progress done"), _whole_number(total, "Progress total")
     if done < 0 or total < 0 or done > total:
         raise ValueError(f"Invalid progress {done}/{total}")
     return {"done": done, "total": total, "max": total or 1, "label": label}

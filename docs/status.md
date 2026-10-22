@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-22 15:19
+**Last Updated**: 2026-10-22 15:22
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: REVIEWER
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -85,6 +85,7 @@
 - [x] Story 1.4 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 2 🟢 (`docs/reviews/story-1.4-code-review-v1.md`)
 - [x] Remediation from `story-1.4-code-review-v1.md`: ISS-001 (`next` must be a same-site absolute path; no URL-name resolution), ISS-002 (DB-failure test), ISS-003 (`icon_variant`; 1.7 hand-off); 757/757 tests
 - [x] Story 1.5 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 2 🟢 (`docs/reviews/story-1.5-code-review-v1.md`)
+- [x] Remediation from `story-1.5-code-review-v1.md`: ISS-001 (whole-number check for score/badge/progress), ISS-002 (`value=0` kept), ISS-003 (HTMX `js:` paths refused); 782/782 tests
 
 ### Implementation Plan
 
@@ -128,7 +129,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.2 | Login & Session Security | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:40 |
 | CYCLE-1 | 1.3 | RBAC Core | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-21) | 2026-10-21 16:35 |
 | CYCLE-1 | 1.4 | Internationalization | 2026-10-21 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 15:15 |
-| CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 | 2026-10-21 16:20 |
+| CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 15:22 |
 | CYCLE-1 | 1.6 | Molecule Primitives | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.7 | App Shell & Role Homes | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.8 | Audit Log | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:55 |
@@ -176,7 +177,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%) | ✅ | 2026-10-21 16:20 |
-| Integration Tests | 100% pass | 100% (757/757 on `main`) | ✅ | 2026-10-22 15:15 |
+| Integration Tests | 100% pass | 100% (782/782 on `main`) | ✅ | 2026-10-22 15:22 |
 | Code Review | All stories | 7/45 | 🟡 | 2026-10-22 15:19 |
 | Documentation | All stories | 8/45 | 🟡 | 2026-10-22 14:30 |
 
@@ -243,11 +244,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.4-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 757/757 tests, coverage 100%, gates clean; real server: bare `next` → `302 /<lang>/`, 0 ERROR lines
 - [x] **Code Review — Story 1.5 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-22
   - Evidence: `docs/reviews/story-1.5-code-review-v1.md` — 192/192 UI tests + 757/757 suite re-run, coverage 100%, gates clean; 10/10 AC (AC 5 partial); probes: numeric atoms truncate 87.6 → 87 and accept 100.4 (ISS-001 🟡), `ui_button value=0` dropped (ISS-002 🟢), `hx_vals='js:…'` passes (ISS-003 🟢, neutralised by CSP)
+- [x] **Remediation — Story 1.5 (review v1)**: ✅ Resolved (3/3) — 2026-10-22
+  - Evidence: `docs/reviews/story-1.5-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 782/782 tests, coverage 100%, gates clean; styleguide 200 in RO/EN on a real dev server, 0 ERROR lines
 ---
 
 ## Upcoming
 
-1. **aire-dev-remediate** for 1.5 review ISS-001 (numeric atoms truncate) before scores get real callers; **aire-review-code** for 2.1
+1. **aire-review-code** for 2.1
 2. **Wave 3** (`aire-dev-implement`): Dev 1 → 1.6 Molecule Primitives (+ 1.3 ISS-004 DEBUG-only URL walk); Dev 2 → 1.9 Admin Accounts & Parent–Child Links — 1.7 carries binding hand-offs (error pages without DB, `/` redirect tests, switcher in the top bar)
 3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
@@ -264,6 +267,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Remediated story 1.4 (story-1.4-code-review-v1.md) | Idle | 2026-10-22 | 2026-10-22 15:15 |
+| DEV | Remediated story 1.5 (story-1.5-code-review-v1.md) | Idle | 2026-10-22 | 2026-10-22 15:22 |
 | REVIEWER | Reviewed story 1.5 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 15:19 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |

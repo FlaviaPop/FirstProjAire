@@ -1,6 +1,7 @@
 """Atom primitives (Story 1.5): every inclusion tag in templatetags/ui.py, valid and invalid."""
 
 import re
+from decimal import Decimal
 from types import SimpleNamespace
 
 import pytest
@@ -64,6 +65,21 @@ def test_button_rejects_hx_on_inline_script_handlers():
         render('{% ui_button "Save" hx_on__click="alert(1)" %}')
 
 
+# Review v1 ISS-003: HTMX's other script paths (`js:` values, hx-vars) are refused as well.
+@pytest.mark.parametrize(
+    "kwarg", ['hx_vals="js:{a: 1}"', 'hx_headers=" javascript:{}"', 'hx_vars="a:1"']
+)
+def test_button_rejects_hx_attributes_that_evaluate_script(kwarg):
+    with pytest.raises(TemplateSyntaxError):
+        render('{% ui_button "Save" ' + kwarg + " %}")
+
+
+def test_button_keeps_plain_json_hx_vals():
+    html = render('{% ui_button "Save" hx_vals=vals %}', vals='{"step": 2}')
+
+    assert 'hx-vals="{&quot;step&quot;: 2}"' in html
+
+
 def test_button_label_name_and_value_are_autoescaped():
     html = render("{% ui_button label name=n value=v %}", label="<b>", n='a"b', v="<v>")
 
@@ -77,6 +93,12 @@ def test_button_without_name_or_value_omits_the_attributes():
 
     assert "name=" not in html
     assert "value=" not in html
+
+
+# Review v1 ISS-002: only "not given" omits the attribute; 0 or "" is a real value.
+@pytest.mark.parametrize(("value", "expected"), [(0, 'value="0"'), ("", 'value=""')])
+def test_button_keeps_a_falsy_value(value, expected):
+    assert expected in render('{% ui_button "A" name="answer" value=v %}', v=value)
 
 
 def test_button_with_icon_renders_a_decorative_20px_icon():
@@ -167,6 +189,13 @@ def test_negative_badge_is_rejected():
         render('{% ui_badge -1 "unread" %}')
 
 
+# Review v1 ISS-001: numbers are never truncated (2.7 is a caller bug, not "2").
+@pytest.mark.parametrize("value", [2.7, None, True, "abc"])
+def test_badge_rejects_values_that_are_not_whole_numbers(value):
+    with pytest.raises(ValueError, match="whole number"):
+        render('{% ui_badge v "unread" %}', v=value)
+
+
 # --- ui_status_pill ----------------------------------------------------------------------------
 
 
@@ -229,6 +258,18 @@ def test_score_outside_range_is_rejected(value):
         render("{% ui_score v %}", v=value)
 
 
+# Review v1 ISS-001: 87.6 must fail loudly, never be shown as 87 to a child or parent.
+@pytest.mark.parametrize("value", [87.6, 99.9, 100.4, Decimal("87.6"), True, None, "abc", ""])
+def test_score_rejects_values_that_are_not_whole_numbers(value):
+    with pytest.raises(ValueError, match="whole number"):
+        render("{% ui_score v %}", v=value)
+
+
+@pytest.mark.parametrize("value", [87, "87", 87.0, Decimal("87")])
+def test_score_accepts_whole_numbers_in_any_form(value):
+    assert 'aria-label="Score: 87 out of 100"' in render("{% ui_score v %}", v=value)
+
+
 # --- ui_progress -------------------------------------------------------------------------------
 
 
@@ -251,6 +292,13 @@ def test_progress_with_zero_total_shows_zero_of_zero():
 @pytest.mark.parametrize(("done", "total"), [(9, 8), (-1, 8), (0, -1)])
 def test_progress_rejects_impossible_counts(done, total):
     with pytest.raises(ValueError, match="Invalid progress"):
+        render("{% ui_progress d t 'Exercises' %}", d=done, t=total)
+
+
+# Review v1 ISS-001: 2.9 of 3 must not be shown as "2/3".
+@pytest.mark.parametrize(("done", "total"), [(2.9, 3), (2, 3.5), (None, 3)])
+def test_progress_rejects_counts_that_are_not_whole_numbers(done, total):
+    with pytest.raises(ValueError, match="whole number"):
         render("{% ui_progress d t 'Exercises' %}", d=done, t=total)
 
 

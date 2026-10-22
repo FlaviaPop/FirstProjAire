@@ -1,5 +1,12 @@
 # Code Review - Story 1.5: Design Tokens & Atom Primitives
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 782/782 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -210,6 +217,13 @@ Add the same pair for `ui_badge` (2.7, `None`) and `ui_progress` (2.9/3).
 
 **Why This Matters**: the atoms are the last line before a number reaches a child or parent. Failing loudly in tests is cheap; a silently wrong score is not.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `_whole_number(value, what)` accepts `int` (not `bool`), digit strings and finite integral `float`/`Decimal`; anything else raises `ValueError("<what> must be a whole number, got …")`. `ui_badge`, `ui_score` and `ui_progress` use it before their range checks, so 100.4 and `None` are rejected too. As suggested, plus `math.isfinite` so `inf` can't raise `OverflowError`
+- Commit / change ref: `src/infrastructure/web/templatetags/ui.py` (`_whole_number`; `ui_badge`, `ui_score`, `ui_progress`)
+- Test evidence: `test_score_rejects_values_that_are_not_whole_numbers` (8), `test_badge_rejects_values_that_are_not_whole_numbers` (4), `test_progress_rejects_counts_that_are_not_whole_numbers` (3). All 15 failed before the fix; `test_score_accepts_whole_numbers_in_any_form` (4) passes before and after
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: `ui_button` drops a falsy `name` or `value` (e.g. `value=0`) 🟢 Low
@@ -238,6 +252,13 @@ Add the same pair for `ui_badge` (2.7, `None`) and `ui_progress` (2.9/3).
 def test_button_keeps_a_falsy_value(value, expected):
     assert expected in render('{% ui_button "A" name="answer" value=v %}', v=value)
 ```
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `{% if name is not None %}` / `{% if value is not None %}`; only "not given" omits the attribute
+- Commit / change ref: `src/infrastructure/web/templates/components/button.html:1`
+- Test evidence: `test_button_keeps_a_falsy_value` (`0` → `value="0"`, `""` → `value=""`) failed before the fix; `test_button_without_name_or_value_omits_the_attributes` still passes
+- Status: ✅ Resolved
 
 ---
 
@@ -281,6 +302,13 @@ def test_button_rejects_hx_attributes_that_evaluate_script(kwarg):
     with pytest.raises(TemplateSyntaxError):
         render('{% ui_button "Save" ' + kwarg + " %}")
 ```
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `_runs_script` rejects `hx_on*`, `hx_vars`, and `hx_vals`/`hx_headers` whose value starts (after whitespace) with `js:` or `javascript:`; the constants `HX_SCRIPT_KEYS`, `HX_JSON_KEYS` and `HX_SCRIPT_PREFIXES` sit next to the other catalogues
+- Commit / change ref: `src/infrastructure/web/templatetags/ui.py` (`_runs_script`, `_hx_attributes`)
+- Test evidence: `test_button_rejects_hx_attributes_that_evaluate_script` (3) failed before the fix; `test_button_keeps_plain_json_hx_vals` proves ordinary JSON still passes, escaped
+- Status: ✅ Resolved
 
 ---
 
@@ -327,3 +355,87 @@ def test_button_rejects_hx_attributes_that_evaluate_script(kwarg):
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 + 🟢 ISS-003 (all findings; scope confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 1.5
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.5 | `templatetags/ui.py` | Numeric atoms truncated non-integers | `_whole_number` for badge, score and progress | 19 ✅ |
+| ISS-002 | 🟢 Low | 1.5 | `components/button.html` | `value=0` dropped | `is not None` checks | 2 ✅ |
+| ISS-003 | 🟢 Low | 1.5 | `templatetags/ui.py` | `js:` HTMX paths passed | `_runs_script` guard | 4 ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/templatetags/ui.py` | Modified | `_whole_number`, `_runs_script`, HX constants; three numeric tags use the helper |
+| `src/infrastructure/web/templates/components/button.html` | Modified | `name` / `value` omitted only when `None` |
+| `tests/integration/web/ui/test_atoms.py` | Modified | +25 tests |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| UI Primitive Catalogue §11.2 (fail loudly) | numeric tags | Strict coercion; one helper, three callers |
+| Security §13 (no inline script) | `_hx_attributes` | Every HTMX script path is refused, not only `hx-on` |
+
+## Testing Summary
+
+- **Targeted tests added**: 25 (21 failed before the fixes; the 4 accept-cases pass before and after)
+- **Full suite**: 782/782 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); `ui.py` 76/76 statements, 24/24 branches
+- **Gates**: ruff format/check clean · mypy 0 issues (95 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Before the fix** (targeted):
+```
+FAILED test_atoms.py::test_button_rejects_hx_attributes_that_evaluate_script[hx_vals="js:{a: 1}"]
+FAILED test_atoms.py::test_button_keeps_a_falsy_value[0-value="0"]
+FAILED test_atoms.py::test_score_rejects_values_that_are_not_whole_numbers[87.6]
+FAILED test_atoms.py::test_score_rejects_values_that_are_not_whole_numbers[100.4]
+FAILED test_atoms.py::test_progress_rejects_counts_that_are_not_whole_numbers[2.9-3]
+…
+21 failed, 64 passed in 0.19s
+```
+
+**After the fix** (full suite):
+```
+src/infrastructure/web/templatetags/ui.py                    76      0     24      0   100%
+TOTAL                                                       701      0     82      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+782 passed in 7.30s
+```
+
+**Real server** (`runserver`, DEBUG):
+```
+GET /ro/_styleguide/ -> 200, 84377 bytes   (aria-label="Punctaj: 1|50|100 din 100")
+GET /en/_styleguide/ -> 200, 84085 bytes   (4 badges rendered)
+ERROR lines: 0
+```
+
+## Deviations from Report Suggestions
+
+- ISS-001: added `math.isfinite`, so `float("inf")` raises the same `ValueError` instead of an `OverflowError`.
+- Observation (not a code change): Django never autoescapes **string literals written in a template** (`hx_vals='{"step": 2}'` renders the quotes raw and breaks the attribute). Values from the context are escaped, which `test_button_passes_through_only_hx_attributes_escaped` and `test_button_keeps_plain_json_hx_vals` prove. Template authors should pass JSON for `hx_vals` through a context variable; Story 1.6 molecules should follow this.
+
+## Lessons Learned
+
+1. `int()` is a conversion, not a validation: it truncates floats and accepts `bool`. Display atoms need a strict "whole number" check.
+2. Allow-listing by attribute **name** isn't enough for HTMX; some attributes evaluate their **value**.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)

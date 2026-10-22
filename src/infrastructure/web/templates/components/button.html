@@ -1,4 +1,4 @@
-{% load ui %}<button type="{{ type }}" class="button button--{{ variant }}{% if loading %} htmx-request{% endif %}"{% if name %} name="{{ name }}"{% endif %}{% if value %} value="{{ value }}"{% endif %}{% if disabled %} disabled{% endif %}{% if loading %} aria-busy="true"{% endif %}{% for attr, val in attrs %} {{ attr }}="{{ val }}"{% endfor %}>
+{% load ui %}<button type="{{ type }}" class="button button--{{ variant }}{% if loading %} htmx-request{% endif %}"{% if name is not None %} name="{{ name }}"{% endif %}{% if value is not None %} value="{{ value }}"{% endif %}{% if disabled %} disabled{% endif %}{% if loading %} aria-busy="true"{% endif %}{% for attr, val in attrs %} {{ attr }}="{{ val }}"{% endfor %}>
   {% if icon %}{% ui_icon icon 20 %}{% endif %}
   <span class="button__label">{{ label }}</span>
   <span class="button__spinner" aria-hidden="true"></span>
