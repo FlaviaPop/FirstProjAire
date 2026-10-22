@@ -1,0 +1,2 @@
+{% load i18n %}{{ label }}{% if lang == "ro" %}<span class="field-pair__lang">{% translate "Română" %}</span>{% elif lang == "en" %}<span class="field-pair__lang">{% translate "English" %}</span>{% endif %}{% if field.field.required %}
+    <span class="field__required">{% translate "(required)" %}</span>{% endif %}

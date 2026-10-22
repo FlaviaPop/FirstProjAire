@@ -39,8 +39,15 @@ document.addEventListener('click', (event) => {
   }
 
   const dismiss = event.target.closest('[data-dismiss]');
-  if (dismiss) {
-    dismiss.closest('.alert')?.remove();
+  const alert = dismiss?.closest('.alert');
+  if (alert) {
+    // Removing the focused × would drop keyboard focus to <body>: move it to <main> first.
+    const main = document.getElementById('content');
+    if (main && alert.contains(document.activeElement)) {
+      main.setAttribute('tabindex', '-1');
+      main.focus();
+    }
+    alert.remove();
   }
 });
 

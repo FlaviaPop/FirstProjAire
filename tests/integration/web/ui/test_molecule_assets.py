@@ -239,7 +239,9 @@ def test_ui_js_has_no_globals_eval_or_inline_handlers(forbidden):
         "input, textarea, select, button",
         ".focus()",
         "?.close()",
-        "?.remove()",
+        # Dismiss twice is a no-op: removal only runs when an enclosing .alert still exists.
+        "if (alert) {",
+        "alert.remove()",
     ],
 )
 def test_ui_js_implements_the_story_behaviour(required):

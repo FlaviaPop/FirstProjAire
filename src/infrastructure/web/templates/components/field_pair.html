@@ -2,7 +2,7 @@
   <legend class="field-pair__legend">{{ legend }}</legend>
   <div class="field-pair__columns">
     {% for lang, column in columns %}<div class="field-pair__column">
-      {% include "components/form_field.html" with field=column.field widget=column.widget help=column.help id=column.id label=column.label lang=lang only %}
+      {% include "components/form_field.html" with field=column.field widget=column.widget help=column.help id=column.id label=column.label lang=lang group=column.group group_aria=column.group_aria only %}
     </div>{% endfor %}
   </div>
 </fieldset>

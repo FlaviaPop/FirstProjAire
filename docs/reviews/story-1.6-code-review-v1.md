@@ -1,5 +1,12 @@
 # Code Review - Story 1.6: Molecule Primitives (+ Story 1.3 review ISS-004)
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1001/1001 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -194,6 +201,13 @@ def test_field_without_auto_id_fails_loudly():
 
 **Why This Matters**: the molecule's whole purpose is correct label and error association. Today it is only correct for single inputs, and fails silently for the widget students will use most.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `_field_context` detects `RadioSelect`/`CheckboxSelectMultiple` (`GROUP_WIDGETS`). A group renders `<fieldset class="field field--group">` with `<legend class="field__label">` and takes its help/error ids from `field.auto_id` (`id_answer_help`, `id_answer_error`); `aria-describedby`/`aria-invalid` go on the fieldset once, not on every input. Any field without an id (`auto_id=False`) raises `ValueError("ui_field needs a form with auto_id …")`. Single-input markup is unchanged. The label text moved to a shared partial `components/_field_label_text.html`; `field_pair.html` passes the group context through; `form_field.css` resets the fieldset with tokens only
+- Commit / change ref: `templatetags/ui_molecules.py` (`GROUP_WIDGETS`, `_field_context`), `components/form_field.html`, `components/_field_label_text.html` (new), `components/field_pair.html`, `static/css/components/form_field.css`
+- Test evidence: `test_molecules_groups_and_headings.py`: 7 choice-group / auto_id tests failed before the fix (`for=""`, `_help`/`_error` ids, no `ValueError`) and pass now; `test_single_input_markup_is_unchanged_next_to_a_group` passes before and after. Real server: styleguide has 0 `for=""`, 0 `_help`/`_error` ids, 0 duplicate ids
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: Dismissing an alert with the keyboard drops focus to `<body>` 🟢 Low
@@ -227,6 +241,13 @@ if (alert) {
 ```
 Add a static test in `test_molecule_assets.py` that `ui.js` moves focus before `remove()`, and add the browser assertion to Story 1.10's journey list.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: when the × (or anything inside the alert) has focus, `ui.js` moves focus to `<main id="content">` (`tabindex="-1"`) before `alert.remove()`; removal stays guarded by `if (alert)`, so dismissing twice is still a no-op
+- Commit / change ref: `src/infrastructure/web/static/js/ui.js` (dismiss branch); Story 1.10 hand-off (browser assertion) added before its Acceptance Criteria
+- Test evidence: `test_ui_js_moves_focus_to_main_before_removing_a_focused_alert` failed before the fix and passes now; `test_molecule_assets.py::test_ui_js_implements_the_story_behaviour` updated from the literal `?.remove()` to `if (alert) {` + `alert.remove()` (same idempotency intent)
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-003: `ui_card` hard-codes `<h2>`, which breaks the heading outline of nested lists 🟢 Low
@@ -250,6 +271,13 @@ def ui_card(title, body="", href=None, icon=None, meta="", level=2):
 <h{{ level }} class="card__title">…</h{{ level }}>
 ```
 Add a test that the default stays `h2` and that `level=3` renders `<h3 class="card__title">`. Because `ui.py` is at 398 lines, this is a good moment to move the molecule tags into a second module (for example `templatetags/ui_molecules.py`, registered on the same library or loaded as `{% load ui ui_molecules %}`).
+
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `ui_card(..., level=2)`; the level goes through `_whole_number` and must be 2–4 (`ValueError("Card heading level must be 2-4 …")`); the template renders `<h{{ level }} class="card__title">`. The molecule tags moved to `templatetags/ui_molecules.py` (264 lines; `ui.py` is now 186). They register on the same `ui` library, so templates keep `{% load ui %}`; `from …templatetags.ui import Cell` still works through a module `__getattr__`, and importing either module first is safe (verified)
+- Commit / change ref: `templatetags/ui_molecules.py` (`CARD_HEADING_LEVELS`, `ui_card`), `templatetags/ui.py` (footer), `components/card.html`, `styleguide/views.py` (imports `Cell` from `ui_molecules`)
+- Test evidence: `test_card_heading_level_is_chosen_by_the_caller` (3) and `test_card_rejects_heading_levels_outside_2_to_4` (6) failed before the fix; `test_card_heading_defaults_to_h2` and `test_cell_is_still_importable_from_the_ui_module` pass before and after. The pure module move was verified separately first: 980/980 before any behaviour change
+- Status: ✅ Resolved
 
 ---
 
@@ -296,3 +324,103 @@ Add a test that the default stays `h2` and that `level=3` renders `<h3 class="ca
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 + 🟢 ISS-003 (all findings; scope confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 1.6 (plus a hand-off line in Story 1.10)
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.6 | `ui_molecules.py`, `form_field.html` | Choice groups / no `auto_id` broke label + ARIA | `<fieldset><legend>`, `auto_id`-based ids, fail loudly without ids | 8 ✅ |
+| ISS-002 | 🟢 Low | 1.6→1.10 | `ui.js` | Dismiss dropped focus to `<body>` | Focus `<main>` before removing | 1 ✅ (+1 updated) |
+| ISS-003 | 🟢 Low | 1.6 | `ui_molecules.py`, `card.html` | Card title fixed `<h2>` | `level` 2–4; molecule tags moved to their own module | 11 ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/templatetags/ui_molecules.py` | New | Molecule tags moved from `ui.py`; choice groups; card level |
+| `src/infrastructure/web/templatetags/ui.py` | Modified | Atoms only (186 lines); registers molecules; lazy `Cell` re-export |
+| `src/infrastructure/web/templates/components/form_field.html` | Modified | Fieldset/legend branch for groups |
+| `src/infrastructure/web/templates/components/_field_label_text.html` | New | Shared label text (language tag, "(required)") |
+| `src/infrastructure/web/templates/components/field_pair.html` | Modified | Passes `group`/`group_aria` |
+| `src/infrastructure/web/templates/components/card.html` | Modified | `<h{{ level }}>` |
+| `src/infrastructure/web/static/css/components/form_field.css` | Modified | `.field--group` fieldset reset (tokens only) |
+| `src/infrastructure/web/static/js/ui.js` | Modified | Focus to `<main>` before alert removal |
+| `src/infrastructure/web/styleguide/views.py` | Modified | Imports `Cell` from `ui_molecules` |
+| `tests/integration/web/ui/test_molecules_groups_and_headings.py` | New | 20 tests |
+| `tests/integration/web/ui/test_molecule_assets.py` | Modified | Dismiss check matches the guarded removal |
+| `docs/plans/stories/epic-1-story-1.10-Foundation-E2E-Journeys.md` | Modified | Browser assertion for alert-dismiss focus |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Accessibility §11.4 | field groups, alert dismiss, card headings | Correct grouping semantics; focus never lost; caller-chosen outline |
+| UI Primitive Catalogue §11.2 (fail loudly) | `_field_context`, `ui_card` | Missing ids and out-of-range levels raise instead of rendering broken markup |
+| File size (rulebook: < 400 lines) | `ui.py` → `ui.py` + `ui_molecules.py` | Same `{% load ui %}` contract |
+
+## Testing Summary
+
+- **Targeted tests added**: 20 (17 failed before the fixes; 3 guard behaviour that must not change)
+- **Full suite**: 1001/1001 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); `ui.py` 81/81 + 26/26 branches, `ui_molecules.py` 116/116 + 32/32 branches
+- **Gates**: ruff format/check clean · mypy 0 issues (98 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Before the fix** (targeted):
+```
+FAILED test_molecules_groups_and_headings.py::test_choice_group_uses_fieldset_and_legend_not_an_orphan_label[answer]
+FAILED …::test_choice_group_help_and_error_ids_are_unique_to_the_field[topics]
+FAILED …::test_field_without_auto_id_fails_loudly
+FAILED …::test_card_heading_level_is_chosen_by_the_caller[4]
+FAILED …::test_card_rejects_heading_levels_outside_2_to_4[None]
+FAILED …::test_ui_js_moves_focus_to_main_before_removing_a_focused_alert
+17 failed, 3 passed in 0.20s
+```
+
+**After the module move only** (before any behaviour change): `980 passed, 20 deselected`; importing `ui_molecules` first → `molecules-first import OK; Cell True`
+
+**After the fix** (full suite):
+```
+src/infrastructure/web/templatetags/ui.py                    81      0     26      0   100%
+src/infrastructure/web/templatetags/ui_molecules.py         116      0     32      0   100%
+TOTAL                                                       823      0    116      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+1001 passed in 8.05s
+```
+
+**Real server** (`runserver`, DEBUG):
+```
+GET /ro/_styleguide/ -> 200 · GET /en/_styleguide/ -> 200 · GET /ro/accounts/login/ -> 200
+GET /static/js/ui.js -> 200 · GET /static/css/components/form_field.css -> 200
+card headings: ['h2'] · duplicate ids: [] · for="" / id="_help" / id="_error": 0 0 0 · ERROR lines: 0
+```
+
+## Deviations from Report Suggestions
+
+- ISS-001: `aria-describedby`/`aria-invalid` are set on the `<fieldset>` once instead of on every radio/checkbox, so a screen reader announces the help and error once per group.
+- ISS-003: instead of a separate Django tag library (which would have changed `{% load ui %}` in every template), the molecule tags live in `ui_molecules.py` but register on the existing `ui` library; `Cell` stays importable from `ui` via a lazy module attribute.
+- ISS-002: the existing static check for the literal `?.remove()` was updated to the guarded form (`if (alert) {` … `alert.remove()`); the "dismiss twice is a no-op" intent is unchanged.
+
+## Lessons Learned
+
+1. `BoundField.id_for_label` is empty for multi-input widgets and for `auto_id=False`. A label/ARIA helper must handle groups explicitly or refuse them.
+2. Removing the focused element is a focus-management decision, not a DOM detail. Decide where focus goes first.
+3. Split a module by moving it first and proving the suite unchanged, then change behaviour.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)
+- [ ] Story 1.10 asserts the alert-dismiss focus in a browser (hand-off added)

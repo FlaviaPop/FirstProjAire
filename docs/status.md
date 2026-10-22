@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-22 16:56
+**Last Updated**: 2026-10-22 17:01
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: REVIEWER
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -90,6 +90,7 @@
 - [x] Remediation from `story-2.1-code-review-v1.md`: ISS-001 (factories: sequenced `sort_order`, inactive by default), ISS-002 (`__str__` by grade code), ISS-003 (non-empty name check constraints, migration `0003_name_not_empty`); 787/787 tests
 - [x] Wave 3 Dev 1 (in one go: decompose-lead → 3 component workers → integrator, worktree `feature/story-1.6-molecules`): Story 1.6 Molecule Primitives + 1.3 review ISS-004; 980/980 tests, coverage 100%, 14/14 AC, DoD gates passed; merged to `main` @ `3cf8fa9` (fast-forward). Owner decision: base.html links the component CSS now
 - [x] Story 1.6 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 2 🟢 (`docs/reviews/story-1.6-code-review-v1.md`)
+- [x] Remediation from `story-1.6-code-review-v1.md`: ISS-001 (choice groups as fieldset/legend, `auto_id`-based ids, fail loudly without ids), ISS-002 (focus to `<main>` before alert removal; 1.10 hand-off), ISS-003 (card heading level; molecule tags moved to `ui_molecules.py`); 1001/1001 tests
 
 ### Implementation Plan
 
@@ -134,7 +135,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.3 | RBAC Core | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-21) | 2026-10-21 16:35 |
 | CYCLE-1 | 1.4 | Internationalization | 2026-10-21 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 15:15 |
 | CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 15:22 |
-| CYCLE-1 | 1.6 | Molecule Primitives | 2026-10-22 | 2026-10-22 | 2026-10-22 16:52 |
+| CYCLE-1 | 1.6 | Molecule Primitives | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 17:01 |
 | CYCLE-1 | 1.7 | App Shell & Role Homes | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.8 | Audit Log | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:55 |
 | CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | — | — | 2026-10-19 16:35 |
@@ -181,7 +182,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
-| Integration Tests | 100% pass | 100% (980/980 on `main`) | ✅ | 2026-10-22 16:52 |
+| Integration Tests | 100% pass | 100% (1001/1001 on `main`) | ✅ | 2026-10-22 17:01 |
 | Code Review | All stories | 9/45 | 🟡 | 2026-10-22 16:56 |
 | Documentation | All stories | 9/45 | 🟡 | 2026-10-22 16:52 |
 
@@ -258,11 +259,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/stories-implemented/story-1.6-review.md` (DoD Evidence: Gate 1 spec echo 14/14 AC + steps + Must Read + 1.3 ISS-004; Gates 2–3) — 980/980 tests ×3 in the worktree and re-run on merged `main`, coverage 100%, ruff/mypy/import-linter/makemigrations clean; real server: RO/EN styleguide 200 with every molecule in both themes, login + 404 link the component CSS, 0 ERROR lines. `docs/reviews/story-1.3-code-review-v1.md` now ✅ Fully Remediated (5/5). Open: manual browser checks (screenshots, keyboard/VoiceOver dialog walk-through) before QA
 - [x] **Code Review — Story 1.6 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-22
   - Evidence: `docs/reviews/story-1.6-code-review-v1.md` — 980/980 suite re-run, coverage 100%, gates clean; 14/14 AC (AC 1 partial) + 1.3 ISS-004 ✅; probes: `ui_field` on RadioSelect/CheckboxSelectMultiple/`auto_id=False` → `for=""` and shared `_help`/`_error` ids (ISS-001 🟡); alert dismiss drops focus to body (ISS-002 🟢); card title fixed `<h2>` (ISS-003 🟢); styleguide 0 duplicate ids
+- [x] **Remediation — Story 1.6 (review v1)**: ✅ Resolved (3/3) — 2026-10-22
+  - Evidence: `docs/reviews/story-1.6-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1001/1001 tests ×3, coverage 100%, gates clean; module move proven behaviour-neutral (980/980) before the fixes; real server: styleguide/login 200, 0 orphan labels or `_help`/`_error` ids, 0 duplicate ids, 0 ERROR lines
 ---
 
 ## Upcoming
 
-1. **aire-dev-remediate** for 1.6 review ISS-001 (choice widgets in `ui_field`), ideally with ISS-003 before Story 2.2; manual browser pass of the styleguide (both themes, dialog keyboard/VoiceOver)
+1. Manual browser pass of the styleguide (both themes, dialog keyboard/VoiceOver)
 2. **Wave 3, Dev 2** (`aire-dev-implement`): 1.9 Admin Accounts & Parent–Child Links — 1.7 carries binding hand-offs (error pages without DB, `/` redirect tests, switcher in the top bar)
 3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
@@ -279,6 +282,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Story 1.6 complete (in one go; + 1.3 ISS-004) | Idle | 2026-10-22 | 2026-10-22 16:52 |
+| DEV | Remediated story 1.6 (story-1.6-code-review-v1.md) | Idle | 2026-10-22 | 2026-10-22 17:01 |
 | REVIEWER | Reviewed story 1.6 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 16:56 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |

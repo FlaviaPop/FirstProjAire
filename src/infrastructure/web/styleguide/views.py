@@ -8,7 +8,8 @@ from django.shortcuts import render
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from infrastructure.web.templatetags.ui import ICON_NAMES, ICON_SIZES, STATUS_LABELS, Cell
+from infrastructure.web.templatetags.ui import ICON_NAMES, ICON_SIZES, STATUS_LABELS
+from infrastructure.web.templatetags.ui_molecules import Cell
 
 THEMES = ("student", "staff")
 

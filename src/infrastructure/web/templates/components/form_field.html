@@ -1,8 +1,9 @@
-{% load i18n ui %}<div class="field{% if field.errors %} field--invalid{% endif %}">
-  <label class="field__label" for="{{ id }}">{{ label }}{% if lang == "ro" %}<span class="field-pair__lang">{% translate "Română" %}</span>{% elif lang == "en" %}<span class="field-pair__lang">{% translate "English" %}</span>{% endif %}{% if field.field.required %}
-    <span class="field__required">{% translate "(required)" %}</span>{% endif %}</label>
-  {{ widget }}
+{% load ui %}{% if group %}<fieldset class="field field--group{% if field.errors %} field--invalid{% endif %}"{% for name, value in group_aria.items %} {{ name }}="{{ value }}"{% endfor %}>
+  <legend class="field__label">{% include "components/_field_label_text.html" %}</legend>
+{% else %}<div class="field{% if field.errors %} field--invalid{% endif %}">
+  <label class="field__label" for="{{ id }}">{% include "components/_field_label_text.html" %}</label>
+{% endif %}  {{ widget }}
   {% if help %}<p class="field__help" id="{{ id }}_help">{{ help }}</p>{% endif %}
   {% if field.errors %}<p class="field__error field-error" id="{{ id }}_error">
     {% ui_icon "warning-circle" 20 %}{{ field.errors.0 }}</p>{% endif %}
-</div>
+{% if group %}</fieldset>{% else %}</div>{% endif %}

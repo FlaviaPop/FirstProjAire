@@ -73,3 +73,12 @@
   color: var(--color-muted);
   font-weight: var(--weight-regular);
 }
+
+/* Choice groups (radio/checkbox) render as <fieldset class="field field--group"> (review v1 ISS-001). */
+.field--group {
+  min-inline-size: 0;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  border: 0;
+}
+.field--group > .field__label { padding: 0; }

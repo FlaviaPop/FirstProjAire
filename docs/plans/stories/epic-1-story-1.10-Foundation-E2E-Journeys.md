@@ -87,6 +87,8 @@ Adds the Playwright harness (`pytest-playwright`, already locked in the seed) un
 - E2E-only pytest options (`--browser=chromium`, tracing, screenshots) set in `tests/e2e/conftest.py`. `pyproject.toml` is **not** changed: the seed already declares the `e2e` marker and excludes it by default.
 - README "End-to-end tests" section: `uv run playwright install chromium`, `uv run pytest -m e2e`, traces on failure (`--tracing retain-on-failure`).
 
+> **Hand-off from Story 1.6 review v1 (2026-10-22), part of AC 9's dialog page:** also include a dismissible `ui_alert` on the test-only page and assert that pressing Enter on its × removes the alert and leaves `document.activeElement` on `<main id="content">`, not on `<body>` (ISS-002; today this is checked only statically in `test_molecules_groups_and_headings.py`).
+
 **Acceptance Criteria**:
 1. `uv run playwright install chromium` is documented. `uv run pytest -m e2e` runs only the e2e suite; the default `uv run pytest` still excludes it (`-m 'not e2e'` from the seed).
 2. Locators use only `get_by_role`, `get_by_label` and `get_by_text` (patterns §12.5). No CSS-class or XPath selectors.
