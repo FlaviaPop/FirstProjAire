@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-22 14:40
+**Last Updated**: 2026-10-22 14:48
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: DEV
+**Updated By**: REVIEWER
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -35,7 +35,7 @@
 | Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
-| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 3/45 stories reviewed (1.0, 1.3, 1.2) | 2026-10-22 14:33 |
+| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 4/45 stories reviewed (1.0, 1.3, 1.2, 1.8) | 2026-10-22 14:48 |
 | QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 
 ---
@@ -77,6 +77,8 @@
 - [x] Story 1.2 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 4 🟢 (`docs/reviews/story-1.2-code-review-v1.md`)
 - [x] Story 1.4 merged into `feature/wave-2-dev-1` (`a5ce928`): wave 2 fully integrated
 - [x] Remediation from `story-1.2-code-review-v1.md`: 4 fixed (1 🟡, 3 🟢), ISS-005 deferred to DevOps; 677/677 tests
+- [x] Wave 2 pushed to `origin/main` (`1547237`); all story/worktree branches deleted (local + remote), only `main` remains
+- [x] Story 1.8 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 3 🟢 (`docs/reviews/story-1.8-code-review-v1.md`)
 
 ### Implementation Plan
 
@@ -169,7 +171,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%) | ✅ | 2026-10-21 16:20 |
 | Integration Tests | 100% pass | 100% (677/677 on `feature/wave-2-dev-1`, wave 2 fully merged) | ✅ | 2026-10-22 14:40 |
-| Code Review | All stories | 3/45 | 🟡 | 2026-10-22 14:33 |
+| Code Review | All stories | 4/45 | 🟡 | 2026-10-22 14:48 |
 | Documentation | All stories | 8/45 | 🟡 | 2026-10-22 14:30 |
 
 ---
@@ -221,16 +223,17 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.2-code-review-v1.md` — 102/102 story tests + 659/659 suite re-run; open-redirect/XSS/enumeration probes clean; 1 medium (templates bypass UI primitives), 4 low (incl. password-spraying design note for DevOps)
 - [x] **Remediation — Story 1.2 (review v1)**: 🟡 Partially Remediated (4/5) — 2026-10-22
   - Evidence: `docs/reviews/story-1.2-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 677/677 tests, coverage 100%, gates clean; real-server RO/EN check; ISS-005 deferred to DevOps
+- [x] **Code Review — Story 1.8 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-22
+  - Evidence: `docs/reviews/story-1.8-code-review-v1.md` — 37/37 story tests + 677/677 suite re-run on `main`; probes: metadata guard misses case/prefix variants (ISS-001 🟡), `_base_manager` bypass (ISS-002 🟢), verbatim failed usernames (ISS-003 🟢, needs product decision), audit growth under attack (ISS-004 🟢, DevOps)
 ---
 
 ## Upcoming
 
-1. **aire-review-code** for the unreviewed wave-2 stories: 1.1, 1.4, 1.5, 1.8, 2.1
-2. **Merge `feature/wave-2-dev-1` to `main`** (after reviews, or now if you accept the reviews in progress)
-3. **Wave 3** (`aire-dev-implement`): Dev 1 → 1.6 Molecule Primitives (+ 1.3 ISS-004 DEBUG-only URL walk); Dev 2 → 1.9 Admin Accounts & Parent–Child Links
-4. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005)
-5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
-6. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
+1. **aire-dev-remediate** for 1.8 review ISS-001 (metadata guard) before 1.9 writes audit metadata; product decision on 1.8 ISS-003; **aire-review-code** for 1.1, 1.4, 1.5, 2.1
+2. **Wave 3** (`aire-dev-implement`): Dev 1 → 1.6 Molecule Primitives (+ 1.3 ISS-004 DEBUG-only URL walk); Dev 2 → 1.9 Admin Accounts & Parent–Child Links
+3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004)
+4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
+5. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ---
 
@@ -244,5 +247,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated story 1.2 (story-1.2-code-review-v1.md) | Idle | 2026-10-22 | 2026-10-22 14:40 |
-| REVIEWER | Reviewed story 1.2 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 14:33 |
+| REVIEWER | Reviewed story 1.8 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 14:48 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
