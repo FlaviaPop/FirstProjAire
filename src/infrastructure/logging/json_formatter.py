@@ -4,6 +4,9 @@ import json
 import logging
 from datetime import UTC, datetime
 
+from infrastructure.logging.sensitive import is_sensitive_log_key
+
+REDACTED = "[redacted]"
 _STANDARD = set(vars(logging.makeLogRecord({}))) | {"message", "asctime"}
 _CONTEXT = ("request_id", "user_id", "role")
 # Django attaches the HttpRequest to django.request/django.security records. Its repr carries
@@ -23,7 +26,8 @@ class JsonFormatter(logging.Formatter):
             **{key: getattr(record, key, None) for key in _CONTEXT},
         }
         payload.update(
-            (key, value)
+            # Redact, never raise: logging must not fail a request (review v1 ISS-001).
+            (key, REDACTED if is_sensitive_log_key(key) else value)
             for key, value in vars(record).items()
             if key not in _STANDARD and key not in _CONTEXT and key not in _NEVER_SERIALISED
         )

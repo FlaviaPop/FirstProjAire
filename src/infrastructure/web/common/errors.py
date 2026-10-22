@@ -1,6 +1,7 @@
 """Error page rendering shared by `DomainErrorMiddleware` and Django's handler400/403/404/500."""
 
 import logging
+from collections.abc import Mapping
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
@@ -24,10 +25,26 @@ GENERIC_BY_STATUS: dict[int, Promise] = {
 ERROR_MESSAGES: dict[str, str | Promise] = {}
 
 
+class _KeepMissingParams(dict[str, object]):
+    """`format_map` mapping that leaves an unknown `{placeholder}` visible and reports it."""
+
+    def __init__(self, params: Mapping[str, str | int], code: str) -> None:
+        super().__init__(params)
+        self._code = code
+
+    def __missing__(self, key: str) -> str:
+        logger.warning("error_message.missing_param", extra={"code": self._code, "param": key})
+        return "{" + key + "}"
+
+
 def violation_message(violation: Violation) -> str:
-    """Localized text for one violation; an unregistered code is shown as the code itself."""
-    template = ERROR_MESSAGES.get(violation.code, violation.code)
-    return str(template).format(**violation.params)
+    """Localized text for one violation; an unregistered code is shown as the code itself.
+
+    A placeholder the violation doesn't supply stays visible (review v1 ISS-002): a coding slip
+    in a later story must not turn a 422 with every violation listed into a 500.
+    """
+    template = str(ERROR_MESSAGES.get(violation.code, violation.code))
+    return template.format_map(_KeepMissingParams(violation.params, violation.code))
 
 
 def render_error(request: HttpRequest, status: int, exc: DomainError | None = None) -> HttpResponse:

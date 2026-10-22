@@ -146,6 +146,11 @@ flowchart TD
 - Home: greeting h1 40px/700 (student) or 32px/700 (staff). Cards in a 3-column grid (student, 24px gap) or 4-column grid (staff, 16px gap), each `ui_card` with icon 32px, title and description.
 - Theme: `theme-student` → bg `#FFF8EC`, base 18px, radius 16px, touch 44px; `theme-staff` → bg `#F5F7FA`, base 16px, radius 8px, touch 32px.
 
+> **Hand-offs from implemented stories (2026-10-22)**. These are binding for this story:
+> - **Story 1.1 review v1 ISS-003, error pages must render without the database:** the top bar reads `request.user` (session → DB). Render `errors/*.html` from a minimal layout without the top bar, **or** guard the top bar so a `DatabaseError` while resolving the user renders it as anonymous. Add a test: with every DB cursor raising, the 500 page still renders the localized page and the reference id (and `/healthz` still answers 503, see BUG-002).
+> - **Story 1.4 hand-off, `/` redirect:** once `home:index` exists at `/<lang>/`, add tests for `GET /` → `302 /ro/` (no cookie), `/en/` with `Accept-Language: en`, and the cookie language when set (Story 1.4 AC 2).
+> - **Story 1.4:** include `components/language_switcher.html` in the top bar and link `css/components/language_switcher.css`.
+
 **Acceptance Criteria**:
 1. `base.html`:
    - `<html lang="{{ LANGUAGE_CODE }}">`

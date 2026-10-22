@@ -23,6 +23,7 @@ urlpatterns = [
     path("nf", _raise(NotFound())),
     path("pv", _raise(PolicyViolation([Violation("a_rule"), Violation("b_rule")]))),
     path("pv-params", _raise(PolicyViolation([Violation("points_total_not_100", {"total": 95})]))),
+    path("pv-missing", _raise(PolicyViolation([Violation("needs_limit"), Violation("b_rule")]))),
     path("cf", _raise(ConflictError())),
     path("as", _raise(AlreadySubmitted())),
     path("de", _raise(DomainError())),
@@ -241,3 +242,18 @@ def test_error_pages_carry_no_inline_style_or_script(client):
         assert "<style" not in content
         assert "<script" not in content
         assert "style=" not in content
+
+
+def test_violation_missing_a_message_param_still_renders_422(client, english, monkeypatch, caplog):
+    # Review v1 ISS-002: a coding slip in a later story must not turn validation into a 500.
+    monkeypatch.setitem(ERROR_MESSAGES, "needs_limit", "At most {limit} items allowed.")
+    monkeypatch.setitem(ERROR_MESSAGES, "b_rule", "Rule B broken")
+
+    response = client.get("/pv-missing", headers=english)
+
+    content = response.content.decode()
+    assert response.status_code == 422
+    assert "At most {limit} items allowed." in content
+    assert "Rule B broken" in content  # the other violations are still listed
+    warning = next(r for r in caplog.records if r.getMessage() == "error_message.missing_param")
+    assert (warning.levelname, warning.code, warning.param) == ("WARNING", "needs_limit", "limit")

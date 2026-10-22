@@ -1,5 +1,12 @@
 # Code Review - Story 1.1: Error Handling & Observability
 
+> ## 🛠️ Remediation Status: 🟡 Partially Remediated (3/4)
+> - **Remediated**: 2026-10-22 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2 (ISS-003 resolved as a binding hand-off note in Story 1.7)
+> - **Deferred (with user consent)**: 1 (ISS-004 → `aire-devops-discover`)
+> - **Tests**: 744/744 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -131,6 +138,13 @@ for key, value in vars(record).items():
 
 **Why This Matters**: Logs leave the server and are retained elsewhere. A single careless `extra` would leak a child's personal data or a credential.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: new shared module `infrastructure/logging/sensitive.py` (`SENSITIVE_FRAGMENTS`, `is_sensitive_key`, `is_sensitive_log_key`). `JsonFormatter` writes `"[redacted]"` for any sensitive `extra` key; it never raises. Logs additionally cover `full_name`, `first_name`, `last_name`, `body`, `block_reason`, `moderation_reason`. Django's CSRF `reason` stays visible (operational, not personal). The Story 1.8 audit guard now uses the same rule (no behaviour change; its tests pass)
+- Commit / change ref: `src/infrastructure/logging/sensitive.py` (new), `src/infrastructure/logging/json_formatter.py` (`REDACTED`, `payload.update`), `src/infrastructure/persistence/audit/repositories.py` (import)
+- Test evidence: `tests/unit/infrastructure/test_log_redaction.py` (18 sensitive keys redacted, 7 ordinary keys kept, fixed keys never redacted) — failed before the fix. Real server: CSRF failure line keeps `reason: "CSRF cookie not set."`; `0` log lines contain the posted password
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: A violation missing a message parameter turns a 422 into a 500 🟢 Low
@@ -152,6 +166,13 @@ def violation_message(violation: Violation) -> str:
 ```
 Optionally log a WARNING `error_message.missing_param` with the code. Test: a missing param renders the template with `{limit}` left in place, and the response stays 422.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: `violation_message` uses `format_map` with `_KeepMissingParams`, so a missing placeholder stays visible (`{limit}`) and logs `WARNING error_message.missing_param` with `code` and `param`
+- Commit / change ref: `src/infrastructure/web/common/errors.py` (`_KeepMissingParams`, `violation_message`)
+- Test evidence: `test_error_middleware.py::test_violation_missing_a_message_param_still_renders_422` (failed before the fix with `assert 500 == 422`; now 422, both violations listed, warning asserted)
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-003: Error pages must stay renderable without the database (note for Story 1.7) 🟢 Low
@@ -163,6 +184,13 @@ Optionally log a WARNING `error_message.missing_param` with the code. Test: a mi
 
 **Suggested Fix** (to apply in Story 1.7): render error pages from a minimal layout (`layouts/error.html`) without the top bar, or guard the top bar so a `DatabaseError` while resolving the user renders it as anonymous. Add a test: 500 page with every DB cursor raising still renders the localized page and the reference id.
 
+
+**Resolution** (2026-10-22, DEV):
+- Fix: a forward-looking risk with no defect in current code (error templates use no DB-backed context today). Recorded as a **binding hand-off** at the top of Story 1.7's Acceptance Criteria: minimal error layout or a guarded top bar, plus a "500 page with every DB cursor raising" test. Story 1.4's `/` redirect tests and the language-switcher inclusion were added there as well
+- Commit / change ref: `docs/plans/stories/epic-1-story-1.7-App-Shell-and-Role-Homes.md` ("Hand-offs from implemented stories")
+- Test evidence: documentation (non-testable now); grep confirms `layouts/base.html` and `errors/*.html` reference no `user`/`request.user`
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-004: Any client can choose its own `X-Request-ID` 🟢 Low
@@ -173,6 +201,9 @@ Optionally log a WARNING `error_message.missing_param` with the code. Test: a mi
 **Issue**: An incoming id is accepted from any client once it matches `^[A-Za-z0-9-]{8,64}$`. That's correct for a request id set by the reverse proxy, but a client can also reuse another request's id to make log correlation ambiguous during an incident.
 
 **Suggested Fix** (DevOps, small code change): accept the incoming header only behind the trusted proxy (setting `TRUST_INCOMING_REQUEST_ID`, false by default, true in prod behind the proxy that sets it), and configure the proxy to overwrite `X-Request-ID`. Record it in `aire-devops-discover`.
+
+
+**Deferral** (2026-10-22, DEV): deferred with user consent to `aire-devops-discover`: trust `X-Request-ID` only from the reverse proxy (setting + proxy overwrites the header). Still open.
 
 ---
 
@@ -220,3 +251,89 @@ Optionally log a WARNING `error_message.missing_param` with the code. Test: a mi
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-22
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 + 🟢 ISS-003 (hand-off note); ISS-004 deferred; scope confirmed by the user
+**Scenario**: Code Review
+**Stories Affected**: 1.1 (and the Story 1.8 audit guard, which now shares the same rule)
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.1 | `logging/sensitive.py`, `logging/json_formatter.py` | Sensitive `extra` fields logged | Redacted via one shared rule (also used by audit) | `test_log_redaction.py` (26) ✅ |
+| ISS-002 | 🟢 Low | 1.1 | `web/common/errors.py` | Missing param → 500 | `format_map` keeps `{param}`; WARNING | `test_error_middleware.py` (1) ✅ |
+| ISS-003 | 🟢 Low | 1.1→1.7 | Story 1.7 file | Error pages vs DB-backed top bar | Binding hand-off in Story 1.7 | n/a (docs) |
+
+## Issues Deferred (with user consent)
+
+| ID | Severity | Story | Reason |
+|----|----------|-------|--------|
+| ISS-004 | 🟢 Low | 1.1 | Trusted `X-Request-ID` from the proxy only: DevOps |
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/logging/sensitive.py` | New | Shared sensitive-key rule |
+| `src/infrastructure/logging/json_formatter.py` | Modified | Redaction |
+| `src/infrastructure/persistence/audit/repositories.py` | Modified | Uses the shared rule |
+| `src/infrastructure/web/common/errors.py` | Modified | Missing-param tolerant formatting |
+| `tests/unit/infrastructure/test_log_redaction.py` | New | 26 tests |
+| `tests/integration/web/common/test_error_middleware.py` | Modified | +1 test, +1 route |
+| `docs/plans/stories/epic-1-story-1.7-App-Shell-and-Role-Homes.md` | Modified | Hand-offs (1.1 ISS-003, 1.4) |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Logging §9 never-log list | formatter + audit | One rule, two consumers; redact in logs, reject in audit |
+| Error handling §8 | `violation_message` | Degrade gracefully; never turn a 4xx into a 5xx |
+
+## Testing Summary
+
+- **Targeted tests added**: 27
+- **Full suite**: 744/744 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); domain 100%; application 100%
+- **Gates**: ruff format/check clean · mypy 0 issues (95 files) · import-linter 2/2 kept · `makemigrations --check` no changes
+
+**Test Output** (verbatim, filtered):
+```
+collected 744 items
+tests/integration/web/common/test_error_middleware.py .................. [ 31%]
+tests/unit/infrastructure/logging/test_json_formatter.py ............    [ 92%]
+tests/unit/infrastructure/test_log_redaction.py ........................ [ 99%]
+src/infrastructure/logging/json_formatter.py                 15      0      2      0   100%
+src/infrastructure/logging/sensitive.py                       9      0      0      0   100%
+src/infrastructure/web/common/errors.py                      37      0      0      0   100%
+TOTAL                                                       681      0     74      0   100%
+Required test coverage of 85% reached. Total coverage: 100.00%
+============================= 744 passed in 7.15s ==============================
+```
+
+**Real server**:
+```
+POST without CSRF -> 403
+{'event': 'csrf.failure', 'level': 'WARNING', 'reason': 'CSRF cookie not set.', 'request_id': '1b1b38d1…'}
+log lines containing the posted password: 0
+```
+
+## Deviations from Report Suggestions
+
+- ISS-001: `reason` is **not** treated as sensitive in general (Django's CSRF reason is operational); only `block_reason` / `moderation_reason` are (patterns §9: "block reasons"). The shared module lives under `infrastructure/logging/` as suggested.
+- ISS-003: resolved as a binding hand-off rather than code, because the risk only arises when Story 1.7 adds the top bar.
+
+## Lessons Learned
+
+1. Guards for "never log / never store" belong in one module shared by every sink, or they drift apart, as the audit and log guards had.
+2. Error rendering must degrade gracefully at every layer: a 4xx page that can throw is a 5xx page in disguise.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
+- [ ] ISS-004 in `aire-devops-discover`; ISS-003 is checked when Story 1.7 is implemented
