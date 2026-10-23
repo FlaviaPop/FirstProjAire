@@ -108,9 +108,10 @@ def test_access_attempt_list_columns(admin_client):
 
     response = admin_client.get(ATTEMPTS)
 
+    # "account" is the username column, masked for non-accounts (review v1 ISS-002).
     assert list(response.context["cl"].list_display) == [
         "action_checkbox",
-        "username",
+        "account",
         "ip_address",
         "failures_since_start",
         "attempt_time",

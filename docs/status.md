@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-22 18:02
+**Last Updated**: 2026-10-23 09:13
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: REVIEWER
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -94,6 +94,7 @@
 - [x] Fix: mypy error from the 1.6 remediation (`ui_molecules.py:72`), caught by the 1.9 build; erratum in `story-1.6-code-review-v1.md` (`1cb6215`)
 - [x] Wave 3 Dev 2 (in one go, atomic story-agent, worktree `feature/story-1.9-admin-accounts`): Story 1.9 Admin Accounts & Parent–Child Links; 1273/1273 tests, coverage 100%, 15/15 AC, DoD gates passed; merged to `main` @ `61ce5aa`. Owner decisions: role change → 2 audit rows; lockout-cleared target = user id or `(unknown):<fingerprint>`; parent guard message (7 messages); last active Admin can't be deleted → **wave 3 complete (2/2)**
 - [x] Story 1.9 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 1 🟢 (`docs/reviews/story-1.9-code-review-v1.md`)
+- [x] Remediation from `story-1.9-code-review-v1.md`: ISS-001 (owner decisions recorded in the story file; AC 2/4/10/15 + response rows + QA note amended), ISS-002 (lockout list masks typed text for non-accounts); 1278/1278 tests
 
 ### Implementation Plan
 
@@ -141,7 +142,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.6 | Molecule Primitives | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 17:01 |
 | CYCLE-1 | 1.7 | App Shell & Role Homes | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 1.8 | Audit Log | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:55 |
-| CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | 2026-10-22 | 2026-10-22 | 2026-10-22 17:55 |
+| CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-23) | 2026-10-23 09:13 |
 | CYCLE-1 | 1.10 | Foundation E2E Journeys | — | — | 2026-10-19 16:35 |
 | CYCLE-1 | 2.1 | Catalogue Data | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 16:11 |
 | CYCLE-1 | 2.2 | Catalogue & Subject Pages | — | — | 2026-10-19 16:35 |
@@ -185,7 +186,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
-| Integration Tests | 100% pass | 100% (1273/1273 on `main`) | ✅ | 2026-10-22 17:55 |
+| Integration Tests | 100% pass | 100% (1278/1278 on `main`) | ✅ | 2026-10-23 09:13 |
 | Code Review | All stories | 10/45 | 🟡 | 2026-10-22 18:02 |
 | Documentation | All stories | 10/45 | 🟡 | 2026-10-22 17:55 |
 
@@ -268,11 +269,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/stories-implemented/story-1.9-review.md` (DoD Evidence: Gate 1 spec echo 15/15 AC + steps + Must Read + 4 owner decisions; Gates 2–3) — 1273/1273 tests ×3 in the worktree and re-run on merged `main`, coverage 100% (domain/application 100%), ruff/mypy/import-linter/makemigrations clean; real server on a fresh DB: admin flows OK, 0 ERROR lines, no passwords/DOB/names in logs. Open: browser/CSP/screen-reader check of the admin pages
 - [x] **Code Review — Story 1.9 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-22
   - Evidence: `docs/reviews/story-1.9-code-review-v1.md` — 1273/1273 suite re-run (each gate read from its own line), coverage 100%; probes: 35 admin routes × GET/POST × 4 roles → anonymous 302 / others 403 (70/70 each); 9 admin pages CSP-clean (0 inline script/style); real server: no DOB/password/name in logs, audit = field names only; unlock → next login 302; deactivation ends the session. Findings: story file not updated with the 4 owner decisions (ISS-001 🟡, QA would test the old contract), lockout list shows raw typed usernames (ISS-002 🟢)
+- [x] **Remediation — Story 1.9 (review v1)**: ✅ Resolved (2/2) — 2026-10-23
+  - Evidence: `docs/reviews/story-1.9-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1278/1278 tests ×3, coverage 100%, every gate read from its own line; real server: typed secret shown 0×, `(unknown):<fingerprint>` label, real account by name, 0 ERROR lines
 ---
 
 ## Upcoming
 
-1. **aire-dev-remediate** for 1.9 review ISS-001 (record the owner decisions in the story file) before any Epic 1 QA test plan; manual browser pass of the styleguide and the admin pages (both themes, dialog keyboard/VoiceOver, admin under CSP)
+1. Manual browser pass of the styleguide and the admin pages (both themes, dialog keyboard/VoiceOver, admin under CSP)
 2. **Wave 4** (`aire-dev-implement`): Dev 1 → 1.7 App Shell & Role Homes (binding hand-offs: error pages without DB, `/` redirect tests, switcher + `icon_variant` in the top bar); Dev 2 → 2.2 Catalogue pages (use `ui_card level=3` under grade headings)
 3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
 4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
@@ -287,6 +290,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Story 1.9 complete (in one go) — wave 3 done | Idle | 2026-10-22 | 2026-10-22 17:55 |
+| DEV | Remediated story 1.9 (story-1.9-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 09:13 |
 | REVIEWER | Reviewed story 1.9 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 18:02 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |

@@ -156,12 +156,20 @@ flowchart TD
 - The Django admin keeps its own stylesheet. The only branding is `site_header`/`site_title`/`index_title` text (translated) and the language follows the URL prefix. No custom admin CSS (keeps the 1-month timeline; admin is staff-only).
 - Validation: on submit | Error: Django admin inline field errors + top error note (admin default).
 
+> **Owner decisions (2026-10-22, recorded at implementation; review v1 ISS-001).** They settle points the original text left open or contradictory. The criteria below are amended in place, and replaced wording is kept ~~struck through~~:
+> 1. **Role change → two audit rows:** `accounts.updated` with `{"fields": [every changed field, incl. "role"]}` **and** `accounts.role_changed` with `{"fields": ["role"]}`. Every other admin save, delete or link writes exactly one row.
+> 2. **Lockout cleared target:** `("user", <user id>)` when the attempt's username is an existing account, otherwise `("user", "(unknown):<8-hex fingerprint>")` (same keyed fingerprint as Story 1.8). The typed text is never stored, and the lockout list shows the same label (Story 1.9 review v1 ISS-002).
+> 3. **Parent guard message:** "Remove this parent's child links before changing the role." The Student message stays as written, so there are **7** error messages.
+> 4. **The last active Admin can't be deleted:** no delete button, a direct POST gets 403, and bulk delete is refused with "There must be at least one active administrator." This includes deleting yourself.
+>
+> Implementation note (AC 2): a signed-in **Admin** opening `/admin/login/` is redirected to the admin index; any other signed-in user still gets 403.
+
 **Acceptance Criteria**:
 1. `UserModel.save()` sets `is_staff = is_superuser = (self.role == "ADMIN")` on every save. Changing role from ADMIN to anything else revokes admin access immediately (next request).
 2. `PlatformAdminSite(name="admin")`:
    - `site_header`/`site_title` = "Learning Platform administration" (translated)
    - `has_permission(request)` = `request.user.is_active and request.user.role == "ADMIN"`
-   - `login(request)`: if authenticated → `PermissionDenied` (403); else redirect to `accounts:login` with `next`
+   - `login(request)`: ~~if authenticated → `PermissionDenied` (403)~~ if signed in as an Admin → redirect to the admin index; signed in otherwise → `PermissionDenied` (403); else redirect to `accounts:login` with `next`
    - `config/urls.py` adds `path("admin/", platform_admin_site.urls)` inside `i18n_patterns`
 3. `UserAdmin`:
    - list `username, full_name, role, preferred_language, is_active, last_login`
@@ -170,9 +178,9 @@ flowchart TD
    - change form: same fields + `is_active`, password-change link; `date_joined`/`last_login` read-only
    - excludes `groups`, `user_permissions`, `is_staff`, `is_superuser` from all forms
 4. Guards in `UserAdmin`:
-   - demoting or deactivating the **last** active Admin raises a form error "There must be at least one active administrator."
+   - demoting or deactivating the **last** active Admin raises a form error "There must be at least one active administrator."; deleting them is refused too (owner decision 4: no delete button, POST → 403, bulk delete refused with the same message)
    - changing a Student's role while `ParentChildLink` rows reference them as student gives the form error "Remove this student's parent links before changing the role."
-   - same rule for a Parent with links
+   - same rule for a Parent with links, with its own message "Remove this parent's child links before changing the role." (owner decision 3)
 5. `ParentChildLinkModel` (`db_table="accounts_parent_child_link"`):
    - `parent` FK (CASCADE, `related_name="child_links"`)
    - `student` FK (CASCADE, `related_name="parent_links"`)
@@ -197,12 +205,12 @@ flowchart TD
    - actions `accounts.created | accounts.updated | accounts.deleted | accounts.password_changed | accounts.role_changed`
    - metadata `{"fields": sorted(changed_fields)}` holding **names only**; field values are never passed in
    - `UserAdmin.save_model`/`delete_model`/`delete_queryset` call it with `form.changed_data`; the password-change view triggers `accounts.password_changed`
-10. `AccessAttemptAdmin` (axes model on `platform_admin_site`): list `username, ip_address, failures_since_start, attempt_time`; deleting = unlock, audited as `auth.lockout_cleared` (target username).
+10. `AccessAttemptAdmin` (axes model on `platform_admin_site`): list `username, ip_address, failures_since_start, attempt_time` (the username column shows the owner-decision-2 label: the account's username, or `(unknown):<fingerprint>`); deleting = unlock, audited as `auth.lockout_cleared` ~~(target username)~~ (target per owner decision 2).
 11. `AuditLogAdmin`: `has_add_permission`, `has_change_permission`, `has_delete_permission` → False; list `created_at, action, actor_username, target_type, target_id, ip_address`; filters `action`; search `actor_username`; date hierarchy `created_at`.
 12. Container factories: `link_parent()`, `unlink_parent()`, `audit_account_change()`, all with `DjangoAuditPort(SystemClock())` + `DjangoUnitOfWork()`.
 13. Fixtures in `tests/conftest.py`: `linked_parent(parent, student)` creates the link and returns the parent; `unlinked_parent` is a fresh Parent with no links. Factory `ParentChildLinkFactory` in `tests/factories/accounts.py`.
 14. Role-access rows for `/ro/admin/`: anonymous 302, Student/Teacher/Parent 403, Admin 200. Added in this story's own admin test module (`tests/integration/web/admin/`) because the matrix file isn't in this story's files; 1.10's E2E covers the browser journey.
-15. RO/EN translations for all new strings (field labels, the 6 error messages, admin titles).
+15. RO/EN translations for all new strings (field labels, the ~~6~~ **7** error messages (owner decision 3), admin titles).
 
 **RBAC Enforcement**:
 
@@ -231,6 +239,8 @@ flowchart TD
 | Admin creates a user with password `12345678` | `200` form with validator errors | nothing saved |
 | Admin sets role ADMIN on a Teacher | `302` | `is_staff=is_superuser=True`; `accounts.updated` + `accounts.role_changed` audit |
 | Admin demotes the last active Admin (incl. self) | `200` form error "There must be at least one active administrator." | nothing saved |
+| Admin deletes the last active Admin (incl. self; single or bulk) | no delete button; direct POST `403`; bulk delete refused with "There must be at least one active administrator." | nothing deleted (owner decision 4) |
+| Admin changes a linked Parent's role | `200` form error "Remove this parent's child links before changing the role." | nothing saved (owner decision 3) |
 | Admin links Parent→Student (new) | `302` | link row; `accounts.parent_linked` audit |
 | Admin repeats the same link | `200` form error "This parent is already linked to this student." | no new row |
 | Concurrent duplicate link (race) | `200` form error (IntegrityError → `ConflictError`) | one row only |
@@ -238,13 +248,13 @@ flowchart TD
 | Admin changes a linked Student's role to TEACHER | `200` form error "Remove this student's parent links before changing the role." | nothing saved |
 | Admin deletes a link / deletes it again | `302`; second time a no-op | link removed once; one `accounts.parent_unlinked` audit |
 | Admin deletes a user with links | `302` | user + links deleted (CASCADE); `accounts.deleted` audit; earlier audit rows keep `actor_username` |
-| Admin deletes an axes `AccessAttempt` | `302` | lockout cleared; `auth.lockout_cleared` audit |
+| Admin deletes an axes `AccessAttempt` | `302` | lockout cleared; `auth.lockout_cleared` audit, target = user id or `(unknown):<fingerprint>` (owner decision 2) |
 | Admin tries to add/change/delete an audit row | no buttons; direct POST → `403` | none |
 
 **QA-observable behaviour**:
 - `accounts_user.is_staff` and `is_superuser` are 1 only for rows with `role='ADMIN'`.
 - `accounts_parent_child_link` contains exactly one row per linked pair. Attempted duplicates and invalid pairs leave the row count unchanged.
-- Every admin save, delete or link produces exactly one corresponding `audit_log` row whose `metadata` contains field **names** only (e.g. `{"fields": ["date_of_birth", "full_name"]}`), never values.
+- Every admin save, delete or link produces exactly one corresponding `audit_log` row (except a role change, which writes two: `accounts.updated` + `accounts.role_changed`, owner decision 1) whose `metadata` contains field **names** only (e.g. `{"fields": ["date_of_birth", "full_name"]}`), never values.
 - After unlocking, the user's next correct login returns 302 (no 429).
 - A Student, Teacher or Parent receives 403 for every `/ro/admin/…` URL tried (index, user list, link add, audit list).
 - **What does NOT change**: no account or link changes outside admin actions; audit rows are never modified; role permissions (`ROLE_PERMISSIONS`) are unaffected; the platform's own login page remains the only sign-in UI.

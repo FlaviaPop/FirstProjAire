@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 17:43+0300\n"
+"POT-Creation-Date: 2026-10-23 09:11+0300\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,6 +33,11 @@ msgstr "Access"
 #: src/infrastructure/persistence/accounts/admin.py:159
 msgid "Important dates"
 msgstr "Important dates"
+
+#: src/infrastructure/persistence/accounts/admin.py:284
+#: src/infrastructure/web/templates/accounts/login.html:16
+msgid "Username"
+msgstr "Username"
 
 #: src/infrastructure/persistence/accounts/admin_forms.py:24
 msgid "There must be at least one active administrator."
@@ -360,10 +365,6 @@ msgstr[1] "Too many failed attempts. Try again in %(minutes)s minutes or ask the
 #: src/infrastructure/web/templates/accounts/login.html:26
 msgid "Sign in"
 msgstr "Sign in"
-
-#: src/infrastructure/web/templates/accounts/login.html:16
-msgid "Username"
-msgstr "Username"
 
 #: src/infrastructure/web/templates/accounts/login.html:22
 msgid "Password"

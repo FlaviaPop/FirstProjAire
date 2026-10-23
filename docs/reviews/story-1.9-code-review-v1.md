@@ -1,5 +1,12 @@
 # Code Review - Story 1.9: Admin Account Management & Parent–Child Links
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent
+> - **Fixed**: 2 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 1
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1278/1278 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-22
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -185,6 +192,13 @@ Then change AC 15's "6" to "7", the QA-observable sentence to "…exactly one ro
 
 **Why This Matters**: the story file is the contract for QA and later stories. Leaving it stale turns correct behaviour into reported bugs and wastes a triage cycle.
 
+
+**Resolution** (2026-10-23, DEV):
+- Fix: added an "Owner decisions (2026-10-22)" block before the Acceptance Criteria (the four decisions plus the AC 2 implementation note), and amended in place: AC 2 (`login` behaviour), AC 4 (last Admin undeletable; Parent message), AC 10 (target and list label per decision 2), AC 15 (~~6~~ **7** messages), the system-response rows for role change, last-Admin delete, linked-Parent role change and lockout cleared, and the QA note ("exactly one row, except a role change which writes two"). Replaced wording is kept ~~struck through~~
+- Commit / change ref: `docs/plans/stories/epic-1-story-1.9-Admin-Accounts-and-Parent-Links.md` (+17 / −7)
+- Test evidence: documentation (non-testable); every amended statement matches an existing passing test (role-change two rows, last-Admin delete ×3 paths, parent guard message, lockout target) in `tests/integration/web/admin/`
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: The lockout list shows (and searches) the raw typed username, which can be a mistyped password 🟢 Low
@@ -208,6 +222,13 @@ fields = ("account", "ip_address", "failures_since_start", "attempt_time")
 readonly_fields = ("account",)
 ```
 Keep `search_fields = ("username",)` (an Admin searching for a known username still finds it), or restrict it to exact matches. Add a test that a lockout for a non-existent "username" is listed as `(unknown):…` and never shows the typed text.
+
+
+**Resolution** (2026-10-23, DEV):
+- Fix: `AccessAttemptAdmin` shows an `account` column (header "Username", reusing the existing reviewed translation "Nume de utilizator") built from `_lockout_target`: the account's username for an existing account, else `(unknown):<fingerprint>`. The detail view uses the same read-only field, so the raw `username` field is no longer displayed. Search by exact username is unchanged, so a known person can still be found
+- Commit / change ref: `src/infrastructure/persistence/accounts/admin.py` (`AccessAttemptAdmin.account`, `list_display`, `fields`, `readonly_fields`); `tests/integration/web/admin/test_lockout_and_audit_admin.py` (column contract `username` → `account`)
+- Test evidence: `tests/integration/web/admin/test_lockout_admin_privacy.py`: the list and detail masking tests failed before the fix (typed text visible) and pass now; real account shown, search and unlock tests pass before and after. Real server: typed secret shown 0×, label `(unknown):27971eff`, `>boss<` shown, header "Nume de utilizator", 0 ERROR lines
+- Status: ✅ Resolved
 
 ---
 
@@ -255,3 +276,82 @@ Keep `search_fields = ("username",)` (an Admin searching for a known username st
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-22
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 (all findings; scope confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 1.9
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.9 | Story 1.9 file | Story contract predated the owner decisions | Decisions block + in-place amendments | n/a (docs) |
+| ISS-002 | 🟢 Low | 1.9 | `accounts/admin.py` | Lockout list showed raw typed usernames | Masked `account` column (decision-2 label) | 5 ✅ (+1 updated) |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `docs/plans/stories/epic-1-story-1.9-Admin-Accounts-and-Parent-Links.md` | Modified | Owner decisions + amended AC 2/4/10/15, response rows, QA note |
+| `src/infrastructure/persistence/accounts/admin.py` | Modified | `account` display column; raw username no longer displayed |
+| `src/infrastructure/i18n/locale/{ro,en}/LC_MESSAGES/django.po` | Modified | Existing "Username" entry gains a source reference (no new msgid, no fuzzy) |
+| `tests/integration/web/admin/test_lockout_admin_privacy.py` | New | 5 tests |
+| `tests/integration/web/admin/test_lockout_and_audit_admin.py` | Modified | Column contract `username` → `account` |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Reference First (CLAUDE.md) | Story 1.9 file | The contract QA reads now matches the owner's decisions (Story 2.1 precedent) |
+| Privacy §9 / owner decision 2 | Lockout admin | One masking rule (`_lockout_target`) for the audit and the admin list |
+
+## Testing Summary
+
+- **Targeted tests added**: 5 (2 failed before the fix; 3 guard behaviour that must not change)
+- **Full suite**: 1278/1278 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); `accounts/admin.py` 183/183, 28/28 branches
+- **Gates** (each read from its own output line): `[ruff format] 156 files already formatted` · `[ruff check] All checks passed!` · `[mypy] Success: no issues found in 104 source files` · `[lint-imports] Contracts: 2 kept, 0 broken.` · `[migrations] No changes detected`
+
+**Before the fix** (targeted):
+```
+FAILED test_lockout_admin_privacy.py::test_lockout_list_masks_text_typed_for_a_non_existent_account
+FAILED test_lockout_admin_privacy.py::test_lockout_detail_masks_text_typed_for_a_non_existent_account
+2 failed, 3 passed in 0.24s
+```
+
+**After the fix** (full suite):
+```
+src/infrastructure/persistence/accounts/admin.py            183      0     28      0   100%
+TOTAL                                                      1212      0    182      0   100%
+1278 passed in 10.25s
+```
+
+**Real server** (fresh DB from the review, two lockout rows: a typed secret and the real account `boss`):
+```
+login -> 302 · GET /ro/admin/axes/accessattempt/ -> 200
+typed secret shown: 0 | masked labels: (unknown):27971eff | real account shown: 1 | header: Nume de utilizator
+ERROR lines: 0
+```
+
+## Deviations from Report Suggestions
+
+- ISS-002: the column header uses the existing msgid "Username" instead of a new lowercase "username". The first attempt made `makemessages` fuzzy-match the new msgid to "Username" (caught by `test_translations_complete`); reusing the reviewed entry avoids a duplicate translation.
+
+## Lessons Learned
+
+1. When the owner decides during implementation, update the story contract in the same change. QA and later stories read the story, not the self-review.
+2. A privacy rule needs one helper used by every surface (audit, admin list, detail), or the surfaces drift apart.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)

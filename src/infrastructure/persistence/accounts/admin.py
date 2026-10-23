@@ -274,10 +274,18 @@ def _lockout_target(username: str | None) -> tuple[int | None, str]:
 class AccessAttemptAdmin(AttemptAdminBase):
     """django-axes lockouts: deleting an attempt unlocks that username + address."""
 
-    list_display = ("username", "ip_address", "failures_since_start", "attempt_time")
+    list_display = ("account", "ip_address", "failures_since_start", "attempt_time")
+    # Searching for a known username still finds its row; results show the masked label.
     search_fields = ("username", "ip_address")
-    # Never the captured GET/POST data: it may echo what was typed.
-    fields = ("username", "ip_address", "failures_since_start", "attempt_time")
+    # Never the captured GET/POST data, nor the raw typed username: both may echo a password.
+    fields = ("account", "ip_address", "failures_since_start", "attempt_time")
+    readonly_fields = ("account",)
+
+    @admin.display(description=_("Username"), ordering="username")
+    def account(self, obj: AccessAttempt) -> str:
+        """The account's username, or "(unknown):<fingerprint>" (review v1 ISS-002)."""
+        _user_id, label = _lockout_target(obj.username)
+        return label
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
