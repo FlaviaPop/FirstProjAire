@@ -63,6 +63,23 @@ with `uv run playwright show-trace test-results/<test>/trace.zip`. Each journey 
 database with the seeded catalogue restored. The test-only page `/en/e2e/dialog/` exists only in
 `tests/e2e/urls.py`.
 
+### Demos
+
+`demos/` holds presenter demos: one command plays a cycle's happy flow in a visible browser. Each
+starts a dev server on a throwaway database in a temporary directory (your `data/` is never
+touched), creates the demo admin (`admin` / `Demo-Pass-2026!`), and stops everything afterwards.
+
+```bash
+uv run python demos/cycle1_happy_flow.py                         # CYCLE-1, about 1 minute
+uv run python demos/cycle1_happy_flow.py --slowmo 900 --pause 2500   # slower, for presenting
+```
+
+CYCLE-1 flow: Admin creates a student, a teacher and a parent and links them (visible in the audit
+log) → the student signs in in Romanian, switches to English, opens Learn and a grade-2 subject,
+and is back in English after signing in again → the teacher and the parent see their homes. The
+same flow runs headless in `uv run pytest -m e2e` (`tests/e2e/test_demos.py`), so it can't
+silently break.
+
 Quality gates (all must pass before merge):
 
 ```bash
