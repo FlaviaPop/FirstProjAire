@@ -1,0 +1,55 @@
+# Rendered at container start by the official image (envsubst of defined variables only, so
+# nginx's own $variables are untouched). APP_DOMAIN comes from /etc/learnplat/deploy.env.
+
+upstream learnplat_app {
+    server app:8000;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${APP_DOMAIN};
+
+    # Let's Encrypt HTTP-01 challenges (certbot --webroot on the host).
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name ${APP_DOMAIN};
+
+    ssl_certificate     /etc/letsencrypt/live/${APP_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${APP_DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:TLS:10m;
+
+    client_max_body_size 2m;
+
+    # Static files collected in the image (WhiteNoise is not wired in the app yet: DEV hand-off).
+    location /static/ {
+        alias /srv/static/;
+        expires 7d;
+        add_header Cache-Control "public";
+        access_log off;
+    }
+
+    location ~ ^/(ro|en)/accounts/login/$ {
+        limit_req zone=login burst=5 nodelay;
+        limit_req_status 429;
+        proxy_pass http://learnplat_app;
+        include /etc/nginx/conf.d/proxy_headers.inc;
+    }
+
+    location / {
+        proxy_pass http://learnplat_app;
+        include /etc/nginx/conf.d/proxy_headers.inc;
+    }
+}

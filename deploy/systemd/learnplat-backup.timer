@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly learnplat backup at 02:30 Bucharest time
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 Europe/Bucharest
+Persistent=true
+Unit=learnplat-backup.service
+
+[Install]
+WantedBy=timers.target

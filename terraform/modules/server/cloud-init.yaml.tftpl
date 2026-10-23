@@ -1,0 +1,65 @@
+#cloud-config
+# First boot of a learnplat VM: Docker, tools, /data volume, the pull-based deploy watcher and
+# the nightly backup timer. Secrets are NOT here: the operator adds them per the runbook
+# (docs/deployment/pipeline-secrets.md): app.env, the APP_DOMAIN line, backup keys, GHCR login.
+package_update: true
+package_upgrade: true
+packages:
+  - docker.io
+  - docker-compose-v2
+  - age
+  - rclone
+  - certbot
+  - curl
+  - unattended-upgrades
+
+write_files:
+  - path: /etc/docker/daemon.json
+    permissions: "0644"
+    content: |
+      {"log-driver": "json-file", "log-opts": {"max-size": "10m", "max-file": "5"}}
+  - path: /etc/learnplat/deploy.env
+    permissions: "0644"
+    content: |
+      LEARNPLAT_ENV=${environment}
+      IMAGE_REPO=${image_repository}
+      # APP_DOMAIN=<set by the operator; see docs/deployment/pipeline-secrets.md>
+  - path: /etc/learnplat/backup.env
+    permissions: "0600"
+    content: |
+      BACKUP_BUCKET=${backup_bucket_name}
+      RCLONE_CONFIG_HETZNER_TYPE=s3
+      RCLONE_CONFIG_HETZNER_PROVIDER=Other
+      RCLONE_CONFIG_HETZNER_ENDPOINT=${object_storage_endpoint}
+      # RCLONE_CONFIG_HETZNER_ACCESS_KEY_ID / _SECRET_ACCESS_KEY and HEARTBEAT_URL: operator adds.
+  - path: /usr/local/bin/learnplat-watch
+    permissions: "0755"
+    content: |
+      ${indent(6, watch_script)}
+  - path: /etc/systemd/system/learnplat-watch.service
+    permissions: "0644"
+    content: |
+      ${indent(6, watch_service)}
+  - path: /etc/systemd/system/learnplat-watch.timer
+    permissions: "0644"
+    content: |
+      ${indent(6, watch_timer)}
+  - path: /etc/systemd/system/learnplat-backup.service
+    permissions: "0644"
+    content: |
+      ${indent(6, backup_service)}
+  - path: /etc/systemd/system/learnplat-backup.timer
+    permissions: "0644"
+    content: |
+      ${indent(6, backup_timer)}
+
+runcmd:
+  - mkdir -p /data /var/lib/learnplat/releases /var/www/certbot
+  # The volume is attached right after boot: wait for its device, then mount it permanently.
+  - for i in $(seq 1 60); do [ -e ${volume_device} ] && break; sleep 2; done
+  - echo "${volume_device} /data ext4 discard,nofail,defaults 0 0" >> /etc/fstab
+  - mount /data
+  - mkdir -p /data/backups && chown -R 10001:10001 /data
+  - systemctl restart docker
+  - systemctl daemon-reload
+  - systemctl enable --now learnplat-watch.timer learnplat-backup.timer

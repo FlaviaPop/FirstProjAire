@@ -1,0 +1,75 @@
+# Production: manual. Pick the commit SHA that is already running on staging; after approval in
+# the GitHub `production` environment the `prod` tag moves to that exact image (no rebuild). The
+# prod VM's learnplat-watch deploys it with the same health gate and automatic rollback.
+# Rollback = run this workflow again with the previous SHA.
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Full commit SHA of an image already published by 'Deploy staging'"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/flaviapop/learnplat
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  promote:
+    name: Move the prod tag (approval required)
+    needs: ci
+    runs-on: ubuntu-24.04
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Validate the SHA input
+        env:
+          SHA: ${{ inputs.sha }}
+        run: |
+          if ! [[ "${SHA}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::sha must be a full 40-character commit SHA"; exit 1
+          fi
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: The image exists
+        env:
+          SHA: ${{ inputs.sha }}
+        run: docker buildx imagetools inspect "${IMAGE}:${SHA}"
+      - name: prod → ${{ inputs.sha }}
+        env:
+          SHA: ${{ inputs.sha }}
+        run: docker buildx imagetools create --tag "${IMAGE}:prod" "${IMAGE}:${SHA}"
+
+  verify:
+    name: Wait for production to report healthy
+    needs: promote
+    if: vars.PROD_URL != ''
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Poll /healthz
+        env:
+          PROD_URL: ${{ vars.PROD_URL }}
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS --max-time 5 "${PROD_URL}/healthz"; then exit 0; fi
+            echo "attempt ${attempt}/30: not healthy yet"; sleep 10
+          done
+          echo "::error::production did not report healthy within 5 minutes (it rolls back automatically; check learnplat-watch)"
+          exit 1

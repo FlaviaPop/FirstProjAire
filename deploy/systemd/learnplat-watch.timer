@@ -1,0 +1,10 @@
+[Unit]
+Description=Run learnplat-watch every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+Unit=learnplat-watch.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=learnplat nightly encrypted SQLite backup to Object Storage
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'exec "$(cat /var/lib/learnplat/current-release)/backup.sh" nightly'

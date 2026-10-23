@@ -34,3 +34,14 @@ staticfiles/
 
 # Compiled gettext catalogues are build artefacts (compilemessages in CI/Docker)
 *.mo
+
+# --- DevOps (pipeline) ---
+terraform/**/.terraform/
+terraform/**/*.tfstate
+terraform/**/*.tfstate.*
+terraform/**/tfplan
+terraform/**/*.tfvars
+!terraform/bootstrap.auto.tfvars
+requirements-audit.txt
+coverage.xml
+test-results/
