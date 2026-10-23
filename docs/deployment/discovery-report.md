@@ -157,7 +157,7 @@ DNS configuration is **manual**. The required records will be documented in the 
 | 2 | **Alert e-mail address** | uptime + backup alerts | ⛔ not provided |
 | 3 | **Operator public IPs** for SSH | `learnplat-fw` port 22 (an empty list with default-deny locks out operators and Terraform) | ⛔ not provided |
 | 4 | GitHub Actions → VM SSH path | GitHub-hosted runners have changing IPs; options: (a) open 22 to GitHub's published Actions ranges (large and changing), (b) **pull-based deploy**: a small agent on the VM polls GHCR / a deploy tag (no inbound SSH from CI) **(recommended)**, (c) a self-hosted runner on the VM | to decide in `aire-devops-pipeline` |
-| 5 | Volume encryption method (Hetzner at-rest vs LUKS) | architecture "encrypted volume" | to confirm in `aire-devops-deploy` |
+| 5 | Volume encryption method (Hetzner at-rest vs LUKS) | architecture "encrypted volume" | ✅ decided 2026-10-23 in `aire-devops-deploy`: **LUKS2** (`deploy/data-volume.sh`) |
 | 6 | HSTS preload | only once the domain is final | owner decision with the domain |
 
 **None of these blocks the CI pipeline** (`ci.yml`, CodeQL, Dependabot, gitleaks, pip-audit, image build).

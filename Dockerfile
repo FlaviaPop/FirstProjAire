@@ -38,7 +38,7 @@ WORKDIR /app
 COPY --from=build --chown=app:app /app /app
 COPY --chown=root:root --chmod=0755 docker/entrypoint.sh docker/healthcheck.py /app/docker/
 # Deploy bundle, extracted on the VM by learnplat-watch (pull-based deploys).
-COPY --chown=root:root docker-compose.prod.yml /opt/learnplat/deploy/
+COPY --chown=root:root docker-compose.prod.yml Makefile /opt/learnplat/deploy/
 COPY --chown=root:root nginx /opt/learnplat/deploy/nginx
 COPY --chown=root:root --chmod=0755 deploy/*.sh /opt/learnplat/deploy/
 ENV PATH="/app/.venv/bin:${PATH}" \

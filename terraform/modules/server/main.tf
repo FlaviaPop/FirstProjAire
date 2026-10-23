@@ -7,12 +7,12 @@ terraform {
 }
 
 # The data volume is created first, so its id (stable device path) can go into cloud-init;
-# it is attached afterwards. SQLite lives on it, mounted at /data (architecture ADR-004).
+# it is attached afterwards. Left unformatted: cloud-init encrypts it with LUKS2 and creates the
+# ext4 filesystem inside (deploy plan, encryption at rest). SQLite lives on it at /data.
 resource "hcloud_volume" "data" {
   name      = var.volume_name
   location  = var.location
   size      = var.volume_size_gb
-  format    = "ext4"
   automount = false
   labels    = var.labels
 }
@@ -32,6 +32,8 @@ resource "hcloud_server" "this" {
     object_storage_endpoint = var.object_storage_endpoint
     volume_device           = "/dev/disk/by-id/scsi-0HC_Volume_${hcloud_volume.data.id}"
     watch_script            = file("${path.module}/../../../deploy/watch.sh")
+    data_volume_script      = file("${path.module}/../../../deploy/data-volume.sh")
+    logrotate_conf          = file("${path.module}/../../../deploy/logrotate.conf")
     watch_service           = file("${path.module}/../../../deploy/systemd/learnplat-watch.service")
     watch_timer             = file("${path.module}/../../../deploy/systemd/learnplat-watch.timer")
     backup_service          = file("${path.module}/../../../deploy/systemd/learnplat-backup.service")

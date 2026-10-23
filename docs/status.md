@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 14:36
+**Last Updated**: 2026-10-23 14:48
 **Last Updated**: 2026-10-21 12:30
 **Updated By**: DEVOPS
 **Overall Status**: 🟡 IN PROGRESS
@@ -39,6 +39,7 @@
 | QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 | DevOps Discovery | ✅ Done | AIRE_DEVOPS | 2026-10-23 | `docs/deployment/discovery-report.md` — Hetzner fsn1, 2× CX22 (staging + prod), Docker Compose + Nginx/Let's Encrypt, Terraform (state in Object Storage), GHCR, staging auto / prod approval + auto-rollback; open before deploy: domains, alert e-mail, operator SSH IPs | 2026-10-23 11:06 |
 | DevOps Pipeline | ✅ Done (CI ready; deploy awaits the open values) | AIRE_DEVOPS | 2026-10-23 | `Dockerfile`, `docker-compose.prod.yml`, `nginx/`, `deploy/`, `Makefile`, `.github/workflows/` (ci, codeql, deploy-staging, deploy-production, terraform), `.github/dependabot.yml`, `terraform/` (bootstrap + firewall/server modules), `docs/deployment/pipeline-secrets.md` | 2026-10-23 14:36 |
+| DevOps Deploy | 🟡 Generated + validated; real run waits for the open values | AIRE_DEVOPS | 2026-10-23 | `docs/deployment/runbook-deploy.md`, `deployment-plan.md` (approved; LUKS2 data volume), `runbook-rollback.md`, `runbook-troubleshoot.md`, `architecture.md`, `quick-reference.md`; `deploy/setup-ssl.sh`, `healthcheck.sh` (+cron), `data-volume.sh`, `logrotate.conf` | 2026-10-23 14:48 |
 
 ---
 
@@ -105,6 +106,7 @@
 - [x] Remediation from `story-2.2-code-review-v1.md`: ISS-001 (`ui_card` icon_variant; student cards duotone, incl. 1.7 home cards), ISS-002 (owner wording: "Clase și materii" + RO glossary in README); 1497/1497 tests
 - [x] DevOps discovery (`aire-devops-discover`, path S): `docs/deployment/discovery-report.md` approved by the user; deferred review items mapped (gettext in CI, HSTS, client IP, login rate limit, audit retention 1 year, X-Request-ID, E2E in CI); 3 values open before `aire-devops-deploy`
 - [x] DevOps pipeline (`aire-devops-pipeline`, greenfield): multi-stage Docker image (gettext, collectstatic, non-root, healthcheck, deploy bundle), compose + Nginx (TLS, login rate limit, X-Request-ID, static), pull-based deploy with health gate + auto-rollback + pin/unpin, nightly encrypted backups, CI/CodeQL/Dependabot/gitleaks/pip-audit/Trivy, Terraform (Hetzner, state in Object Storage). Validated: actionlint, shellcheck, terraform fmt/validate, nginx -t, cloud-init YAML render, pip-audit clean; Docker build verified in CI on first push (no Docker locally). DEV hand-off: wire WhiteNoise (static files under prod settings)
+- [x] DevOps deploy (`aire-devops-deploy`): deployment plan approved (LUKS2 encryption of the SQLite volume added); SSL setup, 5-min health cron with restart, logrotate, LUKS volume script, Makefile shipped in the image bundle; 5 runbooks/docs. Re-validated: terraform fmt/validate, actionlint, shellcheck + bash -n (8 scripts), cloud-init render (11 files, scripts byte-identical), Dockerfile COPY check, app gates + 1497/1497. Real commands pending: domains, alert e-mail, operator IPs + SSH keys, Hetzner account
 
 ### Implementation Plan
 
@@ -301,7 +303,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 2. **Wave 5** (`aire-dev-implement`): Dev 1 → 1.10 Foundation E2E Journeys (carries hand-offs: dialog keyboard, alert-dismiss focus, focus-not-obscured) → CYCLE-1 demo and sign-off
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
 4. **DEV hand-offs from DevOps**: wire WhiteNoise (or drop it), `python-ipware`/`AXES_PROXY_COUNT`, HSTS flags, audit purge job (1 year), Ruff `S` rules
-5. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs: HSTS flags (1.0 ISS-004), `python-ipware`/`AXES_PROXY_COUNT`, audit purge job (1.8 ISS-004, 1 year)
+5. **DevOps go-live** (`docs/deployment/runbook-deploy.md`): provide domains, alert e-mail, operator IPs + SSH keys, Hetzner token + Object Storage keys → bootstrap → apply → DNS → VM secrets → certificates → GitHub settings → first deploy (each command confirmed one by one)
 6. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 7. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
@@ -317,4 +319,4 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | DEV | Remediated story 2.2 (story-2.2-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 10:51 |
 | REVIEWER | Reviewed story 2.2 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 10:46 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
-| DEVOPS | CI/CD pipeline + IaC generated and validated | Idle | 2026-10-23 | 2026-10-23 14:36 |
+| DEVOPS | Deployment setup generated and validated (awaiting open values) | Idle | 2026-10-23 | 2026-10-23 14:48 |

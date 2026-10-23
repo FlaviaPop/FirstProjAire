@@ -95,7 +95,7 @@ Then `make deploy` on the VM (or wait one minute) runs the first deployment.
 | 1 | **Domains** (prod + staging) | `APP_DOMAIN`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, certbot, `STAGING_URL`/`PROD_URL`, DNS A/AAAA records |
 | 2 | **Alert e-mail** | uptime monitor, `HEARTBEAT_URL` check, certbot `-m` |
 | 3 | **Operator IPs** for SSH | `TF_VAR_OPERATOR_IP_ADDRESSES` |
-| 4 | Volume encryption (Hetzner at rest vs LUKS) | `aire-devops-deploy` |
+| 4 | ~~Volume encryption~~ decided: **LUKS2**. Copy `/etc/learnplat/data.key` to the password manager after first boot | `runbook-deploy.md` A.5 |
 
 ---
 

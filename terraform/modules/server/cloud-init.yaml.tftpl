@@ -10,6 +10,7 @@ packages:
   - age
   - rclone
   - certbot
+  - cryptsetup
   - curl
   - unattended-upgrades
 
@@ -36,6 +37,20 @@ write_files:
     permissions: "0755"
     content: |
       ${indent(6, watch_script)}
+  - path: /usr/local/sbin/learnplat-data-volume
+    permissions: "0755"
+    content: |
+      ${indent(6, data_volume_script)}
+  - path: /etc/logrotate.d/learnplat
+    permissions: "0644"
+    content: |
+      ${indent(6, logrotate_conf)}
+  - path: /etc/cron.d/learnplat-healthcheck
+    permissions: "0644"
+    content: |
+      # Every 5 minutes: /healthz through the app container; restart after 3 failures in a row.
+      */5 * * * * root sh -c 'r=$(cat /var/lib/learnplat/current-release 2>/dev/null) && [ -n "$r" ] && "$r/healthcheck.sh"'
+
   - path: /etc/systemd/system/learnplat-watch.service
     permissions: "0644"
     content: |
@@ -54,12 +69,9 @@ write_files:
       ${indent(6, backup_timer)}
 
 runcmd:
-  - mkdir -p /data /var/lib/learnplat/releases /var/www/certbot
-  # The volume is attached right after boot: wait for its device, then mount it permanently.
-  - for i in $(seq 1 60); do [ -e ${volume_device} ] && break; sleep 2; done
-  - echo "${volume_device} /data ext4 discard,nofail,defaults 0 0" >> /etc/fstab
-  - mount /data
-  - mkdir -p /data/backups && chown -R 10001:10001 /data
+  - mkdir -p /var/lib/learnplat/releases /var/www/certbot /var/log/learnplat
+  # LUKS2-encrypt (first boot only), open and mount the data volume at /data; idempotent.
+  - /usr/local/sbin/learnplat-data-volume ${volume_device}
   - systemctl restart docker
   - systemctl daemon-reload
   - systemctl enable --now learnplat-watch.timer learnplat-backup.timer
