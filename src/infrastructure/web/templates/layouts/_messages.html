@@ -1,0 +1,4 @@
+{% load navigation ui %}{% shell_messages as flash %}{% if flash %}<div class="messages">
+  {% for message in flash %}{% ui_alert message|alert_level message.message %}
+  {% endfor %}
+</div>{% endif %}

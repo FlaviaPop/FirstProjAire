@@ -2,7 +2,8 @@
 
 User decision 2026-10-22 ("Add the links now"): layouts/base.html links the component CSS those
 pages use, so their class hooks (login-card, form-banner--error, field-error, error-card) are
-styled today. ui.js stays out of the base layout until Story 1.7.
+styled today. Story 1.7 completed the layout: every component stylesheet plus layout.css, and
+htmx.min.js / ui.js as external scripts.
 """
 
 import re
@@ -26,10 +27,10 @@ def test_login_and_error_pages_link_the_component_stylesheets(client, path):
 
     links = stylesheet_links(html)
 
-    assert links == [
-        "/static/css/tokens.css",
-        *(f"/static/css/components/{name}.css" for name in BASE_STYLESHEETS[1:]),
-    ]
+    # Story 1.7 links every component stylesheet; the ones these pages need stay included.
+    assert links[0] == "/static/css/tokens.css"
+    assert links[-1] == "/static/css/layout.css"
+    assert {f"/static/css/components/{name}.css" for name in BASE_STYLESHEETS[1:]} <= set(links)
 
 
 @pytest.mark.parametrize("name", BASE_STYLESHEETS)
@@ -62,7 +63,11 @@ def test_wrong_credentials_show_the_styled_error_banner_and_field_hooks(client):
 
 
 @pytest.mark.parametrize("path", PAGES)
-def test_base_layout_loads_no_script_until_story_1_7(client, path):
+def test_base_layout_loads_only_external_scripts(client, path):
     html = client.get(path).content.decode()
 
-    assert "<script" not in html
+    # Story 1.7: htmx (deferred) and ui.js (module) from /static/; never an inline script.
+    assert re.findall(r"<script[^>]*>", html) == [
+        '<script src="/static/js/htmx.min.js" defer>',
+        '<script type="module" src="/static/js/ui.js">',
+    ]

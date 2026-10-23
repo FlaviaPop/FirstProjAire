@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from django.urls import path
 
+from config.urls import urlpatterns as root_urlpatterns
 from domain.common.errors import NotFound
 from infrastructure.web.common.health import healthz
 from tests.factories.accounts import UserFactory
@@ -27,6 +28,8 @@ urlpatterns = [
     path("healthz", healthz),
     path("nf", _raise(NotFound())),
     path("boom", _raise(RuntimeError("secret internal detail"))),
+    # Story 1.7: the layout links sign-in, language switch and home, so the real routes follow.
+    *root_urlpatterns,
 ]
 handler404 = "infrastructure.web.common.errors.handle_404"
 handler500 = "infrastructure.web.common.errors.handle_500"

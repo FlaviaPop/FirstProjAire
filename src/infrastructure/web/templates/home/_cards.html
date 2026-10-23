@@ -1,0 +1,4 @@
+{% load i18n ui %}{% if sections %}<div class="home-cards">
+  {% for entry, url in sections %}{% ui_card entry.label entry.description href=url icon=entry.icon %}
+  {% endfor %}
+</div>{% else %}{% translate "Your tools will appear here as they become available." as empty %}{% ui_empty_state empty %}{% endif %}

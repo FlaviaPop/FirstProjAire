@@ -5,6 +5,7 @@ from django.urls import path
 from django.utils import translation
 
 from application.accounts.link_parent import LinkExists
+from config.urls import urlpatterns as root_urlpatterns
 from domain.common.errors import Violation
 from infrastructure.persistence.accounts.models import ParentChildLinkModel
 from infrastructure.persistence.accounts.repositories import DjangoParentLinks
@@ -222,7 +223,7 @@ def _conflict(request):
     raise LinkExists()
 
 
-urlpatterns = [path("conflict", _conflict, name="conflict")]
+urlpatterns = [path("conflict", _conflict, name="conflict"), *root_urlpatterns]  # Story 1.7 layout
 
 
 @pytest.mark.urls(__name__)

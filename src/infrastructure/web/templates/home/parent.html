@@ -1,0 +1,10 @@
+{% extends "layouts/base.html" %}
+{% load i18n navigation %}
+{% block title %}{% translate "Home" %}{% endblock %}
+{% block content %}
+<header class="home__header">
+  <h1 class="home__greeting">{% if greeting_name %}{% blocktranslate %}Hello, {{ greeting_name }}!{% endblocktranslate %}{% else %}{% translate "Hello!" %}{% endif %}</h1>
+  <p class="home__intro">{% translate "Follow your children's learning." %}</p>
+</header>
+{% role_home_cards %}
+{% endblock %}

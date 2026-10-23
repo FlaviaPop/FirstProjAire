@@ -1,9 +1,12 @@
+import re
+
 import pytest
 from django.contrib.sessions.models import Session
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.urls import path
 from django.utils import translation
 
+from config.urls import urlpatterns as root_urlpatterns
 from domain.common.errors import ConflictError, DomainError, NotFound, PolicyViolation, Violation
 from infrastructure.web.common.errors import ERROR_MESSAGES
 
@@ -30,6 +33,8 @@ urlpatterns = [
     path("pd", _raise(PermissionDenied())),
     path("so", _raise(SuspiciousOperation("bad"))),
     path("boom", _raise(RuntimeError("secret internal detail"))),
+    # Story 1.7: the layout links sign-in, language switch and home, so the real routes follow.
+    *root_urlpatterns,
 ]
 handler400 = "infrastructure.web.common.errors.handle_400"
 handler403 = "infrastructure.web.common.errors.handle_403"
@@ -217,13 +222,19 @@ def test_suspicious_operation_renders_the_400_page(client, english):
     assert "Request could not be processed" in response.content.decode()
 
 
+def _without_tokens(response):
+    """The body with this response's request id and CSRF token values removed."""
+    body = response.content.decode().replace(response["X-Request-ID"], "")
+    body = re.sub(r'(name="csrfmiddlewaretoken" value=")[^"]+', r"\1", body)
+    return re.sub(r'("X-CSRFToken": ")[^"]+', r"\1", body)
+
+
 def test_repeated_failure_gets_same_status_and_new_request_id(client):
     first, second = client.get("/nf"), client.get("/nf")
 
     assert first.status_code == second.status_code == 404
-    assert first.content.replace(first["X-Request-ID"].encode(), b"") == second.content.replace(
-        second["X-Request-ID"].encode(), b""
-    )
+    # Story 1.7: the layout carries a per-response CSRF token; everything else is identical.
+    assert _without_tokens(first) == _without_tokens(second)
     assert first["X-Request-ID"] != second["X-Request-ID"]
 
 
@@ -231,7 +242,9 @@ def test_repeated_failure_gets_same_status_and_new_request_id(client):
 def test_error_handling_creates_no_session_or_cookie(client, url):
     response = client.get(url)
 
-    assert response.cookies == {}
+    # Owner decision 2026-10-23 (Story 1.7): error pages carry the full layout, whose forms need
+    # the anti-forgery token, so `csrftoken` is the one cookie allowed. Never a session.
+    assert set(response.cookies) <= {"csrftoken"}
     assert Session.objects.count() == 0
 
 
@@ -240,7 +253,8 @@ def test_error_pages_carry_no_inline_style_or_script(client):
         content = client.get(url).content.decode()
 
         assert "<style" not in content
-        assert "<script" not in content
+        # Story 1.7 loads htmx.min.js and ui.js from /static/; inline scripts stay forbidden.
+        assert not re.search(r"<script(?![^>]*\bsrc=)", content)
         assert "style=" not in content
 
 

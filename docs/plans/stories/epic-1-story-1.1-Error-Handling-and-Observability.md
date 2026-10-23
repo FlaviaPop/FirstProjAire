@@ -172,7 +172,7 @@ No role-differentiated access — single actor.
 - A 422 lists exactly N `<li>` items for N violations, in order.
 - An HTMX request gets the same status code with a body that has no `<html>` element and has `role="alert"`.
 - Log lines are valid JSON, one per line, and contain none of: the query string, form values, passwords, full names, dates of birth.
-- **What does NOT change**: no database rows are created, updated or deleted by any error path. No session or cookie is created by error handling itself. Successful responses keep their original status and body (the middleware only adds a header).
+- **What does NOT change**: no database rows are created, updated or deleted by any error path. No session or cookie is created by error handling itself. *(Owner decision 2026-10-23, Story 1.7: error pages render inside the full layout, whose language switch and sign-out forms need the anti-forgery token, so the `csrftoken` cookie may be set; still never a session.)* Successful responses keep their original status and body (the middleware only adds a header).
 
 **Prerequisites**:
 - Story 1.0 merged (settings split, `base.html`, `tokens.css`, `.po` headers, quality gates).

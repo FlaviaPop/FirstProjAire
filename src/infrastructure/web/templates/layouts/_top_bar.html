@@ -1,0 +1,24 @@
+{% load i18n navigation ui %}{# Story 1.7: brand, role menu, RO|EN switcher, account menu. Uses the db-safe shell_user. #}
+<header class="top-bar">
+  <a class="top-bar__brand" href="{% if shell_user.is_authenticated %}{% url 'home:index' %}{% else %}{% url 'accounts:login' %}{% endif %}">
+    {% if shell_user.is_authenticated and shell_user.role != "STUDENT" %}{% ui_icon "house" 24 %}{% else %}{% ui_icon "house" 24 "duotone" %}{% endif %}
+    <span class="top-bar__name">{% translate "Learning Platform" %}</span>
+  </a>
+  {% if shell_user.is_authenticated %}{% role_nav %}{% endif %}
+  <div class="top-bar__end">
+    {% if shell_user.is_authenticated and shell_user.role != "STUDENT" %}{% include "components/language_switcher.html" %}{% else %}{% include "components/language_switcher.html" with icon_variant="duotone" %}{% endif %}
+    {% if shell_user.is_authenticated %}
+    <details class="user-menu">
+      <summary class="user-menu__toggle" aria-label="{% translate "Account menu" %}">{% ui_avatar shell_user %}</summary>
+      <div class="user-menu__panel">
+        <p class="user-menu__name">{{ shell_user.full_name }}</p>
+        <p class="user-menu__role">{{ shell_user.get_role_display }}</p>
+        <form method="post" action="{% url 'accounts:logout' %}" class="user-menu__form">
+          {% csrf_token %}
+          {% translate "Sign out" as sign_out %}{% ui_button sign_out "secondary" icon="sign-out" %}
+        </form>
+      </div>
+    </details>
+    {% endif %}
+  </div>
+</header>

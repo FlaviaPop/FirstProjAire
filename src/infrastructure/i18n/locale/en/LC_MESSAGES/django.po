@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 09:11+0300\n"
+"POT-Creation-Date: 2026-10-23 09:29+0300\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -65,6 +65,7 @@ msgid "Student"
 msgstr "Student"
 
 #: src/infrastructure/persistence/accounts/apps.py:9
+#: src/infrastructure/web/home/navigation.py:74
 msgid "Accounts"
 msgstr "Accounts"
 
@@ -204,6 +205,82 @@ msgstr "The selected child account isn't a Student."
 #: src/infrastructure/web/common/errors.py:30
 msgid "A person can't be linked to themselves."
 msgstr "A person can't be linked to themselves."
+
+#: src/infrastructure/web/home/navigation.py:31
+#: src/infrastructure/web/templates/home/admin.html:3
+#: src/infrastructure/web/templates/home/parent.html:3
+#: src/infrastructure/web/templates/home/student.html:3
+#: src/infrastructure/web/templates/home/teacher.html:3
+msgid "Home"
+msgstr "Home"
+
+#: src/infrastructure/web/home/navigation.py:33
+msgid "Scores"
+msgstr "Scores"
+
+#: src/infrastructure/web/home/navigation.py:33
+msgid "Pilot results"
+msgstr "Pilot results"
+
+#: src/infrastructure/web/home/navigation.py:38
+msgid "Learn"
+msgstr "Learn"
+
+#: src/infrastructure/web/home/navigation.py:38
+msgid "Choose a subject"
+msgstr "Choose a subject"
+
+#: src/infrastructure/web/home/navigation.py:40
+msgid "My progress"
+msgstr "My progress"
+
+#: src/infrastructure/web/home/navigation.py:40
+msgid "See your results"
+msgstr "See your results"
+
+#: src/infrastructure/web/home/navigation.py:46
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: src/infrastructure/web/home/navigation.py:50
+msgid "Write lessons, exercises and tests"
+msgstr "Write lessons, exercises and tests"
+
+#: src/infrastructure/web/home/navigation.py:54
+msgid "Notifications"
+msgstr "Notifications"
+
+#: src/infrastructure/web/home/navigation.py:58
+msgid "Messages about your content"
+msgstr "Messages about your content"
+
+#: src/infrastructure/web/home/navigation.py:64
+msgid "My children"
+msgstr "My children"
+
+#: src/infrastructure/web/home/navigation.py:68
+msgid "Progress and scores of your children"
+msgstr "Progress and scores of your children"
+
+#: src/infrastructure/web/home/navigation.py:78
+msgid "Create accounts and link parents"
+msgstr "Create accounts and link parents"
+
+#: src/infrastructure/web/home/navigation.py:81
+msgid "Moderation"
+msgstr "Moderation"
+
+#: src/infrastructure/web/home/navigation.py:85
+msgid "Review flagged content"
+msgstr "Review flagged content"
+
+#: src/infrastructure/web/home/navigation.py:89
+msgid "Pilot"
+msgstr "Pilot"
+
+#: src/infrastructure/web/home/navigation.py:93
+msgid "Readiness and completion"
+msgstr "Readiness and completion"
 
 #: src/infrastructure/web/styleguide/views.py:69
 msgid "Save"
@@ -452,6 +529,62 @@ msgstr "Reference"
 #: src/infrastructure/web/templates/errors/_error.html:10
 msgid "Back to home"
 msgstr "Back to home"
+
+#: src/infrastructure/web/templates/home/_cards.html:4
+msgid "Your tools will appear here as they become available."
+msgstr "Your tools will appear here as they become available."
+
+#: src/infrastructure/web/templates/home/admin.html:6
+#: src/infrastructure/web/templates/home/parent.html:6
+#: src/infrastructure/web/templates/home/student.html:6
+#: src/infrastructure/web/templates/home/teacher.html:6
+#, python-format
+msgid "Hello, %(greeting_name)s!"
+msgstr "Hello, %(greeting_name)s!"
+
+#: src/infrastructure/web/templates/home/admin.html:6
+#: src/infrastructure/web/templates/home/parent.html:6
+#: src/infrastructure/web/templates/home/student.html:6
+#: src/infrastructure/web/templates/home/teacher.html:6
+msgid "Hello!"
+msgstr "Hello!"
+
+#: src/infrastructure/web/templates/home/admin.html:7
+msgid "Manage the platform."
+msgstr "Manage the platform."
+
+#: src/infrastructure/web/templates/home/parent.html:7
+msgid "Follow your children's learning."
+msgstr "Follow your children's learning."
+
+#: src/infrastructure/web/templates/home/student.html:7
+msgid "What would you like to learn today?"
+msgstr "What would you like to learn today?"
+
+#: src/infrastructure/web/templates/home/teacher.html:7
+msgid "Your teaching tools."
+msgstr "Your teaching tools."
+
+#: src/infrastructure/web/templates/layouts/_nav.html:1
+msgid "Main"
+msgstr "Main"
+
+#: src/infrastructure/web/templates/layouts/_top_bar.html:5
+#: src/infrastructure/web/templates/layouts/base.html:6
+msgid "Learning Platform"
+msgstr "Learning Platform"
+
+#: src/infrastructure/web/templates/layouts/_top_bar.html:12
+msgid "Account menu"
+msgstr "Account menu"
+
+#: src/infrastructure/web/templates/layouts/_top_bar.html:18
+msgid "Sign out"
+msgstr "Sign out"
+
+#: src/infrastructure/web/templates/layouts/base.html:32
+msgid "Skip to content"
+msgstr "Skip to content"
 
 #: src/infrastructure/web/templates/styleguide/_atoms.html:2
 msgid "Tokens"

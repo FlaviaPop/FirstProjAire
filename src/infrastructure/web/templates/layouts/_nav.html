@@ -1,0 +1,6 @@
+{% load i18n %}<nav class="main-nav" aria-label="{% translate "Main" %}">
+  <ul class="main-nav__list">
+    {% for entry, url, current in items %}<li><a href="{{ url }}"{% if current %} aria-current="page"{% endif %}>{{ entry.label }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>

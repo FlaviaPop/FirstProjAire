@@ -1,0 +1,160 @@
+/* App shell — layouts/base.html, _top_bar.html, _nav.html, _messages.html and home/*.html
+   (Story 1.7). Tokens only (tokens.css). Student theme is the default; .theme-staff overrides. */
+
+/* Skip link: visually hidden until focused, then top-left over the top bar. */
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius, var(--radius-staff));
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-weight: var(--weight-semibold);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+/* Top bar: 64px, white, sticky. */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-height: var(--nav-height);
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--color-disabled);
+  background: var(--color-surface);
+  box-shadow: var(--elevation-1);
+}
+.top-bar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+  font-size: var(--font-20);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+.top-bar__end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+/* Role menu: current page in primary with a 3px underline. */
+.main-nav__list {
+  display: flex;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch, var(--touch-min));
+  border-bottom: 3px solid transparent;
+  color: var(--color-text);
+  font-size: var(--font-18);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+.main-nav a:hover { color: var(--color-primary-hover); }
+.main-nav a[aria-current="page"] {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Account menu: <details> with the avatar as its summary. */
+.user-menu { position: relative; }
+.user-menu__toggle {
+  display: inline-flex;
+  min-height: var(--touch, var(--touch-min));
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  list-style: none;
+}
+.user-menu__toggle::-webkit-details-marker { display: none; }
+.user-menu__toggle .avatar {
+  width: var(--touch-student);
+  height: var(--touch-student);
+}
+.user-menu__panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  min-width: calc(var(--space-16) * 3);
+  padding: var(--space-4);
+  border-radius: var(--radius, var(--radius-staff));
+  background: var(--color-surface);
+  box-shadow: var(--elevation-2);
+}
+.user-menu__name {
+  margin: 0;
+  font-size: var(--font-16);
+  font-weight: var(--weight-semibold);
+}
+.user-menu__role {
+  margin: var(--space-1) 0 var(--space-4);
+  color: var(--color-muted);
+  font-size: var(--font-14);
+}
+.user-menu__form { margin: 0; }
+
+/* Main content: centred, theme width and padding. */
+main {
+  box-sizing: border-box;
+  max-width: var(--content-max-student);
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+main:focus { outline: none; }
+.messages {
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--content-max-student);
+  margin: var(--space-4) auto 0;
+  padding: 0 var(--space-8);
+}
+
+/* Home: greeting and the section cards. */
+.home__greeting {
+  margin: 0;
+  font-size: var(--font-40);
+  font-weight: var(--weight-bold);
+}
+.home__intro {
+  margin: var(--space-2) 0 var(--space-8);
+  color: var(--color-muted);
+}
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+.home-cards .card .icon {
+  width: var(--space-8);
+  height: var(--space-8);
+}
+
+/* Staff theme: denser menu, wider content, 4-column cards. */
+.theme-staff .main-nav__list { gap: var(--space-4); }
+.theme-staff .main-nav a { font-size: var(--font-16); }
+.theme-staff .user-menu__toggle .avatar {
+  width: var(--touch-min);
+  height: var(--touch-min);
+}
+.theme-staff main,
+.theme-staff .messages { max-width: var(--content-max-staff); }
+.theme-staff main { padding: var(--space-6); }
+.theme-staff .messages { padding: 0 var(--space-6); }
+.theme-staff .home__greeting { font-size: var(--font-32); }
+.theme-staff .home-cards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+}

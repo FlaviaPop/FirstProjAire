@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 09:13
+**Last Updated**: 2026-10-23 09:33
 **Last Updated**: 2026-10-21 12:30
 **Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
@@ -27,7 +27,7 @@
 | UI/UX Design | ✅ Done | AIRE_UI_UX_DESIGNER | 2026-10-19 | `docs/ui-ux/ui-ux-spec.md` | 2026-10-19 14:56 |
 | Build Cycles | ✅ Done | AIRE_BUILD_CYCLE_PLANNER | 2026-10-19 | `docs/plans/builds/` · `docs/plans/build-cycles.md` | 2026-10-19 14:45 |
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
-| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-22 | 9/11 stories done (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 1.9) | 2026-10-22 17:55 |
+| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-22 | 10/11 stories done (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9) | 2026-10-23 09:33 |
 | Epic 2: Grade & Subject Catalogue | 🟡 In Progress | AIRE_DEV | 2026-10-21 | 1/2 stories done (2.1) | 2026-10-21 16:20 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
@@ -95,6 +95,7 @@
 - [x] Wave 3 Dev 2 (in one go, atomic story-agent, worktree `feature/story-1.9-admin-accounts`): Story 1.9 Admin Accounts & Parent–Child Links; 1273/1273 tests, coverage 100%, 15/15 AC, DoD gates passed; merged to `main` @ `61ce5aa`. Owner decisions: role change → 2 audit rows; lockout-cleared target = user id or `(unknown):<fingerprint>`; parent guard message (7 messages); last active Admin can't be deleted → **wave 3 complete (2/2)**
 - [x] Story 1.9 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 1 🟢 (`docs/reviews/story-1.9-code-review-v1.md`)
 - [x] Remediation from `story-1.9-code-review-v1.md`: ISS-001 (owner decisions recorded in the story file; AC 2/4/10/15 + response rows + QA note amended), ISS-002 (lockout list masks typed text for non-accounts); 1278/1278 tests
+- [x] Story 1.7 App Shell & Role Homes (wave 4, Dev 1, one-by-one): full layout (htmx 2.0.11 vendored, CSP-safe), role menus from `NAV_BY_ROLE`, role homes, db-safe shell (1.1 ISS-003), `/` redirect tests (1.4), switcher in the top bar (1.4); 1344/1344 tests, coverage 100%. Owner decision 2026-10-23: error pages may set `csrftoken` (never a session)
 
 ### Implementation Plan
 
@@ -140,7 +141,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.4 | Internationalization | 2026-10-21 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 15:15 |
 | CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 15:22 |
 | CYCLE-1 | 1.6 | Molecule Primitives | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 17:01 |
-| CYCLE-1 | 1.7 | App Shell & Role Homes | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.7 | App Shell & Role Homes | 2026-10-23 | 2026-10-23 | 2026-10-23 09:33 |
 | CYCLE-1 | 1.8 | Audit Log | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:55 |
 | CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-23) | 2026-10-23 09:13 |
 | CYCLE-1 | 1.10 | Foundation E2E Journeys | — | — | 2026-10-19 16:35 |
@@ -186,9 +187,9 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
-| Integration Tests | 100% pass | 100% (1278/1278 on `main`) | ✅ | 2026-10-23 09:13 |
+| Integration Tests | 100% pass | 100% (1344/1344 on `main`) | ✅ | 2026-10-23 09:33 |
 | Code Review | All stories | 10/45 | 🟡 | 2026-10-22 18:02 |
-| Documentation | All stories | 10/45 | 🟡 | 2026-10-22 17:55 |
+| Documentation | All stories | 11/45 | 🟡 | 2026-10-23 09:33 |
 
 ---
 
@@ -271,15 +272,19 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.9-code-review-v1.md` — 1273/1273 suite re-run (each gate read from its own line), coverage 100%; probes: 35 admin routes × GET/POST × 4 roles → anonymous 302 / others 403 (70/70 each); 9 admin pages CSP-clean (0 inline script/style); real server: no DOB/password/name in logs, audit = field names only; unlock → next login 302; deactivation ends the session. Findings: story file not updated with the 4 owner decisions (ISS-001 🟡, QA would test the old contract), lockout list shows raw typed usernames (ISS-002 🟢)
 - [x] **Remediation — Story 1.9 (review v1)**: ✅ Resolved (2/2) — 2026-10-23
   - Evidence: `docs/reviews/story-1.9-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1278/1278 tests ×3, coverage 100%, every gate read from its own line; real server: typed secret shown 0×, `(unknown):<fingerprint>` label, real account by name, 0 ERROR lines
+- [x] **Story 1.7 App Shell & Role Homes**: Done — 2026-10-23
+  - Evidence: `docs/stories-implemented/story-1.7-review.md` (DoD: Gate 1 spec echo 11/11 AC + 3a + steps + 3 hand-offs; Gates 2–3) — 1344/1344 tests ×3, coverage 100%, every gate read from its own line; real server: 4 role homes 200 with correct theme/menu/cards, `/` redirects, 0 inline script/style, DEBUG-off 404 inside the full layout, 0 ERROR lines. Open: screenshots/console/keyboard/screen-reader pass
 ---
 
 ## Upcoming
 
-1. Manual browser pass of the styleguide and the admin pages (both themes, dialog keyboard/VoiceOver, admin under CSP)
-2. **Wave 4** (`aire-dev-implement`): Dev 1 → 1.7 App Shell & Role Homes (binding hand-offs: error pages without DB, `/` redirect tests, switcher + `icon_variant` in the top bar); Dev 2 → 2.2 Catalogue pages (use `ui_card level=3` under grade headings)
-3. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
-4. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
-5. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
+1. **aire-review-code** for 1.7
+2. **Wave 4, Dev 2** (`aire-dev-implement`): 2.2 Catalogue pages (use `ui_card level=3` under grade headings) → then Wave 5 (1.10 E2E)
+3. **CI pipeline** (`aire-devops-discover` → `aire-devops-pipeline`) after Wave 4, before 1.10
+4. Manual browser pass of the styleguide, admin pages and the app shell (both themes, keyboard/VoiceOver, console CSP)
+5. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
+6. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
+7. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ## Agent Activity
 
@@ -290,6 +295,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Remediated story 1.9 (story-1.9-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 09:13 |
+| DEV | Story 1.7 complete (one-by-one) | Idle | 2026-10-23 | 2026-10-23 09:33 |
 | REVIEWER | Reviewed story 1.9 (approved with comments) | Idle | 2026-10-22 | 2026-10-22 18:02 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |

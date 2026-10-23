@@ -1,19 +1,37 @@
-{% load static %}<!doctype html>
+{% load static i18n navigation %}{% shell_user as shell_user %}<!doctype html>
 <html lang="{{ LANGUAGE_CODE|default:'ro' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Learning Platform{% endblock %}</title>
+  <title>{% block title %}{% translate "Learning Platform" %}{% endblock %}</title>
+  {# CSP-safe htmx: no injected indicator <style>, no eval, no inline <script> from swaps. #}
+  <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false,"allowScriptTags":false}'>
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
-  {# Story 1.6 (user decision 2026-10-22): the primitives the sign-in and error pages use. #}
-  {# Story 1.7 builds the full layout (top bar, flash messages, ui.js, htmx) on top of this. #}
-  <link rel="stylesheet" href="{% static 'css/components/icon.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/alert.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/avatar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/badge.css' %}">
   <link rel="stylesheet" href="{% static 'css/components/button.css' %}">
   <link rel="stylesheet" href="{% static 'css/components/card.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components/alert.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/confirm_dialog.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/disabled_tile.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/empty_state.css' %}">
   <link rel="stylesheet" href="{% static 'css/components/form_field.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/icon.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/language_switcher.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/page_header.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/progress_meter.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/score.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/status_pill.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components/table.css' %}">
+  <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+  {% block extra_css %}{% endblock %}
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+  <script type="module" src="{% static 'js/ui.js' %}"></script>
 </head>
-<body>
-  <main id="content">{% block content %}{% endblock %}</main>
+<body class="{% if shell_user.is_authenticated and shell_user.role != 'STUDENT' %}theme-staff{% else %}theme-student{% endif %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <a class="skip-link" href="#content">{% translate "Skip to content" %}</a>
+  {% include "layouts/_top_bar.html" %}
+  {% include "layouts/_messages.html" %}
+  <main id="content" tabindex="-1">{% block content %}{% endblock %}</main>
 </body>
 </html>

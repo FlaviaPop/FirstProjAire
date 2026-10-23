@@ -34,6 +34,10 @@ CLIENT_FOR_ROLE = {
 }
 # (role, path, expected_status) — append one block per story, grouped by route.
 ROWS = [(role, "/healthz", 200) for role in CLIENT_FOR_ROLE]
+# Story 1.7 — home
+ROWS += [("anonymous", "/ro/", 302)] + [
+    (role, "/ro/", 200) for role in ("Student", "Teacher", "Parent/Guardian", "Admin")
+]
 
 
 @pytest.mark.parametrize(("role", "path", "expected"), ROWS)
