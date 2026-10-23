@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 16:35
-**Updated By**: DEV
+**Last Updated**: 2026-10-23 16:38
+**Updated By**: REVIEWER
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -105,6 +105,7 @@
 - [x] Story 1.10 Foundation E2E Journeys (wave 5, Dev 1, one-by-one, branch `feature/story-1.10-e2e`): 17 Playwright journeys (8 files) cover 13/13 AC plus the 1.6/1.7 browser hand-offs; 17/17 ×3 in ~7.3 s; deliberate break caught (trace + screenshot kept); default suite unchanged (1497 passed, 17 deselected, 100% coverage); no production code changed, no defects → **wave 5 complete; CYCLE-1 built (13/13)**
 - [x] Story 1.10 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 0 🟢 (`docs/reviews/story-1.10-code-review-v1.md`) — all CYCLE-1 stories reviewed
 - [x] Remediation from `story-1.10-code-review-v1.md`: ISS-001 (focus-not-obscured journey rewritten: field under the sticky bar → Shift+Tab; red without `scroll-padding-top`, green with it); 17/17 e2e ×3, 1497/1497 default
+- [x] Story 1.10 code review v2 (NEW_CHANGES): ✅ APPROVED — 0 🔴 · 0 🟠; ISS-001 fix verified red/green by REVIEWER (`docs/reviews/story-1.10-code-review-v2.md`)
 
 ### Implementation Plan
 
@@ -299,6 +300,8 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.10-code-review-v1.md` — e2e 17/17 ×3 + reversed + isolated orders, default 1497 passed / 17 deselected, coverage 100%, every gate read from its own line; mutation probes: CSP listener, non-modal dialog and alert focus all caught; finding: focus-not-obscured journey still passes with `scroll-padding-top: 0` (ISS-001 🟡; verified sensitive variant in the report)
 - [x] **Remediation — Story 1.10 (review v1)**: ✅ Resolved (1/1) — 2026-10-23
   - Evidence: `docs/reviews/story-1.10-code-review-v1.md` (banner, resolution block, Remediation Section) — red run with the rule removed locally (`assert 9.953125 >= (0 + 65)`), green with it restored; e2e 17/17 ×3, default 1497/1497, coverage 100%, every gate read from its own line; no `src/` change
+- [x] **Code Review — Story 1.10 (v2)**: ✅ APPROVED — 2026-10-23
+  - Evidence: `docs/reviews/story-1.10-code-review-v2.md` — NEW_CHANGES (changed test only); REVIEWER red run (rule removed / `scroll-padding-top: 0` → `assert 9.953125 >= (0 + 65)`), green restored; e2e 17/17 ×3, default 1497/1497, coverage 100%, every gate read from its own line
 ---
 
 ## Upcoming
@@ -320,6 +323,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated story 1.10 (story-1.10-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 16:35 |
-| REVIEWER | Reviewed story 1.10 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 16:30 |
+| REVIEWER | Reviewed story 1.10 v2 (approved) | Idle | 2026-10-23 | 2026-10-23 16:38 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |
