@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 16:57
+**Last Updated**: 2026-10-23 17:09
 **Updated By**: QA
 **Overall Status**: 🟡 IN PROGRESS
 
@@ -35,7 +35,7 @@
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-23 | `docs/reviews/` — 13/45 stories reviewed (1.0–1.10, 2.1, 2.2; all CYCLE-1) | 2026-10-23 16:30 |
-| QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
+| QA | 🟡 In Progress | AIRE_QA | 2026-10-23 | `docs/testing/bug-triage-2026-10-23.md` — 1 open go-live blocker (BUG-004 🟠 P1); BUG-001–003 re-verified fixed | 2026-10-23 17:09 |
 | DevOps Discovery | ✅ Done | AIRE_DEVOPS | 2026-10-23 | `docs/deployment/discovery-report.md` — Hetzner fsn1, 2× CX22 (staging + prod), Docker Compose + Nginx/Let's Encrypt, Terraform (state in Object Storage), GHCR, staging auto / prod approval + auto-rollback; open before deploy: domains, alert e-mail, operator SSH IPs | 2026-10-23 11:06 |
 
 ---
@@ -109,6 +109,7 @@
 - [x] Remediation of the 4 DevOps-deferred review items (user: "multiple", all four): 1.1 ISS-004 (`TRUST_INCOMING_REQUEST_ID`, prod default on behind Nginx), 1.0 ISS-004 (HSTS includeSubDomains/preload env-driven, default off — owner decision; W005/W021 silenced only while off), 1.8 ISS-004 (`manage.py purge_audit_log`, 1-year retention, DELETE trigger lifted for one statement in one transaction, purge audited), 1.2 ISS-005 (closed: Nginx login rate limit in PR #1); 1532/1532 tests, coverage 100% → **no deferred review items remain**
 - [x] Code review v2 (NEW_CHANGES) of the deferred-item fixes: stories 1.0, 1.1, 1.8 ✅ APPROVED (0 🔴 · 0 🟠 each); 1.2 skipped (approved, code unchanged) — `docs/reviews/story-1.0|1.1|1.8-code-review-v2.md`
 - [x] Defect raised (`aire-raise-defect`, local tracking): **BUG-004** 🟠 Major / P1 — behind the reverse proxy, lockouts key on the proxy IP (`django-ipware` missing), so any client can lock any username out; reproduced end to end (`docs/testing/bug-triage-2026-10-23.md`). Next: `aire-qa-triage` → `aire-dev-remediate`
+- [x] Bug triage #3 (sources: validation 2026-10-21 + regression 2026-10-21 + raised BUG-004): 4 bugs — BUG-004 🟠 High / P1 open (go-live blocker; root cause in 3 parts: `django-ipware` missing, axes never reads `X-Forwarded-For`, planned `AXES_PROXY_COUNT=1` wrong for Nginx's overwrite header — proven by 5 runs), BUG-001/002/003 re-verified fixed; release decision ⚠️ CONDITIONAL: CYCLE-1 sign-off may proceed, production go-live blocked (`docs/testing/bug-triage-2026-10-23.md`)
 
 ### Implementation Plan
 
@@ -320,6 +321,14 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 6. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
+## Blockers
+
+| ID | Description | Owner | Opened | Status | Recorded |
+|----|-------------|-------|--------|--------|----------|
+| BUG-004 | 🟠 P1 — behind the reverse proxy, lockouts/audit key on the proxy IP (or NULL): any client can lock any username out. Blocks production go-live, not the CYCLE-1 sign-off. Fix: DEV (`django-ipware`, env-specific `X-Forwarded-For` trust) + DevOps (`AXES_PROXY_COUNT` in PR #1) | DEV + DEVOPS | 2026-10-23 | 🔴 Open | 2026-10-23 17:09 |
+
+---
+
 ## Agent Activity
 
 | Agent | Last Action | Status | Updated | Recorded |
@@ -331,5 +340,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated deferred items of reviews 1.0/1.1/1.2/1.8 | Idle | 2026-10-23 | 2026-10-23 16:47 |
 | REVIEWER | Reviewed stories 1.0, 1.1, 1.8 v2 (approved) | Idle | 2026-10-23 | 2026-10-23 16:52 |
-| QA | Raised BUG-004 (lockout keyed on proxy IP) | Idle | 2026-10-23 | 2026-10-23 16:57 |
+| QA | Bug triage complete — 4 bugs, 1 go-live blocker (BUG-004) | Active | 2026-10-23 | 2026-10-23 17:09 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |
