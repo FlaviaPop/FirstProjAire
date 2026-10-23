@@ -1,0 +1,16 @@
+{% extends "layouts/base.html" %}
+{% load ui %}
+{% block title %}E2E primitives{% endblock %}
+{% block content %}
+<h1>E2E primitives</h1>
+{# Story 1.6 ISS-002 hand-off: a dismissible alert whose × keeps focus on the page. #}
+{% ui_alert "info" "Saved" %}
+{# Story 1.10 AC 9: dialog trigger + confirm dialog. #}
+{% ui_dialog_trigger "d1" "Open" %}
+{% ui_confirm_dialog "d1" "Confirm?" "Body" "OK" "#" %}
+{# Story 1.7 ISS-001 hand-off: a page taller than the viewport for the focus-not-obscured check. #}
+<form action="#" method="get" aria-label="Long form">
+  {% for row in rows %}<p><label for="field-{{ row }}">Field {{ row }}</label> <input id="field-{{ row }}" name="field-{{ row }}"></p>
+  {% endfor %}
+</form>
+{% endblock %}

@@ -1,8 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 11:06
-**Last Updated**: 2026-10-21 12:30
-**Updated By**: DEVOPS
+**Last Updated**: 2026-10-23 16:21
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -27,7 +26,7 @@
 | UI/UX Design | ✅ Done | AIRE_UI_UX_DESIGNER | 2026-10-19 | `docs/ui-ux/ui-ux-spec.md` | 2026-10-19 14:56 |
 | Build Cycles | ✅ Done | AIRE_BUILD_CYCLE_PLANNER | 2026-10-19 | `docs/plans/builds/` · `docs/plans/build-cycles.md` | 2026-10-19 14:45 |
 | Implementation Plan | ✅ Done | AIRE_PRODUCT_OWNER | 2026-10-19 | `docs/plans/implementation-plan.md` — all 3 cycles planned (45 stories) | 2026-10-19 19:23 |
-| Epic 1: Foundation | 🟡 In Progress | AIRE_DEV | 2026-10-22 | 10/11 stories done (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9) | 2026-10-23 09:33 |
+| Epic 1: Foundation | ✅ Done | AIRE_DEV | 2026-10-23 | 11/11 stories done (1.0–1.10); 1.10 awaiting code review | 2026-10-23 16:21 |
 | Epic 2: Grade & Subject Catalogue | ✅ Done | AIRE_DEV | 2026-10-21 | 2/2 stories done (2.1, 2.2) | 2026-10-23 10:36 |
 | Epic 3: Teacher Content Authoring | ⏸️ Not Started | — | — | 0/9 stories done | 2026-10-19 18:44 |
 | Epic 4: Student Lessons & Practice | ⏸️ Not Started | — | — | 0/4 stories done | 2026-10-19 18:44 |
@@ -103,6 +102,7 @@
 - [x] Story 2.2 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 0 🟡 · 2 🟢 (`docs/reviews/story-2.2-code-review-v1.md`) — all built stories reviewed
 - [x] Remediation from `story-2.2-code-review-v1.md`: ISS-001 (`ui_card` icon_variant; student cards duotone, incl. 1.7 home cards), ISS-002 (owner wording: "Clase și materii" + RO glossary in README); 1497/1497 tests
 - [x] DevOps discovery (`aire-devops-discover`, path S): `docs/deployment/discovery-report.md` approved by the user; deferred review items mapped (gettext in CI, HSTS, client IP, login rate limit, audit retention 1 year, X-Request-ID, E2E in CI); 3 values open before `aire-devops-deploy`
+- [x] Story 1.10 Foundation E2E Journeys (wave 5, Dev 1, one-by-one, branch `feature/story-1.10-e2e`): 17 Playwright journeys (8 files) cover 13/13 AC plus the 1.6/1.7 browser hand-offs; 17/17 ×3 in ~7.3 s; deliberate break caught (trace + screenshot kept); default suite unchanged (1497 passed, 17 deselected, 100% coverage); no production code changed, no defects → **wave 5 complete; CYCLE-1 built (13/13)**
 
 ### Implementation Plan
 
@@ -129,7 +129,7 @@
 
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
-| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 8/13 | 🟡 In Progress | 2026-10-21 | — | 2026-10-22 14:30 |
+| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 13/13 | 🟡 Built — awaiting 1.10 review + sign-off | 2026-10-21 | — | 2026-10-23 16:21 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
@@ -151,7 +151,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.7 | App Shell & Role Homes | 2026-10-23 | 2026-10-23 (review v1 remediated 2026-10-23) | 2026-10-23 09:44 |
 | CYCLE-1 | 1.8 | Audit Log | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:55 |
 | CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-23) | 2026-10-23 09:13 |
-| CYCLE-1 | 1.10 | Foundation E2E Journeys | — | — | 2026-10-19 16:35 |
+| CYCLE-1 | 1.10 | Foundation E2E Journeys | 2026-10-23 | 2026-10-23 | 2026-10-23 16:21 |
 | CYCLE-1 | 2.1 | Catalogue Data | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 16:11 |
 | CYCLE-1 | 2.2 | Catalogue & Subject Pages | 2026-10-23 | 2026-10-23 (review v1 remediated 2026-10-23) | 2026-10-23 10:51 |
 | CYCLE-2 | 3.1 | Content Domain Rules | — | — | 2026-10-19 18:44 |
@@ -291,12 +291,14 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-2.2-code-review-v1.md` — 1486/1486 suite re-run (each gate on its own line), coverage 100%; probes: inactive/unknown/huge/zero/non-numeric ids → 404 (no 500), 404 bodies differ only by the requested URL, catalogue = 2 queries + auth, forged params change nothing; findings: student cards regular icon instead of duotone (ISS-001 🟢), "materie" vs "disciplină" wording (ISS-002 🟢, owner decision)
 - [x] **Remediation — Story 2.2 (review v1)**: ✅ Resolved (2/2) — 2026-10-23
   - Evidence: `docs/reviews/story-2.2-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1497/1497 tests ×3, coverage 100%, every gate read from its own line; real server: student cards duotone / teacher regular, lead "Clase și materii", 0 ERROR lines
+- [x] **Story 1.10 Foundation E2E Journeys**: Done — 2026-10-23
+  - Evidence: `docs/stories-implemented/story-1.10-review.md` (DoD: 3 runs 17/17 at 7.30–7.36 s; CYCLE-1 AC → journey map; deliberate-failure trace + screenshot; Gate 1 13/13 AC + 2 hand-offs; deviations: native-dialog Tab stop on `document.body`, test-only serialized-rollback snapshot hand-over and audit-trigger drop for the flush)
 ---
 
 ## Upcoming
 
-1. **CI pipeline** (`aire-devops-pipeline`) before Wave 5 (1.10 adds Playwright E2E) — discovery done; decide the CI→VM deploy path (pull-based recommended)
-2. **Wave 5** (`aire-dev-implement`): Dev 1 → 1.10 Foundation E2E Journeys (carries hand-offs: dialog keyboard, alert-dismiss focus, focus-not-obscured) → CYCLE-1 demo and sign-off
+1. **Code review — Story 1.10** (`aire-review-code`), then CYCLE-1 demo and sign-off (`uv run pytest -m e2e --headed` as the demo script)
+2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add the e2e job (Chromium install) there
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
 4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs: HSTS flags (1.0 ISS-004), `python-ipware`/`AXES_PROXY_COUNT`, audit purge job (1.8 ISS-004, 1 year)
 5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
@@ -311,7 +313,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Remediated story 2.2 (story-2.2-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 10:51 |
+| DEV | Implemented story 1.10 (Foundation E2E Journeys) | Idle | 2026-10-23 | 2026-10-23 16:21 |
 | REVIEWER | Reviewed story 2.2 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 10:46 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |

@@ -48,6 +48,21 @@ uv run pytest -m e2e                                        # browser journeys (
 Without compiled catalogues, the tests that need real translations stop with
 "Compiled catalogues missing … run compilemessages".
 
+### End-to-end tests
+
+The CYCLE-1 journeys in `tests/e2e/` drive Chromium against a live server (pytest-playwright).
+A plain `uv run pytest` skips them (`-m 'not e2e'` in `pyproject.toml`).
+
+```bash
+uv run playwright install chromium     # once per machine
+uv run pytest -m e2e                   # ~10 s; add --headed to watch
+```
+
+On a failure, the trace and a screenshot land in `test-results/<test>/` (git-ignored); open a trace
+with `uv run playwright show-trace test-results/<test>/trace.zip`. Each journey gets a fresh
+database with the seeded catalogue restored. The test-only page `/en/e2e/dialog/` exists only in
+`tests/e2e/urls.py`.
+
 Quality gates (all must pass before merge):
 
 ```bash
