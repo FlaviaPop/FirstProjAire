@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 17:22
-**Updated By**: DEV
+**Last Updated**: 2026-10-23 17:29
+**Updated By**: QA
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -35,7 +35,7 @@
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-23 | `docs/reviews/` — 13/45 stories reviewed (1.0–1.10, 2.1, 2.2; all CYCLE-1) | 2026-10-23 16:30 |
-| QA | 🟡 In Progress | AIRE_QA | 2026-10-23 | `docs/testing/bug-triage-2026-10-23.md` — 1 open go-live blocker (BUG-004 🟠 P1); BUG-001–003 re-verified fixed | 2026-10-23 17:09 |
+| QA | 🟡 In Progress | AIRE_QA | 2026-10-23 | `docs/testing/regression-report-2026-10-23.md` — 🟢 no regressions (1541/1541, e2e 17/17); BUG-004 app-fixed, go-live awaits PR #1 `AXES_PROXY_COUNT=0` | 2026-10-23 17:29 |
 | DevOps Discovery | ✅ Done | AIRE_DEVOPS | 2026-10-23 | `docs/deployment/discovery-report.md` — Hetzner fsn1, 2× CX22 (staging + prod), Docker Compose + Nginx/Let's Encrypt, Terraform (state in Object Storage), GHCR, staging auto / prod approval + auto-rollback; open before deploy: domains, alert e-mail, operator SSH IPs | 2026-10-23 11:06 |
 
 ---
@@ -111,6 +111,7 @@
 - [x] Defect raised (`aire-raise-defect`, local tracking): **BUG-004** 🟠 Major / P1 — behind the reverse proxy, lockouts key on the proxy IP (`django-ipware` missing), so any client can lock any username out; reproduced end to end (`docs/testing/bug-triage-2026-10-23.md`). Next: `aire-qa-triage` → `aire-dev-remediate`
 - [x] Bug triage #3 (sources: validation 2026-10-21 + regression 2026-10-21 + raised BUG-004): 4 bugs — BUG-004 🟠 High / P1 open (go-live blocker; root cause in 3 parts: `django-ipware` missing, axes never reads `X-Forwarded-For`, planned `AXES_PROXY_COUNT=1` wrong for Nginx's overwrite header — proven by 5 runs), BUG-001/002/003 re-verified fixed; release decision ⚠️ CONDITIONAL: CYCLE-1 sign-off may proceed, production go-live blocked (`docs/testing/bug-triage-2026-10-23.md`)
 - [x] Remediation from `bug-triage-2026-10-23.md`: BUG-004 fixed in the app — `django-ipware` added, `X-Forwarded-For` read only in prod (`DJANGO_TRUST_X_FORWARDED_FOR`, default on), `AXES_PROXY_COUNT` default 0 documented; real prod-settings run: other client 302, attacker 429, real IPs in axes + audit; 1541/1541 ×3, e2e 17/17, coverage 100%. **Go-live condition**: PR #1 must deploy `AXES_PROXY_COUNT=0` (DevOps hand-off)
+- [x] QA regression vs Story 1.0 baseline (+ 2026-10-21 regression as comparison): 🟢 NO REGRESSIONS — 1541/1541 ×3 + reversed order, e2e 17/17 ×2, 100% coverage, 28/28 surviving baseline functions, 14 manual scenarios (3 expected changes classified); BUG-004 re-validated on prod settings (fixed with defaults; `AXES_PROXY_COUNT=1` reproduces it → go-live condition) (`docs/testing/regression-report-2026-10-23.md`)
 
 ### Implementation Plan
 
@@ -313,6 +314,8 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.0-code-review-v2.md`, `story-1.1-code-review-v2.md`, `story-1.8-code-review-v2.md` — NEW_CHANGES; live runserver request-id per mode (prod trusted / prod off / dev), real `check --deploy` (2 silenced / 0 silenced), real-DB purge probes (induced failure rolls back rows + triggers; exact-second cutoff boundary; concurrent writer waits 1.29 s, its DELETE rejected); 1532/1532, coverage 100%, every gate read from its own line
 - [x] **Remediation — BUG-004 (`bug-triage-2026-10-23.md`)**: ✅ Resolved (application) — 2026-10-23
   - Evidence: `docs/testing/bug-triage-2026-10-23.md` (banner, resolution, Remediation Section) — red: 5 failed; green: 1541/1541 ×3, e2e 17/17, coverage 100%, every gate read from its own line; real server on `config.settings.prod`: student 302 /en/, attacker 429, axes/audit record 203.0.113.10 / 198.51.100.20, 0 ERROR lines
+- [x] **QA Regression — 2026-10-23**: 🟢 NO REGRESSIONS
+  - Evidence: `docs/testing/regression-report-2026-10-23.md` — clean `uv sync --frozen`; 1541/1541 ×3 + reversed, e2e 17/17 ×2, 100% (1416 stmts), domain/application 100%; baseline survival 28/28; manual TC-001…TC-030 on a real server; BUG-004 prod re-validation
 ---
 
 ## Upcoming
@@ -343,5 +346,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated BUG-004 (bug-triage-2026-10-23.md) | Idle | 2026-10-23 | 2026-10-23 17:22 |
 | REVIEWER | Reviewed stories 1.0, 1.1, 1.8 v2 (approved) | Idle | 2026-10-23 | 2026-10-23 16:52 |
-| QA | Bug triage complete — 4 bugs, 1 go-live blocker (BUG-004) | Active | 2026-10-23 | 2026-10-23 17:09 |
+| QA | Regression complete — 0 regressions | Idle | 2026-10-23 | 2026-10-23 17:29 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |
