@@ -148,7 +148,7 @@ The default run's test count and duration are the same as before the story: 1,49
 | AC12 | Trace + screenshot on failure in `test-results/` (git-ignored) | Deliberate-failure check; `.gitignore:25` |
 | AC13 | Under 3 minutes, recorded | ~7.3 s |
 | Hand-off 1.6 ISS-002 | Enter on the alert × removes it; focus on `<main id="content">` | `test_dismissing_an_alert_keeps_focus_on_main` |
-| Hand-off 1.7 ISS-001 | Long page: Shift+Tab to a field near the top; box top ≥ 64 px | `test_focus_is_never_hidden_under_the_sticky_top_bar` (Field 40 → Field 1, `y >= 64`) |
+| Hand-off 1.7 ISS-001 | Long page: keyboard focus never leaves a field hidden under the sticky bar | `test_focus_is_never_hidden_under_the_sticky_top_bar`: Field 20 under the bar → Shift+Tab → top ≥ banner bottom. Rewritten in remediation of review v1 ISS-001: the original Field 40 → Field 1 walk passed without `scroll-padding-top`; the new test fails without it (y = 9.95 < 65) and passes with it |
 | OUT | No production code; no CI job, cross-browser, visual diff, or CYCLE-2/3 journeys | `git diff main --stat -- src/ pyproject.toml` empty |
 
 **AC rows: 13 / 13. Steps: 5 / 5. Hand-offs: 2 / 2.**

@@ -1,5 +1,12 @@
 # Code Review - Story 1.10: Foundation E2E Journeys
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent
+> - **Fixed**: 1 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 0
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1497/1497 passing (default) + 17/17 e2e ×3 | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-23
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -206,6 +213,18 @@ Optionally keep the existing long Shift+Tab walk as a second test, but don't cou
 
 **Why This Matters**: This journey is the only browser-level evidence for a WCAG 2.2 AA criterion that the CYCLE-1 sign-off relies on. Right now it would stay green through exactly the regression it was written to catch.
 
+**Resolution** (2026-10-23, DEV):
+- **Fix:** the journey was rewritten as suggested.
+  - Field 21 is focused and Field 20 is scrolled to sit inside the viewport but under the bar, then Shift+Tab focuses Field 20.
+  - It asserts Field 20's top is at or below the banner's bottom edge, read from `get_by_role("banner")`. `TOP_BAR_HEIGHT = 64` is removed; the banner is actually 65px tall.
+  - A **precondition assertion** checks that Field 20 really is under the bar before the key press, so the test can't pass vacuously.
+  - The old Field 40 → Field 1 walk was dropped, since it guarded nothing.
+- **Change ref:** `tests/e2e/test_dialog_keyboard.py:43-65`. No `src/` change.
+- **Test evidence:**
+  - **Red, with the rule removed locally** (`layout.css:5` commented out): `AssertionError … assert 9.953125 >= (0 + 65)` → 1 failed. The CSS was restored from a backup afterwards (`git status --short src/` → empty).
+  - **Green, with the rule restored:** `test_dialog_keyboard.py` 3 passed. Full e2e 17/17 ×3.
+- Status: ✅ Resolved
+
 ---
 
 ## Issue Summary
@@ -256,3 +275,79 @@ Optionally keep the existing long Shift+Tab walk as a second test, but don't cou
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-23
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 Medium (all reported issues; the user confirmed the scope)
+**Scenario**: Code Review
+**Stories Affected**: 1.10
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.10 | `tests/e2e/test_dialog_keyboard.py:43-65` | Focus-not-obscured journey passed without `scroll-padding-top` | Field placed under the bar, then focused by Shift+Tab; banner edge read from the page; precondition assertion | rewritten test ✅ (red without the rule, green with it) |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `tests/e2e/test_dialog_keyboard.py` | Modified | Sensitive focus-not-obscured journey; `TOP_BAR_HEIGHT` constant removed |
+| `docs/stories-implemented/story-1.10-review.md` | Modified | Hand-off 1.7 ISS-001 row now cites the red/green evidence |
+| `docs/reviews/story-1.10-code-review-v1.md` | Modified | Banner, resolution block, this section |
+| `docs/status.md` | Modified | Remediation entry |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| E2E locators (§12.5) | `get_by_role("banner")`, `get_by_label("Field 20/21", exact=True)` | `page.evaluate` is used only to scroll, not to locate |
+| Tests that can fail (§12.6) | precondition assertion + red run | the test fails when the behaviour it guards is removed |
+
+## Testing Summary
+
+- **Targeted tests changed**: 1 (rewritten)
+- **Full suite**: 1497/1497 passing in the default run; e2e 17/17 in 3 consecutive runs
+- **Coverage**: 100% (target ≥85%)
+
+**Test Output**:
+```
+--- RED (layout.css:5 scroll-padding-top removed locally; restored afterwards, src/ unchanged)
+E       AssertionError: ({'x': 262.578125, 'y': 9.953125, 'width': 153, 'height': 21}, {'x': 0, 'y': 0, 'width': 1280, 'height': 65})
+E       assert 9.953125 >= (0 + 65)
+FAILED tests/e2e/test_dialog_keyboard.py::test_focus_is_never_hidden_under_the_sticky_top_bar[chromium]
+1 failed, 2 deselected in 0.99s
+--- old test with the same CSS removed (the defect): 1 passed, 2 deselected in 0.97s
+--- GREEN (rule restored)
+tests/e2e/test_dialog_keyboard.py: 3 passed in 1.34s
+e2e run 1: 17 passed, 1497 deselected in 6.94s
+e2e run 2: 17 passed, 1497 deselected in 7.04s
+e2e run 3: 17 passed, 1497 deselected in 6.94s
+default:   1497 passed, 17 deselected in 12.81s | Total coverage: 100.00%
+[ruff format]     187 files already formatted
+[ruff check]      All checks passed!
+[mypy]            Success: no issues found in 115 source files
+[lint-imports]    Contracts: 2 kept, 0 broken.
+[makemigrations]  No changes detected
+```
+
+## Deviations from Report Suggestions
+
+- **Precondition assertion added:** `under_bar["y"] < bar bottom` before Shift+Tab. If the page layout changes so the field is no longer under the bar, the test fails at setup instead of passing vacuously.
+- **Old walk not kept as a second test:** the report made this optional. It proves nothing beyond the new test, so it was dropped.
+
+## Lessons Learned
+
+1. A regression test is only proven by watching it fail without the fix. Chromium's focus scrolling moves off-screen targets fully into view, so "scroll up to the top" can't show the sticky-bar problem; "already in the viewport, under the bar" can.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional, since no 🔴 was fixed
+- [ ] CYCLE-1 demo and sign-off (`uv run pytest -m e2e --headed`)

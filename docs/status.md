@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 16:30
-**Updated By**: REVIEWER
+**Last Updated**: 2026-10-23 16:35
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -104,6 +104,7 @@
 - [x] DevOps discovery (`aire-devops-discover`, path S): `docs/deployment/discovery-report.md` approved by the user; deferred review items mapped (gettext in CI, HSTS, client IP, login rate limit, audit retention 1 year, X-Request-ID, E2E in CI); 3 values open before `aire-devops-deploy`
 - [x] Story 1.10 Foundation E2E Journeys (wave 5, Dev 1, one-by-one, branch `feature/story-1.10-e2e`): 17 Playwright journeys (8 files) cover 13/13 AC plus the 1.6/1.7 browser hand-offs; 17/17 ×3 in ~7.3 s; deliberate break caught (trace + screenshot kept); default suite unchanged (1497 passed, 17 deselected, 100% coverage); no production code changed, no defects → **wave 5 complete; CYCLE-1 built (13/13)**
 - [x] Story 1.10 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 0 🟢 (`docs/reviews/story-1.10-code-review-v1.md`) — all CYCLE-1 stories reviewed
+- [x] Remediation from `story-1.10-code-review-v1.md`: ISS-001 (focus-not-obscured journey rewritten: field under the sticky bar → Shift+Tab; red without `scroll-padding-top`, green with it); 17/17 e2e ×3, 1497/1497 default
 
 ### Implementation Plan
 
@@ -296,11 +297,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/stories-implemented/story-1.10-review.md` (DoD: 3 runs 17/17 at 7.30–7.36 s; CYCLE-1 AC → journey map; deliberate-failure trace + screenshot; Gate 1 13/13 AC + 2 hand-offs; deviations: native-dialog Tab stop on `document.body`, test-only serialized-rollback snapshot hand-over and audit-trigger drop for the flush)
 - [x] **Code Review — Story 1.10 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-23
   - Evidence: `docs/reviews/story-1.10-code-review-v1.md` — e2e 17/17 ×3 + reversed + isolated orders, default 1497 passed / 17 deselected, coverage 100%, every gate read from its own line; mutation probes: CSP listener, non-modal dialog and alert focus all caught; finding: focus-not-obscured journey still passes with `scroll-padding-top: 0` (ISS-001 🟡; verified sensitive variant in the report)
+- [x] **Remediation — Story 1.10 (review v1)**: ✅ Resolved (1/1) — 2026-10-23
+  - Evidence: `docs/reviews/story-1.10-code-review-v1.md` (banner, resolution block, Remediation Section) — red run with the rule removed locally (`assert 9.953125 >= (0 + 65)`), green with it restored; e2e 17/17 ×3, default 1497/1497, coverage 100%, every gate read from its own line; no `src/` change
 ---
 
 ## Upcoming
 
-1. **Remediate Story 1.10 review v1** (`aire-dev-remediate`, ISS-001), then CYCLE-1 demo and sign-off (`uv run pytest -m e2e --headed` as the demo script)
+1. **CYCLE-1 demo and sign-off** (`uv run pytest -m e2e --headed` as the demo script)
 2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add the e2e job (Chromium install) there
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
 4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs: HSTS flags (1.0 ISS-004), `python-ipware`/`AXES_PROXY_COUNT`, audit purge job (1.8 ISS-004, 1 year)
@@ -316,7 +319,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Implemented story 1.10 (Foundation E2E Journeys) | Idle | 2026-10-23 | 2026-10-23 16:21 |
+| DEV | Remediated story 1.10 (story-1.10-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 16:35 |
 | REVIEWER | Reviewed story 1.10 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 16:30 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |

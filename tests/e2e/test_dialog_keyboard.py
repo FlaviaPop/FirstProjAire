@@ -4,7 +4,6 @@ import pytest
 from playwright.sync_api import Page, expect
 
 pytestmark = pytest.mark.e2e
-TOP_BAR_HEIGHT = 64  # tokens.css --nav-height
 
 
 def test_dialog_opens_traps_focus_and_returns_focus(page: Page, base_url, console_errors):
@@ -42,15 +41,25 @@ def test_dismissing_an_alert_keeps_focus_on_main(page: Page, base_url, console_e
 
 
 def test_focus_is_never_hidden_under_the_sticky_top_bar(page: Page, base_url, console_errors):
-    # Story 1.7 review v1 ISS-001 (WCAG 2.4.11).
+    # Story 1.7 review v1 ISS-001 (WCAG 2.4.11): a field sitting under the sticky bar is scrolled
+    # clear of it when keyboard focus reaches it. Only `scroll-padding-top` does that: without it
+    # the field is already "in the viewport" and the browser leaves it under the bar (1.10 review
+    # v1 ISS-001: walking up to the top of the page passed either way).
     page.goto(f"{base_url}/en/e2e/dialog/")
-    page.get_by_label("Field 40", exact=True).focus()  # bottom of a page taller than the viewport
+    bar = page.get_by_role("banner").bounding_box()
+    assert bar is not None
+    page.get_by_label("Field 21", exact=True).focus()
+    page.evaluate(  # scroll so Field 20 sits inside the viewport but under the bar
+        "window.scrollBy(0, document.getElementById('field-20').getBoundingClientRect().top - 10)"
+    )
+    field_20 = page.get_by_label("Field 20", exact=True)
+    under_bar = field_20.bounding_box()
+    assert under_bar is not None
+    assert under_bar["y"] < bar["y"] + bar["height"], (under_bar, bar)  # precondition
 
-    for _ in range(39):
-        page.keyboard.press("Shift+Tab")
+    page.keyboard.press("Shift+Tab")
 
-    field_1 = page.get_by_label("Field 1", exact=True)
-    expect(field_1).to_be_focused()
-    box = field_1.bounding_box()
+    expect(field_20).to_be_focused()
+    box = field_20.bounding_box()
     assert box is not None
-    assert box["y"] >= TOP_BAR_HEIGHT, box
+    assert box["y"] >= bar["y"] + bar["height"], (box, bar)
