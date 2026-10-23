@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 16:21
-**Updated By**: DEV
+**Last Updated**: 2026-10-23 16:30
+**Updated By**: REVIEWER
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -34,7 +34,7 @@
 | Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
-| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 12/45 stories reviewed (1.0–1.9, 2.1, 2.2) | 2026-10-23 10:46 |
+| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-23 | `docs/reviews/` — 13/45 stories reviewed (1.0–1.10, 2.1, 2.2; all CYCLE-1) | 2026-10-23 16:30 |
 | QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 | DevOps Discovery | ✅ Done | AIRE_DEVOPS | 2026-10-23 | `docs/deployment/discovery-report.md` — Hetzner fsn1, 2× CX22 (staging + prod), Docker Compose + Nginx/Let's Encrypt, Terraform (state in Object Storage), GHCR, staging auto / prod approval + auto-rollback; open before deploy: domains, alert e-mail, operator SSH IPs | 2026-10-23 11:06 |
 
@@ -103,6 +103,7 @@
 - [x] Remediation from `story-2.2-code-review-v1.md`: ISS-001 (`ui_card` icon_variant; student cards duotone, incl. 1.7 home cards), ISS-002 (owner wording: "Clase și materii" + RO glossary in README); 1497/1497 tests
 - [x] DevOps discovery (`aire-devops-discover`, path S): `docs/deployment/discovery-report.md` approved by the user; deferred review items mapped (gettext in CI, HSTS, client IP, login rate limit, audit retention 1 year, X-Request-ID, E2E in CI); 3 values open before `aire-devops-deploy`
 - [x] Story 1.10 Foundation E2E Journeys (wave 5, Dev 1, one-by-one, branch `feature/story-1.10-e2e`): 17 Playwright journeys (8 files) cover 13/13 AC plus the 1.6/1.7 browser hand-offs; 17/17 ×3 in ~7.3 s; deliberate break caught (trace + screenshot kept); default suite unchanged (1497 passed, 17 deselected, 100% coverage); no production code changed, no defects → **wave 5 complete; CYCLE-1 built (13/13)**
+- [x] Story 1.10 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 0 🟢 (`docs/reviews/story-1.10-code-review-v1.md`) — all CYCLE-1 stories reviewed
 
 ### Implementation Plan
 
@@ -195,7 +196,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
 | Integration Tests | 100% pass | 100% (1497/1497 on `main`) | ✅ | 2026-10-23 10:51 |
-| Code Review | All stories | 12/45 | 🟡 | 2026-10-23 10:46 |
+| Code Review | All stories | 13/45 | 🟡 | 2026-10-23 16:30 |
 | Documentation | All stories | 12/45 | 🟡 | 2026-10-23 10:36 |
 
 ---
@@ -293,11 +294,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-2.2-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1497/1497 tests ×3, coverage 100%, every gate read from its own line; real server: student cards duotone / teacher regular, lead "Clase și materii", 0 ERROR lines
 - [x] **Story 1.10 Foundation E2E Journeys**: Done — 2026-10-23
   - Evidence: `docs/stories-implemented/story-1.10-review.md` (DoD: 3 runs 17/17 at 7.30–7.36 s; CYCLE-1 AC → journey map; deliberate-failure trace + screenshot; Gate 1 13/13 AC + 2 hand-offs; deviations: native-dialog Tab stop on `document.body`, test-only serialized-rollback snapshot hand-over and audit-trigger drop for the flush)
+- [x] **Code Review — Story 1.10 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-23
+  - Evidence: `docs/reviews/story-1.10-code-review-v1.md` — e2e 17/17 ×3 + reversed + isolated orders, default 1497 passed / 17 deselected, coverage 100%, every gate read from its own line; mutation probes: CSP listener, non-modal dialog and alert focus all caught; finding: focus-not-obscured journey still passes with `scroll-padding-top: 0` (ISS-001 🟡; verified sensitive variant in the report)
 ---
 
 ## Upcoming
 
-1. **Code review — Story 1.10** (`aire-review-code`), then CYCLE-1 demo and sign-off (`uv run pytest -m e2e --headed` as the demo script)
+1. **Remediate Story 1.10 review v1** (`aire-dev-remediate`, ISS-001), then CYCLE-1 demo and sign-off (`uv run pytest -m e2e --headed` as the demo script)
 2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add the e2e job (Chromium install) there
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
 4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs: HSTS flags (1.0 ISS-004), `python-ipware`/`AXES_PROXY_COUNT`, audit purge job (1.8 ISS-004, 1 year)
@@ -314,6 +317,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Implemented story 1.10 (Foundation E2E Journeys) | Idle | 2026-10-23 | 2026-10-23 16:21 |
-| REVIEWER | Reviewed story 2.2 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 10:46 |
+| REVIEWER | Reviewed story 1.10 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 16:30 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |
