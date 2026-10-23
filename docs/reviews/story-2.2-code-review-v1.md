@@ -1,5 +1,12 @@
 # Code Review - Story 2.2: Catalogue & Subject Pages
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent
+> - **Fixed**: 2 issue(s) — 🔴 0 / 🟠 0 / 🟡 0 / 🟢 2
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1497/1497 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-23
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -155,6 +162,13 @@ def ui_card(title, body="", href=None, icon=None, meta="", level=2, icon_variant
 ```
 Then pass `icon_variant=icon_variant` in `_grade_section.html` and in Story 1.7's `home/_cards.html`, and add a test that a student catalogue card references `#book-open-duotone` while a teacher's references `#book-open`.
 
+
+**Resolution** (2026-10-23, DEV):
+- Fix: `ui_card(…, icon_variant="regular")` validated against `ICON_VARIANTS` (`ValueError("Unknown icon variant…")`); `card.html` renders `{% ui_icon icon 24 icon_variant %}`; `_grade_section.html` (both card kinds) and Story 1.7's `home/_cards.html` pass the view's `icon_variant` (duotone for students, regular for staff). As suggested
+- Commit / change ref: `templatetags/ui_molecules.py` (`ui_card`), `components/card.html`, `templates/catalogue/_grade_section.html`, `templates/home/_cards.html`
+- Test evidence: `tests/integration/web/catalogue/test_card_icon_variant.py`: the duotone card, student catalogue (3 cards duotone) and student home tests failed before the fix; the rejection test now requires `ValueError` with "Unknown icon variant" (before the fix it only passed because the keyword didn't exist). Real server: student cards `book-open-duotone`, teacher cards `book-open`, student "Learn" home card duotone
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: "Subject" is "materie" on the student home card but "disciplină" in the catalogue 🟢 Low
@@ -171,6 +185,13 @@ subject  → "materie" (student/parent UI), "disciplină" only in admin/teacher 
 grade/level → "nivel" when K and P are included ("Niveluri și materii"), "clasă" for 1–8
 ```
 Then align `"Grades and subjects"` (and any future entries) with it. This is a product wording decision, so confirm with the owner.
+
+
+**Resolution** (2026-10-23, DEV):
+- Fix: owner wording decision 2026-10-23, **"materie" + "Clase"**: `"Grades and subjects"` → **"Clase și materii"** (`"Choose a subject"` stays "Alege o materie"); a Romanian glossary added to the README "Translations" section ("materie" for student/parent UI, "clasă" for levels)
+- Commit / change ref: `src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po`; `README.md` (Translations → Romanian glossary)
+- Test evidence: `test_catalogue_translations.py` expectations updated to the decided wording (the catalogue-entry test and the RO page lead test failed against the old text first); `makemessages` re-run → 0 fuzzy; real server lead text "Clase și materii"
+- Status: ✅ Resolved
 
 ---
 
@@ -215,3 +236,88 @@ Then align `"Grades and subjects"` (and any future entries) with it. This is a p
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-23
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟢 ISS-001 + 🟢 ISS-002 (both findings; scope and wording confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 2.2 (and Story 1.7's home cards, which share `ui_card`)
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟢 Low | 2.2 (+1.7) | `ui_molecules.py`, `card.html`, `_grade_section.html`, `home/_cards.html` | Student card icons regular | `ui_card` `icon_variant`; duotone for students | 9 ✅ |
+| ISS-002 | 🟢 Low | 2.2 | `ro/django.po`, `README.md` | "materie" vs "disciplină" | "Clase și materii" + glossary | 2 updated ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/templatetags/ui_molecules.py` | Modified | `ui_card` `icon_variant` (validated) |
+| `src/infrastructure/web/templates/components/card.html` | Modified | Icon rendered with the variant |
+| `src/infrastructure/web/templates/catalogue/_grade_section.html` | Modified | Passes `icon_variant` |
+| `src/infrastructure/web/templates/home/_cards.html` | Modified | Passes `icon_variant` (Story 1.7) |
+| `src/infrastructure/i18n/locale/ro/LC_MESSAGES/django.po` | Modified | "Clase și materii" |
+| `README.md` | Modified | Romanian glossary |
+| `tests/integration/web/catalogue/test_card_icon_variant.py` | New | 9 tests |
+| `tests/integration/web/catalogue/test_catalogue_translations.py` | Modified | Decided wording |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| UI primitives §11.2 (theme icon variant) | `ui_card` | Caller passes the theme's variant; default unchanged |
+| i18n consistency | glossary | One student-facing term per concept |
+
+## Testing Summary
+
+- **Targeted tests added or updated**: 11 (5 failed before the fixes)
+- **Full suite**: 1497/1497 passing (3 runs)
+- **Coverage**: 100% (target ≥85%); `ui_molecules.py` 118/118, 34/34 branches; file 269 lines
+- **Gates** (each read from its own output line): `[ruff format] 175 files already formatted` · `[ruff check] All checks passed!` · `[mypy] Success: no issues found in 115 source files` · `[lint-imports] Contracts: 2 kept, 0 broken.` · `[migrations] No changes detected` · `[po] fuzzy RO 0 EN 0`
+
+**Before the fix** (targeted):
+```
+FAILED test_card_icon_variant.py::test_card_icon_can_be_duotone
+FAILED test_card_icon_variant.py::test_student_catalogue_cards_are_duotone
+FAILED test_card_icon_variant.py::test_student_home_cards_are_duotone
+FAILED test_catalogue_translations.py::test_romanian_translation_matches_the_story[Grades and subjects-Clase și materii]
+4 failed, 33 passed
+```
+
+**After the fix** (full suite):
+```
+src/infrastructure/web/templatetags/ui_molecules.py         118      0     34      0   100%
+TOTAL                                                      1364      0    196      0   100%
+1497 passed in 13.09s
+```
+
+**Real server**:
+```
+ana (Student) GET /ro/catalogue/ -> 200 | lead: Clase și materii | cards 3 | icons ['book-open-duotone']
+ion (Teacher) GET /ro/catalogue/ -> 200 | lead: Clase și materii | cards 3 | icons ['book-open']
+ana home Learn card icon: ['book-open-duotone']
+ERROR lines: 0
+```
+
+## Deviations from Report Suggestions
+
+- ISS-002: the owner chose "materie + Clase" (not the suggested "Niveluri"), so "Clase și materii" is used and the glossary records "clasă" for levels.
+
+## Lessons Learned
+
+1. A test that "passes before the fix" may be passing for the wrong reason (a missing keyword); pin the expected error message.
+2. Wording consistency across consecutive screens is a product decision: record it once, in a glossary new strings must follow.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (only 🟢 issues)

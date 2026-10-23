@@ -119,16 +119,21 @@ def ui_card(
     icon: str | None = None,
     meta: str = "",
     level: int = 2,
+    icon_variant: str = "regular",
 ) -> TagContext:
     """A card; with `href` the title is its only link (CSS stretches it over the card).
 
     `level` is the title's heading level (2-4): the caller knows where the card sits in the page
-    outline (review v1 ISS-003). Icon names are validated by ui_icon when the card renders."""
+    outline (1.6 review v1 ISS-003). `icon_variant` follows the theme: duotone for students
+    (2.2 review v1 ISS-001). Icon names are validated by ui_icon when the card renders."""
     heading = _whole_number(level, "Card heading level")
     if heading not in CARD_HEADING_LEVELS:
         raise ValueError(f"Card heading level must be 2-4, got {level!r}")
+    if icon_variant not in ICON_VARIANTS:
+        raise ValueError(f"Unknown icon variant: {icon_variant!r}")
     return {
         "level": heading,
+        "icon_variant": icon_variant,
         "title": title,
         "body": body,
         "href": _href(href, "Card href") if href else None,

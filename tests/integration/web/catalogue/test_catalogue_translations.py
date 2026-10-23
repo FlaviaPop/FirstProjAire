@@ -14,7 +14,8 @@ ROMANIAN = {
     "Available to students": "Disponibil pentru elevi",
     "No chapters are published yet.": "Încă nu sunt publicate capitole.",
     "The catalogue is not available yet.": "Catalogul nu este încă disponibil.",
-    "Grades and subjects": "Clase și discipline",
+    # Owner wording decision 2026-10-23 (2.2 review v1 ISS-002): "materie" for student/parent UI.
+    "Grades and subjects": "Clase și materii",
 }
 
 
@@ -53,7 +54,7 @@ def test_romanian_catalogue_page_is_translated(teacher_client, compiled_catalogu
     html = teacher_client.get("/ro/catalogue/").content.decode()
 
     assert '<h1 class="page-header__title">Catalog</h1>' in html
-    assert '<p class="catalogue__lead">Clase și discipline</p>' in html
+    assert '<p class="catalogue__lead">Clase și materii</p>' in html
     assert html.count('<p class="card__meta">Disponibil pentru elevi</p>') == 3
     assert '<span class="catalogue__pilot">Pilot</span>' in html
     assert html.count('<span class="tile__status">Indisponibil</span>') == 108

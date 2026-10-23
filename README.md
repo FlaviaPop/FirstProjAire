@@ -60,6 +60,10 @@ uv run python manage.py makemigrations --check --dry-run
 
 ## Translations
 
+**Romanian glossary** (owner decision 2026-10-23): in pages students and parents see, a school
+subject is a **"materie"** (plural "materii"), not "disciplină", and a level is a **"clasă"**
+(plural "clase"). New strings follow these terms so consecutive screens never switch words.
+
 The UI is in Romanian (default) and English. Every page lives under `/ro/…` and `/en/…`, and the
 RO | EN switcher posts to `/i18n/setlang/`. Catalogues are in
 `src/infrastructure/i18n/locale/{ro,en}/LC_MESSAGES/django.po`.

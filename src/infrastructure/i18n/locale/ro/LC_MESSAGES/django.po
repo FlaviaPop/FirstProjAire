@@ -458,7 +458,7 @@ msgstr "Disponibil pentru elevi"
 
 #: src/infrastructure/web/templates/catalogue/index.html:8
 msgid "Grades and subjects"
-msgstr "Clase și discipline"
+msgstr "Clase și materii"
 
 #: src/infrastructure/web/templates/catalogue/index.html:13
 msgid "The catalogue is not available yet."
