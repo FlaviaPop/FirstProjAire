@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 16:52
-**Updated By**: REVIEWER
+**Last Updated**: 2026-10-23 16:57
+**Updated By**: QA
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -108,6 +108,7 @@
 - [x] Story 1.10 code review v2 (NEW_CHANGES): ✅ APPROVED — 0 🔴 · 0 🟠; ISS-001 fix verified red/green by REVIEWER (`docs/reviews/story-1.10-code-review-v2.md`)
 - [x] Remediation of the 4 DevOps-deferred review items (user: "multiple", all four): 1.1 ISS-004 (`TRUST_INCOMING_REQUEST_ID`, prod default on behind Nginx), 1.0 ISS-004 (HSTS includeSubDomains/preload env-driven, default off — owner decision; W005/W021 silenced only while off), 1.8 ISS-004 (`manage.py purge_audit_log`, 1-year retention, DELETE trigger lifted for one statement in one transaction, purge audited), 1.2 ISS-005 (closed: Nginx login rate limit in PR #1); 1532/1532 tests, coverage 100% → **no deferred review items remain**
 - [x] Code review v2 (NEW_CHANGES) of the deferred-item fixes: stories 1.0, 1.1, 1.8 ✅ APPROVED (0 🔴 · 0 🟠 each); 1.2 skipped (approved, code unchanged) — `docs/reviews/story-1.0|1.1|1.8-code-review-v2.md`
+- [x] Defect raised (`aire-raise-defect`, local tracking): **BUG-004** 🟠 Major / P1 — behind the reverse proxy, lockouts key on the proxy IP (`django-ipware` missing), so any client can lock any username out; reproduced end to end (`docs/testing/bug-triage-2026-10-23.md`). Next: `aire-qa-triage` → `aire-dev-remediate`
 
 ### Implementation Plan
 
@@ -315,7 +316,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 1. **CYCLE-1 demo and sign-off** (`uv run pytest -m e2e --headed` as the demo script)
 2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add there: the e2e job (Chromium install), the env names `DJANGO_TRUST_INCOMING_REQUEST_ID` / `DJANGO_HSTS_INCLUDE_SUBDOMAINS` / `DJANGO_HSTS_PRELOAD` (pipeline-secrets.md, compose env), and a daily timer for `manage.py purge_audit_log` (DEV hand-offs 2026-10-23)
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
-4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs done 2026-10-23 (HSTS env flags, request-id trust, purge command); still open: `python-ipware` (not installed — without it axes ignores `AXES_PROXY_COUNT` and sees the proxy address for every client), WhiteNoise in `MIDDLEWARE`; switch HSTS flags on once the domain is final
+4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs done 2026-10-23 (HSTS env flags, request-id trust, purge command); still open: **BUG-004** (`django-ipware` not installed — axes ignores `AXES_PROXY_COUNT`, so behind the proxy any client can lock any username out; `docs/testing/bug-triage-2026-10-23.md`), WhiteNoise in `MIDDLEWARE`; switch HSTS flags on once the domain is final
 5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 6. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
@@ -330,5 +331,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Remediated deferred items of reviews 1.0/1.1/1.2/1.8 | Idle | 2026-10-23 | 2026-10-23 16:47 |
 | REVIEWER | Reviewed stories 1.0, 1.1, 1.8 v2 (approved) | Idle | 2026-10-23 | 2026-10-23 16:52 |
-| QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
+| QA | Raised BUG-004 (lockout keyed on proxy IP) | Idle | 2026-10-23 | 2026-10-23 16:57 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |
