@@ -1,6 +1,9 @@
 /* App shell — layouts/base.html, _top_bar.html, _nav.html, _messages.html and home/*.html
    (Story 1.7). Tokens only (tokens.css). Student theme is the default; .theme-staff overrides. */
 
+/* Scrolling to a focused control or #target leaves room for the sticky top bar (WCAG 2.4.11). */
+html { scroll-padding-top: calc(var(--nav-height) + var(--space-2)); }
+
 /* Skip link: visually hidden until focused, then top-left over the top bar. */
 .skip-link {
   position: absolute;

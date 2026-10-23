@@ -1,5 +1,12 @@
 # Code Review - Story 1.7: App Shell & Role Homes
 
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent
+> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1350/1350 passing | **Coverage**: 100% | **Linter**: clean
+> - **Scenario**: Code Review
+
 **Date**: 2026-10-23
 **Reviewed By**: REVIEWER Agent
 **Review Number**: 1
@@ -174,6 +181,13 @@ def test_scroll_padding_clears_the_sticky_top_bar():
 ```
 Also add a browser assertion to Story 1.10 (focus a field low on a long page with Shift+Tab; its bounding box top is ≥ the bar height).
 
+
+**Resolution** (2026-10-23, DEV):
+- Fix: `html { scroll-padding-top: calc(var(--nav-height) + var(--space-2)); }` (tokens only), as suggested; Story 1.10 gets the browser assertion (Shift+Tab focus stays below the 64px bar)
+- Commit / change ref: `src/infrastructure/web/static/css/layout.css` (first rule); `docs/plans/stories/epic-1-story-1.10-Foundation-E2E-Journeys.md` (hand-off)
+- Test evidence: `test_shell_review_fixes.py::test_scroll_padding_clears_the_sticky_top_bar` failed before the fix and passes now; real server serves `html { scroll-padding-top: calc(var(--nav-height) + var(--space-2)); }`
+- Status: ✅ Resolved
+
 ---
 
 ### ISS-002: A leading space in the full name loses the greeting 🟢 Low
@@ -197,6 +211,13 @@ def test_greeting_ignores_surrounding_whitespace(client, name):
 
     assert "Hello, Ana!" in client.get("/en/").content.decode()
 ```
+
+
+**Resolution** (2026-10-23, DEV):
+- Fix: `next(iter(full_name.split()), "")`: the first word, ignoring stray spaces and tabs
+- Commit / change ref: `src/infrastructure/web/home/views.py:23-24`
+- Test evidence: `test_greeting_ignores_surrounding_whitespace` (`"  Ana Pop"`, `"Ana\tPop"`, `" Ana"` failed before; `"Ana  Pop"` passed before and after). Real server: a student named `"  Ana Maria Pop"` sees `Bună, Ana!`
+- Status: ✅ Resolved
 
 ---
 
@@ -222,6 +243,13 @@ def test_no_empty_navigation_landmark_for_a_corrupt_role(client):
 
     assert 'class="main-nav"' not in client.get("/en/").content.decode()
 ```
+
+
+**Resolution** (2026-10-23, DEV):
+- Fix: `_nav.html` renders the `<nav>` only when it has items; the top bar stays
+- Commit / change ref: `src/infrastructure/web/templates/layouts/_nav.html`
+- Test evidence: `test_no_empty_navigation_landmark_for_a_corrupt_role` failed before the fix and passes now
+- Status: ✅ Resolved
 
 ---
 
@@ -268,3 +296,87 @@ def test_no_empty_navigation_landmark_for_a_corrupt_role(client):
 **Reviewer**: REVIEWER Agent
 **Date**: 2026-10-23
 **Signature**: Approved with comments
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟡 ISS-001 + 🟢 ISS-002 + 🟢 ISS-003 (all findings; scope confirmed by the user)
+**Scenario**: Code Review
+**Stories Affected**: 1.7 (plus a hand-off line in Story 1.10)
+**Branch**: `main`
+
+## Issues Remediated
+
+| ID | Severity | Story | File | Summary | Resolution | Test Added |
+|------|----------|-------|------|---------|------------|------------|
+| ISS-001 | 🟡 Medium | 1.7→1.10 | `static/css/layout.css` | Sticky bar could hide focus | `scroll-padding-top` on `html`; 1.10 browser check | 1 ✅ |
+| ISS-002 | 🟢 Low | 1.7 | `home/views.py` | Leading space lost the greeting | `split()` first word | 4 ✅ |
+| ISS-003 | 🟢 Low | 1.7 | `layouts/_nav.html` | Empty nav landmark | Render only with items | 1 ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/static/css/layout.css` | Modified | `html { scroll-padding-top }` |
+| `src/infrastructure/web/home/views.py` | Modified | Whitespace-safe first name |
+| `src/infrastructure/web/templates/layouts/_nav.html` | Modified | `{% if items %}` around `<nav>` |
+| `tests/integration/web/home/test_shell_review_fixes.py` | New | 6 tests |
+| `docs/plans/stories/epic-1-story-1.10-Foundation-E2E-Journeys.md` | Modified | Focus-not-obscured browser assertion |
+
+## Patterns Applied
+
+| Pattern | Where Applied | Notes |
+|---------|---------------|-------|
+| Accessibility §11.4 (WCAG 2.2 AA) | layout CSS, nav | Focus never hidden under the sticky bar; no empty landmarks |
+| Tokens only (Story 1.5 rule) | `layout.css` | Offset from `--nav-height` + `--space-2` |
+
+## Testing Summary
+
+- **Targeted tests added**: 6 (5 failed before the fixes; 1 guards behaviour that already worked)
+- **Full suite**: 1350/1350 passing (3 runs)
+- **Coverage**: 100% (target ≥85%)
+- **Gates** (each read from its own output line): `[ruff format] 166 files already formatted` · `[ruff check] All checks passed!` (after splitting the docstring and using `Path.read_text` in the new test) · `[mypy] Success: no issues found in 110 source files` · `[lint-imports] Contracts: 2 kept, 0 broken.` · `[migrations] No changes detected`
+
+**Before the fix** (targeted):
+```
+FAILED test_shell_review_fixes.py::test_scroll_padding_clears_the_sticky_top_bar
+FAILED test_shell_review_fixes.py::test_greeting_ignores_surrounding_whitespace[  Ana Pop]
+FAILED test_shell_review_fixes.py::test_greeting_ignores_surrounding_whitespace[Ana\tPop]
+FAILED test_shell_review_fixes.py::test_greeting_ignores_surrounding_whitespace[ Ana]
+FAILED test_shell_review_fixes.py::test_no_empty_navigation_landmark_for_a_corrupt_role
+5 failed, 1 passed in 0.20s
+```
+
+**After the fix** (full suite):
+```
+src/infrastructure/web/home/views.py                         11      0      0      0   100%
+TOTAL                                                      1298      0    192      0   100%
+1350 passed in 11.46s
+```
+
+**Real server**:
+```
+student "  Ana Maria Pop" → <h1 class="home__greeting">Bună, Ana!
+GET /static/css/layout.css → html { scroll-padding-top: calc(var(--nav-height) + var(--space-2)); }
+ERROR lines: 0
+```
+
+## Deviations from Report Suggestions
+
+None.
+
+## Lessons Learned
+
+1. A sticky header needs a matching `scroll-padding-top`, or focus and `#targets` scroll under it.
+2. `str.split()` without arguments is the safe "first word": `split(" ")` treats leading or repeated spaces as empty words.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`): optional (no 🔴 or 🟠 issues)
+- [ ] Story 1.10 adds the focus-not-obscured browser assertion

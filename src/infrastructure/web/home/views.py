@@ -20,7 +20,8 @@ def index(request: HttpRequest) -> HttpResponse:
     user = request.user
     role = getattr(user, "role", "")
     context = {
-        "greeting_name": (getattr(user, "full_name", "") or "").split(" ")[0],
+        # First word, ignoring stray spaces/tabs (review v1 ISS-002).
+        "greeting_name": next(iter((getattr(user, "full_name", "") or "").split()), ""),
         "sections": [(e, url) for e, url in available_sections(user) if e is not HOME],
         "icon_variant": "duotone" if role == "STUDENT" else "regular",
     }

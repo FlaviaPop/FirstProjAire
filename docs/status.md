@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 09:36
+**Last Updated**: 2026-10-23 09:44
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: REVIEWER
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -97,6 +97,7 @@
 - [x] Remediation from `story-1.9-code-review-v1.md`: ISS-001 (owner decisions recorded in the story file; AC 2/4/10/15 + response rows + QA note amended), ISS-002 (lockout list masks typed text for non-accounts); 1278/1278 tests
 - [x] Story 1.7 App Shell & Role Homes (wave 4, Dev 1, one-by-one): full layout (htmx 2.0.11 vendored, CSP-safe), role menus from `NAV_BY_ROLE`, role homes, db-safe shell (1.1 ISS-003), `/` redirect tests (1.4), switcher in the top bar (1.4); 1344/1344 tests, coverage 100%. Owner decision 2026-10-23: error pages may set `csrftoken` (never a session)
 - [x] Story 1.7 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 2 🟢 (`docs/reviews/story-1.7-code-review-v1.md`; same-session review, independence note in the report)
+- [x] Remediation from `story-1.7-code-review-v1.md`: ISS-001 (`scroll-padding-top` for the sticky bar; 1.10 browser hand-off), ISS-002 (whitespace-safe greeting), ISS-003 (no empty nav landmark); 1350/1350 tests
 
 ### Implementation Plan
 
@@ -142,7 +143,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | CYCLE-1 | 1.4 | Internationalization | 2026-10-21 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 15:15 |
 | CYCLE-1 | 1.5 | Design Tokens & Atom Primitives | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 15:22 |
 | CYCLE-1 | 1.6 | Molecule Primitives | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-22) | 2026-10-22 17:01 |
-| CYCLE-1 | 1.7 | App Shell & Role Homes | 2026-10-23 | 2026-10-23 | 2026-10-23 09:33 |
+| CYCLE-1 | 1.7 | App Shell & Role Homes | 2026-10-23 | 2026-10-23 (review v1 remediated 2026-10-23) | 2026-10-23 09:44 |
 | CYCLE-1 | 1.8 | Audit Log | 2026-10-21 | 2026-10-21 (review v1 remediated 2026-10-22) | 2026-10-22 14:55 |
 | CYCLE-1 | 1.9 | Admin Account Management & Parent–Child Links | 2026-10-22 | 2026-10-22 (review v1 remediated 2026-10-23) | 2026-10-23 09:13 |
 | CYCLE-1 | 1.10 | Foundation E2E Journeys | — | — | 2026-10-19 16:35 |
@@ -188,7 +189,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
-| Integration Tests | 100% pass | 100% (1344/1344 on `main`) | ✅ | 2026-10-23 09:33 |
+| Integration Tests | 100% pass | 100% (1350/1350 on `main`) | ✅ | 2026-10-23 09:44 |
 | Code Review | All stories | 11/45 | 🟡 | 2026-10-23 09:36 |
 | Documentation | All stories | 11/45 | 🟡 | 2026-10-23 09:33 |
 
@@ -277,17 +278,18 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/stories-implemented/story-1.7-review.md` (DoD: Gate 1 spec echo 11/11 AC + 3a + steps + 3 hand-offs; Gates 2–3) — 1344/1344 tests ×3, coverage 100%, every gate read from its own line; real server: 4 role homes 200 with correct theme/menu/cards, `/` redirects, 0 inline script/style, DEBUG-off 404 inside the full layout, 0 ERROR lines. Open: screenshots/console/keyboard/screen-reader pass
 - [x] **Code Review — Story 1.7 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-23
   - Evidence: `docs/reviews/story-1.7-code-review-v1.md` — 1344/1344 suite re-run (each gate on its own line), coverage 100%; probes: greeting, escaping, query-string marker, switch from home, DB-down login/admin/home; findings: sticky top bar without `scroll-padding-top` can hide focused controls (ISS-001 🟡, WCAG 2.4.11), leading-space name loses the greeting (ISS-002 🟢), empty nav landmark for a corrupt role (ISS-003 🟢)
+- [x] **Remediation — Story 1.7 (review v1)**: ✅ Resolved (3/3) — 2026-10-23
+  - Evidence: `docs/reviews/story-1.7-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1350/1350 tests ×3, coverage 100%, every gate read from its own line; real server: `Bună, Ana!` for a leading-space name, scroll-padding rule served, 0 ERROR lines
 ---
 
 ## Upcoming
 
-1. **aire-dev-remediate** for 1.7 review ISS-001 (one CSS rule) before CYCLE-2's long editor pages
-2. **Wave 4, Dev 2** (`aire-dev-implement`): 2.2 Catalogue pages (use `ui_card level=3` under grade headings) → then Wave 5 (1.10 E2E)
-3. **CI pipeline** (`aire-devops-discover` → `aire-devops-pipeline`) after Wave 4, before 1.10
-4. Manual browser pass of the styleguide, admin pages and the app shell (both themes, keyboard/VoiceOver, console CSP)
-5. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
-6. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
-7. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
+1. **Wave 4, Dev 2** (`aire-dev-implement`): 2.2 Catalogue pages (use `ui_card level=3` under grade headings) → then Wave 5 (1.10 E2E)
+2. **CI pipeline** (`aire-devops-discover` → `aire-devops-pipeline`) after Wave 4, before 1.10
+3. Manual browser pass of the styleguide, admin pages and the app shell (both themes, keyboard/VoiceOver, console CSP)
+4. **DevOps** (`aire-devops-discover`, during CYCLE-2): gettext + `compilemessages` before tests in CI/Docker; HSTS subdomains/preload (1.0 ISS-004); `python-ipware` for the axes proxy count; login rate limit (1.2 ISS-005) + audit_log retention (1.8 ISS-004) + trusted X-Request-ID only from the proxy (1.1 ISS-004)
+5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
+6. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
 ## Agent Activity
 
@@ -298,6 +300,6 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Story 1.7 complete (one-by-one) | Idle | 2026-10-23 | 2026-10-23 09:33 |
+| DEV | Remediated story 1.7 (story-1.7-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 09:44 |
 | REVIEWER | Reviewed story 1.7 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 09:36 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |

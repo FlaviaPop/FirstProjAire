@@ -87,6 +87,8 @@ Adds the Playwright harness (`pytest-playwright`, already locked in the seed) un
 - E2E-only pytest options (`--browser=chromium`, tracing, screenshots) set in `tests/e2e/conftest.py`. `pyproject.toml` is **not** changed: the seed already declares the `e2e` marker and excludes it by default.
 - README "End-to-end tests" section: `uv run playwright install chromium`, `uv run pytest -m e2e`, traces on failure (`--tracing retain-on-failure`).
 
+> **Hand-off from Story 1.7 review v1 (2026-10-23), ISS-001:** on a page taller than the viewport (the test-only page can repeat a field block), scroll to the bottom, Shift+Tab up to a field near the top and assert its bounding box `top` ≥ the sticky top bar's height (64px): focus is never hidden under the bar (WCAG 2.4.11). Today this is checked only statically (`html { scroll-padding-top }` in `test_shell_review_fixes.py`).
+>
 > **Hand-off from Story 1.6 review v1 (2026-10-22), part of AC 9's dialog page:** also include a dismissible `ui_alert` on the test-only page and assert that pressing Enter on its × removes the alert and leaves `document.activeElement` on `<main id="content">`, not on `<body>` (ISS-002; today this is checked only statically in `test_molecules_groups_and_headings.py`).
 
 **Acceptance Criteria**:
