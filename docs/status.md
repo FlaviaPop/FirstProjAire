@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 10:36
+**Last Updated**: 2026-10-23 10:46
 **Last Updated**: 2026-10-21 12:30
-**Updated By**: DEV
+**Updated By**: REVIEWER
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -35,7 +35,7 @@
 | Epic 6: Chapter Tests & Scoring | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
 | Epic 7: Progress & Score Visibility | ⏸️ Not Started | — | — | 0/5 stories done | 2026-10-19 19:23 |
 | Epic 8: Content Moderation & Notifications | ⏸️ Not Started | — | — | 0/6 stories done | 2026-10-19 19:23 |
-| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 11/45 stories reviewed (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.1) | 2026-10-23 09:36 |
+| Review | 🟡 In Progress | AIRE_REVIEWER | 2026-10-22 | `docs/reviews/` — 12/45 stories reviewed (1.0–1.9, 2.1, 2.2) | 2026-10-23 10:46 |
 | QA | 🟡 In Progress | AIRE_QA | 2026-10-21 | `docs/testing/regression-report-2026-10-21.md` — 🟢 no regressions (605/605); all triaged bugs fixed | 2026-10-21 16:50 |
 
 ---
@@ -99,6 +99,7 @@
 - [x] Story 1.7 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 2 🟢 (`docs/reviews/story-1.7-code-review-v1.md`; same-session review, independence note in the report)
 - [x] Remediation from `story-1.7-code-review-v1.md`: ISS-001 (`scroll-padding-top` for the sticky bar; 1.10 browser hand-off), ISS-002 (whitespace-safe greeting), ISS-003 (no empty nav landmark); 1350/1350 tests
 - [x] Wave 4 Dev 2 (in one go, atomic story-agent, worktree `feature/story-2.2-catalogue`): Story 2.2 Catalogue & Subject Pages; 1486/1486 tests, coverage 100%, 12/12 AC, DoD gates passed; merged to `main` @ `415e3eb` → **wave 4 complete (2/2)**; Epic 2 done; Student "Learn" entry now live
+- [x] Story 2.2 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 0 🟡 · 2 🟢 (`docs/reviews/story-2.2-code-review-v1.md`) — all built stories reviewed
 
 ### Implementation Plan
 
@@ -191,7 +192,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
 | Integration Tests | 100% pass | 100% (1486/1486 on `main`) | ✅ | 2026-10-23 10:36 |
-| Code Review | All stories | 11/45 | 🟡 | 2026-10-23 09:36 |
+| Code Review | All stories | 12/45 | 🟡 | 2026-10-23 10:46 |
 | Documentation | All stories | 12/45 | 🟡 | 2026-10-23 10:36 |
 
 ---
@@ -283,11 +284,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.7-code-review-v1.md` (banner, per-issue resolutions, Remediation Section) — 1350/1350 tests ×3, coverage 100%, every gate read from its own line; real server: `Bună, Ana!` for a leading-space name, scroll-padding rule served, 0 ERROR lines
 - [x] **Story 2.2 Catalogue & Subject Pages**: Done — 2026-10-23
   - Evidence: `docs/stories-implemented/story-2.2-review.md` (DoD: Gate 1 spec echo 12/12 AC + 7 steps; Gates 2–3) — 1486/1486 tests ×3 in the worktree and re-run on merged `main`, coverage 100%, every gate read from its own line; real server, 4 roles × RO/EN: student sees exactly 3 subject links + 108 disabled tiles, h1/10×h2/3×h3, MEM 200, inactive/unknown 404, staff read-only, anonymous 302, 0 inline script/style, 0 ERROR lines. Open: screenshots + manual Tab walk
+- [x] **Code Review — Story 2.2 (v1)**: ⚠️ APPROVED WITH COMMENTS — 2026-10-23
+  - Evidence: `docs/reviews/story-2.2-code-review-v1.md` — 1486/1486 suite re-run (each gate on its own line), coverage 100%; probes: inactive/unknown/huge/zero/non-numeric ids → 404 (no 500), 404 bodies differ only by the requested URL, catalogue = 2 queries + auth, forged params change nothing; findings: student cards regular icon instead of duotone (ISS-001 🟢), "materie" vs "disciplină" wording (ISS-002 🟢, owner decision)
 ---
 
 ## Upcoming
 
-1. **aire-review-code** for 2.2
+1. Optional **aire-dev-remediate** for 2.2 review ISS-001 (card icon variant) / ISS-002 (pick one RO term for "subject")
 2. **CI pipeline** (`aire-devops-discover` → `aire-devops-pipeline`) before Wave 5 (1.10 adds Playwright E2E)
 3. **Wave 5** (`aire-dev-implement`): Dev 1 → 1.10 Foundation E2E Journeys (carries hand-offs: dialog keyboard, alert-dismiss focus, focus-not-obscured) → CYCLE-1 demo and sign-off
 4. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
@@ -305,5 +308,5 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
 | DEV | Story 2.2 complete (in one go) — wave 4 done | Idle | 2026-10-23 | 2026-10-23 10:36 |
-| REVIEWER | Reviewed story 1.7 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 09:36 |
+| REVIEWER | Reviewed story 2.2 (approved with comments) | Idle | 2026-10-23 | 2026-10-23 10:46 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
