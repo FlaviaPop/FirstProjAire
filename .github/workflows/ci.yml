@@ -1,0 +1,138 @@
+# CI: every gate as its own step (each result visible on its own line), translations first,
+# security scans, the image build + Trivy, and the E2E job (journeys arrive with Story 1.10).
+# Reusable (rulebook W1): the deploy workflows call it with `uses: ./.github/workflows/ci.yml`.
+name: CI
+
+# Pushes to main run CI through deploy-staging.yml (reusable call), so it runs once per merge.
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, types, tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+          python-version-file: .python-version
+          enable-cache: true
+      - name: Install GNU gettext
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gettext
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Compile translations
+        run: uv run python manage.py compilemessages --ignore=.venv
+      - name: ruff format
+        run: uv run ruff format --check .
+      - name: ruff check
+        run: uv run ruff check .
+      - name: mypy
+        run: uv run mypy
+      - name: Import contracts
+        run: PYTHONPATH=src uv run lint-imports
+      - name: Migrations are complete
+        run: uv run python manage.py makemigrations --check --dry-run
+      - name: Tests with coverage gate
+        run: uv run pytest -q --cov=src --cov-branch --cov-fail-under=85 --cov-report=xml
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore
+
+  e2e:
+    name: E2E (Playwright)
+    needs: checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+          python-version-file: .python-version
+          enable-cache: true
+      - name: Install GNU gettext
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gettext
+      - name: Install dependencies and Chromium
+        run: |
+          uv sync --frozen
+          uv run playwright install --with-deps chromium
+      - name: Compile translations
+        run: uv run python manage.py compilemessages --ignore=.venv
+      - name: E2E journeys
+        # Exit code 5 = no tests collected: accepted until Story 1.10 adds the journeys.
+        run: |
+          set +e
+          uv run pytest -m e2e --tracing retain-on-failure --output test-results
+          status=$?
+          if [ "$status" -eq 5 ]; then echo "No E2E journeys yet (Story 1.10)."; exit 0; fi
+          exit "$status"
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results
+
+  security:
+    name: Secrets and dependency audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+          python-version-file: .python-version
+      - name: pip-audit (locked runtime + dev dependencies)
+        run: |
+          uv export --frozen --format requirements-txt --no-emit-project > requirements-audit.txt
+          uvx pip-audit --strict --disable-pip --no-deps -r requirements-audit.txt
+
+  image:
+    name: Docker image + Trivy
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image (not pushed)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: learnplat:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Trivy report (all severities, informational)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: learnplat:ci-${{ github.sha }}
+          format: table
+          exit-code: "0"
+          ignore-unfixed: true
+      - name: Trivy gate (CRITICAL fails the build)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: learnplat:ci-${{ github.sha }}
+          format: table
+          exit-code: "1"
+          severity: CRITICAL
+          ignore-unfixed: true

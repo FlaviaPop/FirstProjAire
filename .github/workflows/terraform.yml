@@ -1,0 +1,85 @@
+# Terraform for both environments (one root, `environments` map: staging + prod - rulebook T6).
+# Plan on pull requests that touch terraform/; apply on merge to main after approval in the
+# `infrastructure` environment (it can change production servers).
+name: Terraform
+
+on:
+  pull_request:
+    paths: ["terraform/**", ".github/workflows/terraform.yml"]
+  push:
+    branches: [main]
+    paths: ["terraform/**", ".github/workflows/terraform.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
+env:
+  TF_IN_AUTOMATION: "1"
+  TF_INPUT: "0"
+  HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.HETZNER_S3_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.HETZNER_S3_SECRET_KEY }}
+  TF_VAR_operator_ip_addresses: ${{ secrets.TF_VAR_OPERATOR_IP_ADDRESSES }}
+  TF_VAR_operator_ssh_public_keys: ${{ secrets.TF_VAR_OPERATOR_SSH_PUBLIC_KEYS }}
+
+defaults:
+  run:
+    working-directory: terraform
+
+jobs:
+  bootstrap-check:
+    name: Backend bootstrapped?
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: backend.hcl and bootstrap.auto.tfvars exist
+        run: |
+          missing=0
+          for file in backend.hcl bootstrap.auto.tfvars; do
+            [ -f "$file" ] || { echo "::error::terraform/$file is missing"; missing=1; }
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error::Run 'make tf-bootstrap' once (operator laptop) and commit the two generated files."
+            exit 1
+          fi
+
+  plan:
+    name: Plan (staging + prod)
+    needs: bootstrap-check
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.6"
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend-config=backend.hcl
+      - run: terraform validate
+      - run: terraform plan -out=tfplan -no-color
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: terraform/tfplan
+          retention-days: 5
+
+  apply:
+    name: Apply (approval required)
+    needs: plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: infrastructure
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.6"
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: terraform
+      - run: terraform init -backend-config=backend.hcl
+      - run: terraform apply -no-color tfplan

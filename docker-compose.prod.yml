@@ -1,0 +1,52 @@
+# Production and staging (same file; each VM has its own /etc/learnplat/*.env).
+# Started by deploy/deploy.sh with LEARNPLAT_IMAGE pinned to an image digest.
+name: learnplat
+
+services:
+  app:
+    image: ${LEARNPLAT_IMAGE:?LEARNPLAT_IMAGE must be set by deploy.sh}
+    restart: unless-stopped
+    env_file: /etc/learnplat/app.env
+    # Behind Nginx only (rulebook D2): reachable on the compose network, never published.
+    expose:
+      - "8000"
+    volumes:
+      - /data:/data            # SQLite (Hetzner volume mounted on the host)
+      - static:/srv/static     # copied from the image at start, served by Nginx
+    mem_limit: 1g              # rulebook D3: mem_limit/cpus, not deploy.resources
+    cpus: 1.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?APP_DOMAIN must be set in /etc/learnplat/deploy.env}
+    volumes:
+      - ./nginx/conf.d/00-http-context.conf:/etc/nginx/conf.d/00-http-context.conf:ro
+      - ./nginx/conf.d/proxy_headers.inc:/etc/nginx/conf.d/proxy_headers.inc:ro
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - static:/srv/static:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  static:

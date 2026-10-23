@@ -1,0 +1,26 @@
+# Only what the image needs: pyproject/uv.lock, manage.py, src/, docker/, deploy bundle.
+.git/
+.github/
+.claude/
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.import_linter_cache/
+.coverage
+coverage.xml
+__pycache__/
+*.py[co]
+*.mo
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+data/
+staticfiles/
+terraform/
+docs/
+SPEC/
+tests/
+README.md
