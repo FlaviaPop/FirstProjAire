@@ -7,6 +7,7 @@ import uuid
 from collections.abc import Callable
 from typing import Any
 
+from django.conf import settings
 from django.db import DatabaseError
 from django.http import HttpRequest, HttpResponse
 
@@ -34,8 +35,11 @@ class RequestIdMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
-        incoming = request.headers.get("X-Request-ID", "")
-        # An invalid incoming id is replaced and never echoed (header/log injection guard).
+        # Only the reverse proxy's id is reused (Story 1.1 review v1 ISS-004); an invalid one is
+        # replaced and never echoed (header/log injection guard).
+        incoming = (
+            request.headers.get("X-Request-ID", "") if settings.TRUST_INCOMING_REQUEST_ID else ""
+        )
         request_id = incoming if _VALID_ID.match(incoming) else uuid.uuid4().hex
         request.request_id = request_id  # type: ignore[attr-defined]
         request.log_context = (request_id, None, None)  # type: ignore[attr-defined]

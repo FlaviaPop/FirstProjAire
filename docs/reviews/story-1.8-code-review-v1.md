@@ -1,10 +1,10 @@
 # Code Review - Story 1.8: Audit Log
 
-> ## 🛠️ Remediation Status: 🟡 Partially Remediated (3/4)
-> - **Remediated**: 2026-10-22 by DEV Agent
-> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2
-> - **Deferred (with user consent)**: 1 (ISS-004 → `aire-devops-discover`) — see Remediation Section
-> - **Tests**: 717/717 passing | **Coverage**: 100% | **Linter**: clean
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent (deferred item; earlier passes on 2026-10-22)
+> - **Fixed**: 4 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 3 (ISS-004 in this pass)
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1532/1532 passing (+17 e2e) | **Coverage**: 100% | **Linter**: clean
 > - **Scenario**: Code Review
 
 **Date**: 2026-10-22
@@ -214,6 +214,29 @@ Add parametrised tests for case, prefix and suffix variants (`Password`, `new_pa
 
 **Deferral** (2026-10-22, DEV): deferred with user consent to `aire-devops-discover`, together with Story 1.2 ISS-005 (login rate limit) and an `audit_log` retention policy. A retention job will need to drop and re-create the 0002 triggers explicitly. Still open.
 
+**Resolution** (2026-10-23, DEV):
+- **Fix:** retention = 1 year (owner decision, discovery report §15), as `AUDIT_RETENTION_DAYS = 365`.
+  - New `AuditRetention` service, built by `container.audit_retention()`, behind a thin `manage.py purge_audit_log [--dry-run]`.
+  - In ONE transaction it drops **only the DELETE trigger**, deletes `created_at < cutoff` with one statement, re-creates the trigger from the migration's own SQL, and records `audit.purged` (actor `(system)`, metadata `{deleted, cutoff}`).
+  - SQLite DDL is transactional, so a failure rolls back rows and trigger together. The UPDATE trigger and the ORM guards are untouched.
+  - The request-rate side is the Nginx login limit (PR #1, see 1.2 ISS-005).
+- **Commit / change ref:**
+  - `src/infrastructure/persistence/audit/retention.py`
+  - `src/infrastructure/persistence/audit/management/commands/purge_audit_log.py`
+  - `src/infrastructure/container.py:61-64`
+  - `src/config/settings/base.py:126-128`
+- **Test evidence:** `tests/integration/persistence/audit/test_audit_retention.py` (11 tests), all green:
+  - the boundary at the cutoff;
+  - the audited purge, including a purge with 0 rows;
+  - dry run;
+  - both triggers in place afterwards, still rejecting DELETE and UPDATE;
+  - a failed purge rolls back rows and triggers;
+  - days validation;
+  - container;
+  - the command, with and without `--dry-run`.
+  Also a real-DB run (below).
+- Status: ✅ Resolved
+
 ---
 
 ## Issue Summary
@@ -363,3 +386,85 @@ Error: stepping, audit_log is append-only (19)      (DELETE)
 
 - [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
 - [ ] ISS-004 in `aire-devops-discover`
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟢 Low (ISS-004, the previously deferred item)
+**Scenario**: Code Review
+**Stories Affected**: 1.8
+**Branch**: `main`
+
+Combined pass: the four DevOps-deferred review items (1.0 ISS-004, 1.1 ISS-004, 1.2 ISS-005, 1.8 ISS-004) were remediated together on `main`, scope confirmed by the user.
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-004 | 🟢 Low | 1.8 | receivers / `audit_log` growth | Rows grow without bound | Nginx login rate limit (PR #1) + 1-year retention purge: `purge_audit_log`, narrow trigger exception in one transaction, purge audited | `test_audit_retention.py` (11) ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/persistence/audit/retention.py` | New | `AuditRetention.purge()` and `PurgeResult` |
+| `src/infrastructure/persistence/audit/management/commands/purge_audit_log.py` | New | Thin command; `--dry-run` |
+| `src/infrastructure/persistence/audit/management/__init__.py`, `commands/__init__.py` | New | Command package |
+| `src/infrastructure/container.py` | Modified | `audit_retention()` factory (new `audit` block) |
+| `src/config/settings/base.py` | Modified | `AUDIT_RETENTION_DAYS = 365` |
+| `tests/integration/persistence/audit/test_audit_retention.py` | New | 11 tests |
+
+## Testing Summary
+
+- **Red first**: `ModuleNotFoundError: No module named 'infrastructure.persistence.audit.retention'`.
+- **Green**: `tests/integration/persistence/audit/` 73 passed; `retention.py` and the command at 100% (line + branch); full suite below.
+
+**Test Output** (whole combined pass):
+```
+[full suite x3]  1532 passed, 17 deselected (13.87s / 14.30s / 14.58s) | Total coverage: 100.00%
+[e2e]            17 passed, 1532 deselected in 7.11s
+[ruff format]    193 files already formatted
+[ruff check]     All checks passed!
+[mypy]           Success: no issues found in 119 source files   (--no-incremental)
+[lint-imports]   Contracts: 2 kept, 0 broken.
+[makemigrations] No changes detected
+```
+
+**Real-database run** (fresh migrated file DB, `config.settings.dev`, real transactions; rows at 500/366/364/0 days):
+```
+--- dry run
+Would delete 2 audit log entries older than 2025-10-23T13:44:46.799074+00:00
+--- purge
+Deleted 2 audit log entries older than 2025-10-23T13:44:46.947408+00:00
+--- rows
+kept.c|ana|{}
+kept.d|ana|{}
+audit.purged|(system)|{"deleted": 2, "cutoff": "2025-10-23T13:44:46.947408+00:00"}
+trigger: audit_log_append_only_delete
+trigger: audit_log_append_only_update
+--- raw DELETE after purge
+Error: stepping, audit_log is append-only (19)
+3 rows remain
+--- (earlier slip: same command on an unmigrated DB)
+django.db.utils.OperationalError: no such trigger: audit_log_append_only_delete   <- refuses to run without the trigger
+```
+
+## Deviations from Report Suggestions
+
+- **Only the DELETE trigger is lifted**, not both: the migration docstring says to drop and re-create "these triggers", but the purge never updates rows, so the UPDATE trigger stays in force throughout.
+- **The purge is audited even when it deletes nothing**, so each scheduled run leaves a heartbeat in the log.
+
+## Lessons Learned
+
+1. Lift a database guard for exactly one statement, inside the transaction that restores it: a failure then can't leave the guard down.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`) — optional (no 🔴 fixed)
+- [ ] DevOps (PR #1): add the new env names to `docs/deployment/pipeline-secrets.md` / compose env, and schedule `manage.py purge_audit_log` daily (systemd timer)

@@ -1,10 +1,10 @@
 # Code Review - Story 1.2: Login & Session Security
 
-> ## 🛠️ Remediation Status: 🟡 Partially Remediated (4/5)
-> - **Remediated**: 2026-10-22 by DEV Agent
-> - **Fixed**: 4 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 3
-> - **Deferred (with user consent)**: 1 (ISS-005 → `aire-devops-discover` / architecture) — see Remediation Section
-> - **Tests**: 677/677 passing | **Coverage**: 100% | **Linter**: clean
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent (deferred item; earlier passes on 2026-10-22)
+> - **Fixed**: 5 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 4 (ISS-005 in this pass: mitigated at the reverse proxy)
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1532/1532 passing (+17 e2e) | **Coverage**: 100% | **Linter**: clean
 > - **Scenario**: Code Review
 
 **Date**: 2026-10-22
@@ -228,6 +228,12 @@ Keep the existing open-redirect tests, which already cover it.
 
 **Deferral** (2026-10-22, DEV): deferred with user consent to `aire-devops-discover` (IP-level rate limit at the reverse proxy) or a future architecture decision on an extra axes parameter set. This is a design question, not a code defect. Still open.
 
+**Resolution** (2026-10-23, DEV): user decision: close as mitigated at the proxy, with no extra axes IP-only rule.
+- Fix: no application change. The IP-level limit the report suggests is delivered by DevOps in PR #1, `nginx/conf.d/00-http-context.conf`: `limit_req_zone $login_limit_key zone=login:10m rate=5r/m` keyed on POST only, applied with `limit_req zone=login burst=5 nodelay; limit_req_status 429;` on the sign-in location (`nginx/templates/app.conf.template:45-46`). Axes sees the same client address (`X-Forwarded-For $remote_addr`, `AXES_PROXY_COUNT=1`).
+- Commit / change ref: none in `src/`. Takes effect when PR #1 is merged and deployed.
+- Test evidence: not testable in the application test suite (Nginx configuration); the config is reviewed and validated with PR #1.
+- Status: ✅ Resolved
+
 ---
 
 ## Issue Summary
@@ -364,3 +370,61 @@ Required test coverage of 85% reached. Total coverage: 100.00%
 
 - [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
 - [ ] ISS-005 in `aire-devops-discover`
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟢 Low (ISS-005, the previously deferred design note)
+**Scenario**: Code Review
+**Stories Affected**: 1.2
+**Branch**: `main`
+
+Combined pass: the four DevOps-deferred review items (1.0 ISS-004, 1.1 ISS-004, 1.2 ISS-005, 1.8 ISS-004) were remediated together on `main`, scope confirmed by the user.
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-005 | 🟢 Low | 1.2 | `base.py` axes parameters | Per username+IP lockout doesn't slow spraying | Mitigated at the proxy: Nginx login `limit_req` (PR #1); no app change by user decision | n/a: proxy config (non-testable in app) |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| — | — | No application or test change for this item (see Resolution) |
+
+## Testing Summary
+
+- No targeted test: the mitigation is proxy configuration. The full suite below confirms the combined pass broke nothing.
+
+**Test Output** (whole combined pass):
+```
+[full suite x3]  1532 passed, 17 deselected (13.87s / 14.30s / 14.58s) | Total coverage: 100.00%
+[e2e]            17 passed, 1532 deselected in 7.11s
+[ruff format]    193 files already formatted
+[ruff check]     All checks passed!
+[mypy]           Success: no issues found in 119 source files   (--no-incremental)
+[lint-imports]   Contracts: 2 kept, 0 broken.
+[makemigrations] No changes detected
+```
+
+**Dependency**: until PR #1 is merged and deployed, the limit isn't active in any environment.
+
+## Deviations from Report Suggestions
+
+- The report's optional second idea (an extra axes `[["ip_address"]]` parameter set) was not taken, by user decision.
+
+## Lessons Learned
+
+1. A defence that lives in another layer still needs a closing record in the review that raised it, pointing at the exact config.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`) — optional (no 🔴 fixed)
+- [ ] DevOps (PR #1): add the new env names to `docs/deployment/pipeline-secrets.md` / compose env, and schedule `manage.py purge_audit_log` daily (systemd timer)

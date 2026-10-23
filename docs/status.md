@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 16:38
-**Updated By**: REVIEWER
+**Last Updated**: 2026-10-23 16:47
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -106,6 +106,7 @@
 - [x] Story 1.10 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 0 🟢 (`docs/reviews/story-1.10-code-review-v1.md`) — all CYCLE-1 stories reviewed
 - [x] Remediation from `story-1.10-code-review-v1.md`: ISS-001 (focus-not-obscured journey rewritten: field under the sticky bar → Shift+Tab; red without `scroll-padding-top`, green with it); 17/17 e2e ×3, 1497/1497 default
 - [x] Story 1.10 code review v2 (NEW_CHANGES): ✅ APPROVED — 0 🔴 · 0 🟠; ISS-001 fix verified red/green by REVIEWER (`docs/reviews/story-1.10-code-review-v2.md`)
+- [x] Remediation of the 4 DevOps-deferred review items (user: "multiple", all four): 1.1 ISS-004 (`TRUST_INCOMING_REQUEST_ID`, prod default on behind Nginx), 1.0 ISS-004 (HSTS includeSubDomains/preload env-driven, default off — owner decision; W005/W021 silenced only while off), 1.8 ISS-004 (`manage.py purge_audit_log`, 1-year retention, DELETE trigger lifted for one statement in one transaction, purge audited), 1.2 ISS-005 (closed: Nginx login rate limit in PR #1); 1532/1532 tests, coverage 100% → **no deferred review items remain**
 
 ### Implementation Plan
 
@@ -197,9 +198,9 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | Metric | Target | Current | Status | Recorded |
 |--------|--------|---------|--------|----------|
 | Unit Test Coverage | ≥85% | 100% (domain 100%, application 100%) | ✅ | 2026-10-22 16:52 |
-| Integration Tests | 100% pass | 100% (1497/1497 on `main`) | ✅ | 2026-10-23 10:51 |
+| Integration Tests | 100% pass | 100% (1532/1532 on `main`, +17 e2e) | ✅ | 2026-10-23 16:47 |
 | Code Review | All stories | 13/45 | 🟡 | 2026-10-23 16:30 |
-| Documentation | All stories | 12/45 | 🟡 | 2026-10-23 10:36 |
+| Documentation | All stories | 13/45 | 🟡 | 2026-10-23 16:47 |
 
 ---
 
@@ -302,14 +303,16 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/reviews/story-1.10-code-review-v1.md` (banner, resolution block, Remediation Section) — red run with the rule removed locally (`assert 9.953125 >= (0 + 65)`), green with it restored; e2e 17/17 ×3, default 1497/1497, coverage 100%, every gate read from its own line; no `src/` change
 - [x] **Code Review — Story 1.10 (v2)**: ✅ APPROVED — 2026-10-23
   - Evidence: `docs/reviews/story-1.10-code-review-v2.md` — NEW_CHANGES (changed test only); REVIEWER red run (rule removed / `scroll-padding-top: 0` → `assert 9.953125 >= (0 + 65)`), green restored; e2e 17/17 ×3, default 1497/1497, coverage 100%, every gate read from its own line
+- [x] **Remediation — deferred items of reviews 1.0, 1.1, 1.2, 1.8**: ✅ Resolved (4/4) — 2026-10-23
+  - Evidence: Remediation Sections dated 2026-10-23 in `docs/reviews/story-1.0-code-review-v1.md`, `story-1.1-…`, `story-1.2-…`, `story-1.8-…` — red runs recorded per item; 1532/1532 ×3, e2e 17/17, coverage 100%, every gate read from its own line; real `check --deploy` (2 silenced / 0 silenced); real-DB purge (2 deleted, purge audited, both triggers back, raw DELETE rejected)
 ---
 
 ## Upcoming
 
 1. **CYCLE-1 demo and sign-off** (`uv run pytest -m e2e --headed` as the demo script)
-2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add the e2e job (Chromium install) there
+2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add there: the e2e job (Chromium install), the env names `DJANGO_TRUST_INCOMING_REQUEST_ID` / `DJANGO_HSTS_INCLUDE_SUBDOMAINS` / `DJANGO_HSTS_PRELOAD` (pipeline-secrets.md, compose env), and a daily timer for `manage.py purge_audit_log` (DEV hand-offs 2026-10-23)
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
-4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs: HSTS flags (1.0 ISS-004), `python-ipware`/`AXES_PROXY_COUNT`, audit purge job (1.8 ISS-004, 1 year)
+4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs done 2026-10-23 (HSTS env flags, request-id trust, purge command); still open: `python-ipware` (not installed — without it axes ignores `AXES_PROXY_COUNT` and sees the proxy address for every client), WhiteNoise in `MIDDLEWARE`; switch HSTS flags on once the domain is final
 5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 6. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
@@ -322,7 +325,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Remediated story 1.10 (story-1.10-code-review-v1.md) | Idle | 2026-10-23 | 2026-10-23 16:35 |
+| DEV | Remediated deferred items of reviews 1.0/1.1/1.2/1.8 | Idle | 2026-10-23 | 2026-10-23 16:47 |
 | REVIEWER | Reviewed story 1.10 v2 (approved) | Idle | 2026-10-23 | 2026-10-23 16:38 |
 | QA | Regression complete — 0 regressions | Idle | 2026-10-21 | 2026-10-21 16:50 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |

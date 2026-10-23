@@ -120,6 +120,12 @@ LOGGING: dict[str, Any] = {  # dictConfig; dev.py adjusts the levels in place
     },
     "root": {"handlers": ["stdout"], "level": LOG_LEVEL},
 }
+# Story 1.1 review v1 ISS-004: an incoming X-Request-ID is reused only behind the reverse proxy,
+# which always overwrites it (prod.py); otherwise a client could pick another request's id.
+TRUST_INCOMING_REQUEST_ID = False
+# Story 1.8 review v1 ISS-004 (owner decision, discovery report §15): audit entries are kept for
+# one year; `manage.py purge_audit_log` (scheduled daily by DevOps) deletes older ones.
+AUDIT_RETENTION_DAYS = 365
 
 # --- Story 1.2: authentication, brute-force protection, sessions, security headers ---
 # Fixed product policy (patterns §10): constants here, not env vars. Only the proxy count

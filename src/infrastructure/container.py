@@ -3,6 +3,8 @@
 One factory function per use case, grouped in one block per context (alphabetical).
 """
 
+from django.conf import settings
+
 from application.accounts.link_parent import LinkParent, UnlinkParent
 from application.accounts.manage_account import AuditAccountChange
 from application.accounts.record_security_event import RecordSecurityEvent
@@ -14,6 +16,7 @@ from infrastructure.persistence.accounts.repositories import (
 )
 from infrastructure.persistence.audit.fingerprint import username_fingerprint
 from infrastructure.persistence.audit.repositories import DjangoAuditPort
+from infrastructure.persistence.audit.retention import AuditRetention
 from infrastructure.persistence.common.unit_of_work import DjangoUnitOfWork
 from infrastructure.system_clock import SystemClock
 
@@ -50,3 +53,12 @@ def unlink_parent() -> UnlinkParent:
 def update_preferred_language() -> UpdatePreferredLanguage:
     """Story 1.4: save the signed-in user's UI language (DjangoUnitOfWork per 1.8 hand-off)."""
     return UpdatePreferredLanguage(DjangoUserPreferences(), DjangoUnitOfWork)
+
+
+# --- audit ---------------------------------------------------------------------------------
+
+
+def audit_retention() -> AuditRetention:
+    """Story 1.8 review v1 ISS-004: the scheduled purge (`manage.py purge_audit_log`)."""
+    clock = SystemClock()
+    return AuditRetention(DjangoAuditPort(clock), clock, days=settings.AUDIT_RETENTION_DAYS)

@@ -1,10 +1,10 @@
 # Code Review - Story 1.1: Error Handling & Observability
 
-> ## 🛠️ Remediation Status: 🟡 Partially Remediated (3/4)
-> - **Remediated**: 2026-10-22 by DEV Agent
-> - **Fixed**: 3 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 2 (ISS-003 resolved as a binding hand-off note in Story 1.7)
-> - **Deferred (with user consent)**: 1 (ISS-004 → `aire-devops-discover`)
-> - **Tests**: 744/744 passing | **Coverage**: 100% | **Linter**: clean
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent (deferred item; earlier passes on 2026-10-22)
+> - **Fixed**: 4 issue(s) — 🔴 0 / 🟠 0 / 🟡 1 / 🟢 3 (ISS-004 in this pass; ISS-003 resolved earlier as a binding hand-off note in Story 1.7)
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1532/1532 passing (+17 e2e) | **Coverage**: 100% | **Linter**: clean
 > - **Scenario**: Code Review
 
 **Date**: 2026-10-22
@@ -205,6 +205,16 @@ Optionally log a WARNING `error_message.missing_param` with the code. Test: a mi
 
 **Deferral** (2026-10-22, DEV): deferred with user consent to `aire-devops-discover`: trust `X-Request-ID` only from the reverse proxy (setting + proxy overwrites the header). Still open.
 
+**Resolution** (2026-10-23, DEV):
+- Fix: new setting `TRUST_INCOMING_REQUEST_ID`. It is `False` in base/dev/test, so a client's `X-Request-ID` is ignored and a fresh id generated. In prod it comes from `DJANGO_TRUST_INCOMING_REQUEST_ID` (default `true`), because Nginx always overwrites the header with `$request_id` (PR #1, `nginx/conf.d/proxy_headers.inc`). The header validation still applies when trusted.
+- Commit / change ref: `src/infrastructure/web/common/middleware.py:38-42`, `src/config/settings/base.py:123-125`, `src/config/settings/prod.py:29-31`, `src/config/settings/env.py:24-35` (`env_bool`)
+- Test evidence:
+  - `tests/integration/web/common/test_request_id_logging.py:82` (client id ignored by default), and the reuse/boundary/invalid tests now run `behind_proxy`;
+  - `tests/integration/config/test_prod_security_settings.py` (prod default on, env off, dev never trusts);
+  - `tests/unit/config/test_env.py:54-80` (`env_bool`, 15 cases).
+  - All green.
+- Status: ✅ Resolved
+
 ---
 
 ## Issue Summary
@@ -337,3 +347,68 @@ log lines containing the posted password: 0
 
 - [ ] Re-request code review (`aire-review-code`): optional (no 🔴 fixed)
 - [ ] ISS-004 in `aire-devops-discover`; ISS-003 is checked when Story 1.7 is implemented
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟢 Low (ISS-004, the previously deferred item)
+**Scenario**: Code Review
+**Stories Affected**: 1.1
+**Branch**: `main`
+
+Combined pass: the four DevOps-deferred review items (1.0 ISS-004, 1.1 ISS-004, 1.2 ISS-005, 1.8 ISS-004) were remediated together on `main`, scope confirmed by the user.
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-004 | 🟢 Low | 1.1 | `web/common/middleware.py:38-42` | Any client could choose its own `X-Request-ID` | Reused only when `TRUST_INCOMING_REQUEST_ID` (prod, behind Nginx) | `test_request_id_logging.py:82` + prod settings tests ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/infrastructure/web/common/middleware.py` | Modified | Reuse the incoming id only when trusted |
+| `src/config/settings/base.py` | Modified | `TRUST_INCOMING_REQUEST_ID = False` |
+| `src/config/settings/prod.py` | Modified | `env_bool("DJANGO_TRUST_INCOMING_REQUEST_ID", default=True)` |
+| `src/config/settings/env.py` | Modified | `env_bool()`: true/false/1/0, anything else is a start-up error naming the variable |
+| `.env.example` | Modified | Variable documented (placeholder) |
+| `tests/integration/web/common/test_request_id_logging.py` | Modified | New default-ignore test; `behind_proxy` fixture for reuse tests |
+| `tests/integration/web/common/test_error_middleware.py` | Modified | 500-reference test sets the proxy trust |
+| `tests/integration/config/test_prod_security_settings.py` | New | Prod switches loaded in a subprocess (shared with 1.0 ISS-004) |
+| `tests/unit/config/test_env.py` | Modified | `env_bool` cases |
+
+## Testing Summary
+
+- **Red first**: `test_incoming_request_id_is_ignored_unless_behind_the_proxy` and the 3 prod trust tests failed; `test_env.py` failed to import `env_bool`.
+- **Green**: targeted 59 passed; full suite below.
+
+**Test Output** (whole combined pass):
+```
+[full suite x3]  1532 passed, 17 deselected (13.87s / 14.30s / 14.58s) | Total coverage: 100.00%
+[e2e]            17 passed, 1532 deselected in 7.11s
+[ruff format]    193 files already formatted
+[ruff check]     All checks passed!
+[mypy]           Success: no issues found in 119 source files   (--no-incremental)
+[lint-imports]   Contracts: 2 kept, 0 broken.
+[makemigrations] No changes detected
+```
+
+## Deviations from Report Suggestions
+
+- None. Suggested setting name used; the proxy side was already delivered by DevOps (PR #1).
+
+## Lessons Learned
+
+1. When a header's trustworthiness depends on the deployment, make trust an explicit setting that is off by default, rather than a validation rule alone.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`) — optional (no 🔴 fixed)
+- [ ] DevOps (PR #1): add the new env names to `docs/deployment/pipeline-secrets.md` / compose env, and schedule `manage.py purge_audit_log` daily (systemd timer)

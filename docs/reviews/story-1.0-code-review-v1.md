@@ -1,10 +1,10 @@
 # Code Review - Story 1.0: Root Tooling Seed
 
-> ## 🛠️ Remediation Status: 🟡 Partially Remediated (6/7)
-> - **Remediated**: 2026-10-21 by DEV Agent
-> - **Fixed**: 6 issue(s) — 🔴 0 / 🟠 0 / 🟡 2 / 🟢 4
-> - **Deferred (with user consent)**: 1 (ISS-004 → DevOps). ISS-005 was resolved in the second pass (see below)
-> - **Tests**: 605/605 passing (second pass, wave-2 branch) | **Coverage**: 100% | **Linter**: clean
+> ## 🛠️ Remediation Status: ✅ Resolved
+> - **Remediated**: 2026-10-23 by DEV Agent (deferred item; earlier passes on 2026-10-21)
+> - **Fixed**: 7 issue(s) — 🔴 0 / 🟠 0 / 🟡 2 / 🟢 5 (ISS-004 in this pass; ISS-005 in the 2026-10-21 second pass)
+> - **Deferred (with user consent)**: 0
+> - **Tests**: 1532/1532 passing (+17 e2e) | **Coverage**: 100% | **Linter**: clean
 > - **Scenario**: Code Review
 
 **Date**: 2026-10-21
@@ -188,6 +188,12 @@ Alternatively, add a `required_nonempty` helper in `env.py` with a unit test.
 **Suggested Fix**: Raise it in `aire-devops-discover`. Once the domain is known, either set both to `True` or silence W005/W021 in `prod.py` with a comment giving the reason.
 
 **Deferral** (2026-10-21, DEV): deferred with user consent to `aire-devops-discover`, because the production domain isn't decided yet. Still open.
+
+**Resolution** (2026-10-23, DEV): owner decision "env-driven, off" (2026-10-23).
+- Fix: `SECURE_HSTS_INCLUDE_SUBDOMAINS` / `SECURE_HSTS_PRELOAD` come from `DJANGO_HSTS_INCLUDE_SUBDOMAINS` / `DJANGO_HSTS_PRELOAD` (default `false`, via `env_bool`). While a flag is off, only its own deploy warning (W005 / W021) is added to `SILENCED_SYSTEM_CHECKS`. Switching a flag on unsilences it.
+- Commit / change ref: `src/config/settings/prod.py:15-24`
+- Test evidence: `tests/integration/config/test_prod_security_settings.py` (defaults off + silenced; both on, not silenced; only the off flag silenced; `check --deploy` has no W005/W021; unreadable value stops start-up). All green.
+- Status: ✅ Resolved
 
 ---
 
@@ -412,3 +418,73 @@ Done together with `docs/testing/bug-triage-2026-10-21-2.md`. Full evidence (tes
 | ISS-005 | 🟢 Low | `src/config/settings/dev.py:11-15` | Dev `LOG_LEVEL` defaults to DEBUG; env override kept; `django` logger stays INFO | `tests/integration/config/test_log_levels.py` (3) ✅ |
 
 Still deferred: ISS-004 (HSTS subdomains/preload → `aire-devops-discover`).
+
+---
+
+# 🛠️ Remediation — 2026-10-23
+
+**Developer**: DEV Agent
+**Severity Scope**: 🟢 Low (ISS-004, the previously deferred item)
+**Scenario**: Code Review
+**Stories Affected**: 1.0
+**Branch**: `main`
+
+Combined pass: the four DevOps-deferred review items (1.0 ISS-004, 1.1 ISS-004, 1.2 ISS-005, 1.8 ISS-004) were remediated together on `main`, scope confirmed by the user.
+
+## Issues Remediated
+
+| ID | Severity | Story | File:Line | Summary | Resolution | Test Added |
+|------|----------|-------|-----------|---------|------------|------------|
+| ISS-004 | 🟢 Low | 1.0 | `config/settings/prod.py:15-24` | `check --deploy` HSTS warnings W005/W021 | Env-driven flags, default off; each warning silenced only while its flag is off | `test_prod_security_settings.py` (5 HSTS tests) ✅ |
+
+## Issues Deferred (with user consent)
+
+None.
+
+## Files Changed
+
+| File | Change Type | Description |
+|------|-------------|-------------|
+| `src/config/settings/prod.py` | Modified | HSTS flags from env + conditional `SILENCED_SYSTEM_CHECKS` |
+| `src/config/settings/env.py` | Modified | `env_bool()` (shared with 1.1 ISS-004) |
+| `.env.example` | Modified | Both variables documented (`false`) |
+| `tests/integration/config/test_prod_security_settings.py` | New | Prod settings loaded in a subprocess with the env on/off |
+
+## Testing Summary
+
+- **Red first**: the 5 HSTS tests failed (settings missing; W005/W021 present). Full suite at that point: `5 failed, 1516 passed`.
+- **Green**: `tests/integration/config/test_prod_security_settings.py` 8 passed; full suite below.
+
+**Test Output** (whole combined pass):
+```
+[full suite x3]  1532 passed, 17 deselected (13.87s / 14.30s / 14.58s) | Total coverage: 100.00%
+[e2e]            17 passed, 1532 deselected in 7.11s
+[ruff format]    193 files already formatted
+[ruff check]     All checks passed!
+[mypy]           Success: no issues found in 119 source files   (--no-incremental)
+[lint-imports]   Contracts: 2 kept, 0 broken.
+[makemigrations] No changes detected
+```
+
+**Real `check --deploy`** (`config.settings.prod`, random 50-char key, scratch DB):
+```
+--- defaults (both off)
+System check identified no issues (2 silenced).
+--- DJANGO_HSTS_INCLUDE_SUBDOMAINS=true DJANGO_HSTS_PRELOAD=true
+System check identified no issues (0 silenced).
+--- an invalid value (seen when a shell quoting slip passed 'true DJANGO_HSTS_PRELOAD=true')
+django.core.exceptions.ImproperlyConfigured: DJANGO_HSTS_INCLUDE_SUBDOMAINS must be true or false, got 'true DJANGO_HSTS_PRELOAD=true'
+```
+
+## Deviations from Report Suggestions
+
+- None. The report offered "set both or silence with a reason"; the owner chose env-driven, off, so both paths exist.
+
+## Lessons Learned
+
+1. A silenced check should follow the setting it is about; otherwise switching the setting on later would keep hiding the warning.
+
+## Next Steps
+
+- [ ] Re-request code review (`aire-review-code`) — optional (no 🔴 fixed)
+- [ ] DevOps (PR #1): add the new env names to `docs/deployment/pipeline-secrets.md` / compose env, and schedule `manage.py purge_audit_log` daily (systemd timer)

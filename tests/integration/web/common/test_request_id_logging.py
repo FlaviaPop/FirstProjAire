@@ -73,13 +73,28 @@ def test_generated_request_id_is_32_hex_characters(client):
     int(request_id, 16)
 
 
-def test_valid_incoming_request_id_is_reused(client):
+@pytest.fixture
+def behind_proxy(settings):
+    """Story 1.1 review v1 ISS-004: prod trusts the id only because Nginx always overwrites it."""
+    settings.TRUST_INCOMING_REQUEST_ID = True
+
+
+def test_incoming_request_id_is_ignored_unless_behind_the_proxy(client, capfd):
+    returned = client.get("/healthz", headers={"X-Request-ID": "client-chosen-1"})["X-Request-ID"]
+
+    assert returned != "client-chosen-1"
+    assert len(returned) == 32
+    (line,) = _completed_lines(capfd)
+    assert line["request_id"] == returned
+
+
+def test_valid_incoming_request_id_is_reused(client, behind_proxy):
     assert client.get("/healthz", headers={"X-Request-ID": "proxy-1234"})["X-Request-ID"] == (
         "proxy-1234"
     )
 
 
-def test_valid_incoming_request_id_appears_in_log_lines(client, capfd):
+def test_valid_incoming_request_id_appears_in_log_lines(client, capfd, behind_proxy):
     client.get("/healthz", headers={"X-Request-ID": "abc12345-proxy"})
 
     (line,) = _completed_lines(capfd)
@@ -87,12 +102,12 @@ def test_valid_incoming_request_id_appears_in_log_lines(client, capfd):
 
 
 @pytest.mark.parametrize("good", ["a" * 8, "A1-b2-C3", "z" * 64])
-def test_boundary_valid_incoming_ids_are_reused(client, good):
+def test_boundary_valid_incoming_ids_are_reused(client, behind_proxy, good):
     assert client.get("/healthz", headers={"X-Request-ID": good})["X-Request-ID"] == good
 
 
 @pytest.mark.parametrize("bad", ["<script>", "x" * 65, "short", "a b c d e f g h", "", "abc_1234"])
-def test_invalid_incoming_request_id_is_replaced(client, capfd, bad):
+def test_invalid_incoming_request_id_is_replaced(client, capfd, behind_proxy, bad):
     returned = client.get("/healthz", headers={"X-Request-ID": bad})["X-Request-ID"]
 
     assert returned != bad

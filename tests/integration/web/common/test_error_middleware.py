@@ -192,7 +192,8 @@ def test_htmx_partial_lists_every_violation(client):
     assert content.count("<li>") == 2
 
 
-def test_unexpected_error_shows_reference_without_details(client):
+def test_unexpected_error_shows_reference_without_details(client, settings):
+    settings.TRUST_INCOMING_REQUEST_ID = True  # the proxy's id (Story 1.1 review v1 ISS-004)
     response = client.get("/boom", headers={"X-Request-ID": "qa-ref-0001"})
 
     assert response.status_code == 500
