@@ -1,0 +1,14 @@
+{% extends "layouts/base.html" %}
+{% load static i18n ui %}
+{% block title %}{% translate "Catalogue" %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/catalogue.css' %}">{% endblock %}
+{% block content %}
+{% translate "Catalogue" as page_title %}{% ui_page_header page_title %}
+{% if grades %}
+<p class="catalogue__lead">{% translate "Grades and subjects" %}</p>
+<div class="catalogue">
+  {% for grade in grades %}{% include "catalogue/_grade_section.html" %}
+  {% endfor %}
+</div>
+{% else %}{% translate "The catalogue is not available yet." as empty %}{% ui_empty_state empty %}{% endif %}
+{% endblock %}

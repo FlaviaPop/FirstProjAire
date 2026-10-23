@@ -15,6 +15,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
 urlpatterns += i18n_patterns(
     # Context URL includes are appended here, one block per context, alphabetically.
     path("", include("infrastructure.web.accounts.urls")),  # Story 1.2: login, logout
+    path("", include("infrastructure.web.catalogue.urls")),  # Story 2.2: catalogue, subject pages
     path("", include("infrastructure.web.home.urls")),  # Story 1.7: role homes
     # Story 1.9: platform admin, Admin role only (PlatformAdminSite.has_permission).
     path("admin/", platform_admin_site.urls),

@@ -38,6 +38,10 @@ ROWS = [(role, "/healthz", 200) for role in CLIENT_FOR_ROLE]
 ROWS += [("anonymous", "/ro/", 302)] + [
     (role, "/ro/", 200) for role in ("Student", "Teacher", "Parent/Guardian", "Admin")
 ]
+# Story 2.2 — catalogue (subject-page access is in tests/integration/web/catalogue/: ids are seeded)
+ROWS += [("anonymous", "/ro/catalogue/", 302)] + [
+    (role, "/ro/catalogue/", 200) for role in ("Student", "Teacher", "Parent/Guardian", "Admin")
+]
 
 
 @pytest.mark.parametrize(("role", "path", "expected"), ROWS)

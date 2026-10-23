@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: learning-platform 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 09:29+0300\n"
+"POT-Creation-Date: 2026-10-23 10:01+0300\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -166,6 +166,13 @@ msgstr "intrări în jurnalul de audit"
 msgid "Incorrect username or password."
 msgstr "Nume de utilizator sau parolă incorecte."
 
+#: src/infrastructure/web/catalogue/views.py:38
+#: src/infrastructure/web/styleguide/views.py:150
+#: src/infrastructure/web/templates/catalogue/index.html:3
+#: src/infrastructure/web/templates/catalogue/index.html:6
+msgid "Catalogue"
+msgstr "Catalog"
+
 #: src/infrastructure/web/common/errors.py:17
 msgid "Your request could not be processed. Please try again."
 msgstr "Cererea dumneavoastră nu a putut fi procesată. Vă rugăm să încercați din nou."
@@ -275,6 +282,7 @@ msgid "Review flagged content"
 msgstr "Verifică conținutul semnalat"
 
 #: src/infrastructure/web/home/navigation.py:89
+#: src/infrastructure/web/templates/catalogue/_grade_section.html:3
 msgid "Pilot"
 msgstr "Pilot"
 
@@ -384,10 +392,6 @@ msgstr "Adaugă o lecție"
 msgid "Chapter 1"
 msgstr "Capitolul 1"
 
-#: src/infrastructure/web/styleguide/views.py:150
-msgid "Catalogue"
-msgstr "Catalog"
-
 #: src/infrastructure/web/styleguide/views.py:151
 msgid "Edit"
 msgstr "Editează"
@@ -447,6 +451,22 @@ msgstr "Autentificare"
 #: src/infrastructure/web/templates/accounts/login.html:22
 msgid "Password"
 msgstr "Parolă"
+
+#: src/infrastructure/web/templates/catalogue/_grade_section.html:7
+msgid "Available to students"
+msgstr "Disponibil pentru elevi"
+
+#: src/infrastructure/web/templates/catalogue/index.html:8
+msgid "Grades and subjects"
+msgstr "Clase și discipline"
+
+#: src/infrastructure/web/templates/catalogue/index.html:13
+msgid "The catalogue is not available yet."
+msgstr "Catalogul nu este încă disponibil."
+
+#: src/infrastructure/web/templates/catalogue/subject.html:7
+msgid "No chapters are published yet."
+msgstr "Încă nu sunt publicate capitole."
 
 #: src/infrastructure/web/templates/components/_field_label_text.html:1
 #: src/infrastructure/web/templates/components/language_switcher.html:6

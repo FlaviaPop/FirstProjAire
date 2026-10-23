@@ -1,0 +1,11 @@
+{% load i18n i18n_content ui %}{# catalogue_grid organism (feature-local): one level and its subjects #}
+<section class="catalogue__grade" aria-labelledby="grade-{{ grade.code }}">
+  <h2 id="grade-{{ grade.code }}">{% localized grade "name" %}{% if grade.has_active %} <span class="catalogue__pilot">{% translate "Pilot" %}</span>{% endif %}</h2>
+  <div class="catalogue__grid">
+    {% for subject in grade.subjects %}{% localized subject "name" as subject_name %}
+    {% if subject.is_active and can_open %}{% url "catalogue:subject" subject.id as subject_url %}{% ui_card subject_name href=subject_url icon="book-open" level=3 %}
+    {% elif subject.is_active %}{% translate "Available to students" as note %}{% ui_card subject_name icon="book-open" meta=note level=3 %}
+    {% else %}{% ui_disabled_tile subject_name %}
+    {% endif %}{% endfor %}
+  </div>
+</section>
