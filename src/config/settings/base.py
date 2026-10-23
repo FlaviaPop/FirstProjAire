@@ -159,7 +159,13 @@ AXES_HTTP_RESPONSE_CODE = 429
 # Story 1.2 table: an attempt during the cool-off has no side effect, so it must not
 # restart the 15 minutes (axes' default would).
 AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
+# BUG-004: the client IP for lockouts and audit rows comes from django-ipware. Without a proxy
+# only REMOTE_ADDR is read (a client could forge X-Forwarded-For); prod.py reads the header
+# Nginx sets. The proxy count is the number of proxies listed INSIDE X-Forwarded-For: Nginx
+# overwrites the header with the client alone, so 0 is right (1 makes every address None).
+AXES_IPWARE_META_PRECEDENCE_ORDER: tuple[str, ...] = ("REMOTE_ADDR",)
 AXES_IPWARE_PROXY_COUNT = int(env_str("AXES_PROXY_COUNT", "0"))
+PROXIED_IP_HEADERS = ("HTTP_X_FORWARDED_FOR", "REMOTE_ADDR")
 # Wave-2 integration: axes logs an INFO banner on every start. With Story 1.1's JSON logs on
 # stdout, that line polluted every management command's output (shell -c, scripts).
 AXES_VERBOSE = False

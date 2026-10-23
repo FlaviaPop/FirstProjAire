@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 17:09
-**Updated By**: QA
+**Last Updated**: 2026-10-23 17:22
+**Updated By**: DEV
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -110,6 +110,7 @@
 - [x] Code review v2 (NEW_CHANGES) of the deferred-item fixes: stories 1.0, 1.1, 1.8 ✅ APPROVED (0 🔴 · 0 🟠 each); 1.2 skipped (approved, code unchanged) — `docs/reviews/story-1.0|1.1|1.8-code-review-v2.md`
 - [x] Defect raised (`aire-raise-defect`, local tracking): **BUG-004** 🟠 Major / P1 — behind the reverse proxy, lockouts key on the proxy IP (`django-ipware` missing), so any client can lock any username out; reproduced end to end (`docs/testing/bug-triage-2026-10-23.md`). Next: `aire-qa-triage` → `aire-dev-remediate`
 - [x] Bug triage #3 (sources: validation 2026-10-21 + regression 2026-10-21 + raised BUG-004): 4 bugs — BUG-004 🟠 High / P1 open (go-live blocker; root cause in 3 parts: `django-ipware` missing, axes never reads `X-Forwarded-For`, planned `AXES_PROXY_COUNT=1` wrong for Nginx's overwrite header — proven by 5 runs), BUG-001/002/003 re-verified fixed; release decision ⚠️ CONDITIONAL: CYCLE-1 sign-off may proceed, production go-live blocked (`docs/testing/bug-triage-2026-10-23.md`)
+- [x] Remediation from `bug-triage-2026-10-23.md`: BUG-004 fixed in the app — `django-ipware` added, `X-Forwarded-For` read only in prod (`DJANGO_TRUST_X_FORWARDED_FOR`, default on), `AXES_PROXY_COUNT` default 0 documented; real prod-settings run: other client 302, attacker 429, real IPs in axes + audit; 1541/1541 ×3, e2e 17/17, coverage 100%. **Go-live condition**: PR #1 must deploy `AXES_PROXY_COUNT=0` (DevOps hand-off)
 
 ### Implementation Plan
 
@@ -310,14 +311,16 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: Remediation Sections dated 2026-10-23 in `docs/reviews/story-1.0-code-review-v1.md`, `story-1.1-…`, `story-1.2-…`, `story-1.8-…` — red runs recorded per item; 1532/1532 ×3, e2e 17/17, coverage 100%, every gate read from its own line; real `check --deploy` (2 silenced / 0 silenced); real-DB purge (2 deleted, purge audited, both triggers back, raw DELETE rejected)
 - [x] **Code Review — Stories 1.0, 1.1, 1.8 (v2)**: ✅ APPROVED — 2026-10-23
   - Evidence: `docs/reviews/story-1.0-code-review-v2.md`, `story-1.1-code-review-v2.md`, `story-1.8-code-review-v2.md` — NEW_CHANGES; live runserver request-id per mode (prod trusted / prod off / dev), real `check --deploy` (2 silenced / 0 silenced), real-DB purge probes (induced failure rolls back rows + triggers; exact-second cutoff boundary; concurrent writer waits 1.29 s, its DELETE rejected); 1532/1532, coverage 100%, every gate read from its own line
+- [x] **Remediation — BUG-004 (`bug-triage-2026-10-23.md`)**: ✅ Resolved (application) — 2026-10-23
+  - Evidence: `docs/testing/bug-triage-2026-10-23.md` (banner, resolution, Remediation Section) — red: 5 failed; green: 1541/1541 ×3, e2e 17/17, coverage 100%, every gate read from its own line; real server on `config.settings.prod`: student 302 /en/, attacker 429, axes/audit record 203.0.113.10 / 198.51.100.20, 0 ERROR lines
 ---
 
 ## Upcoming
 
 1. **CYCLE-1 demo and sign-off** (`uv run pytest -m e2e --headed` as the demo script)
-2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add there: the e2e job (Chromium install), the env names `DJANGO_TRUST_INCOMING_REQUEST_ID` / `DJANGO_HSTS_INCLUDE_SUBDOMAINS` / `DJANGO_HSTS_PRELOAD` (pipeline-secrets.md, compose env), and a daily timer for `manage.py purge_audit_log` (DEV hand-offs 2026-10-23)
+2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add there: **`AXES_PROXY_COUNT=0` (not 1) + `DJANGO_TRUST_X_FORWARDED_FOR` (BUG-004 go-live condition)**, the e2e job (Chromium install), the env names `DJANGO_TRUST_INCOMING_REQUEST_ID` / `DJANGO_HSTS_INCLUDE_SUBDOMAINS` / `DJANGO_HSTS_PRELOAD` (pipeline-secrets.md, compose env), and a daily timer for `manage.py purge_audit_log` (DEV hand-offs 2026-10-23)
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
-4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs done 2026-10-23 (HSTS env flags, request-id trust, purge command); still open: **BUG-004** (`django-ipware` not installed — axes ignores `AXES_PROXY_COUNT`, so behind the proxy any client can lock any username out; `docs/testing/bug-triage-2026-10-23.md`), WhiteNoise in `MIDDLEWARE`; switch HSTS flags on once the domain is final
+4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs done 2026-10-23 (HSTS env flags, request-id trust, purge command); BUG-004 app side fixed 2026-10-23 (PR #1 must deploy `AXES_PROXY_COUNT=0`), WhiteNoise in `MIDDLEWARE`; switch HSTS flags on once the domain is final
 5. Optional: update the UI canvas Catalogue screen (add Grădiniță before Clasa pregătitoare)
 6. **Tracker export decision** (keep Local, or publish to GitHub Projects / Azure DevOps)
 
@@ -325,7 +328,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 
 | ID | Description | Owner | Opened | Status | Recorded |
 |----|-------------|-------|--------|--------|----------|
-| BUG-004 | 🟠 P1 — behind the reverse proxy, lockouts/audit key on the proxy IP (or NULL): any client can lock any username out. Blocks production go-live, not the CYCLE-1 sign-off. Fix: DEV (`django-ipware`, env-specific `X-Forwarded-For` trust) + DevOps (`AXES_PROXY_COUNT` in PR #1) | DEV + DEVOPS | 2026-10-23 | 🔴 Open | 2026-10-23 17:09 |
+| BUG-004 | 🟠 P1 — lockout/audit client IP behind the reverse proxy. **App fixed 2026-10-23** (`django-ipware`, prod reads `X-Forwarded-For`, proxy count 0). Remaining for go-live: PR #1 must set `AXES_PROXY_COUNT=0` (now `1`, which would record no address) + document `DJANGO_TRUST_X_FORWARDED_FOR`; then `aire-qa-regression` on staging | DEVOPS | 2026-10-23 | 🟡 App fixed — awaiting PR #1 value | 2026-10-23 17:22 |
 
 ---
 
@@ -338,7 +341,7 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
 | UI_UX_DESIGNER | UI/UX spec complete (approved) | Idle | 2026-10-19 | 2026-10-19 14:56 |
 | BUILD_CYCLE_PLANNER | Build cycles confirmed and generated | Idle | 2026-10-19 | 2026-10-19 14:45 |
 | PRODUCT_OWNER | CYCLE-3 plan + 18 stories written (all cycles planned) | Idle | 2026-10-19 | 2026-10-19 19:23 |
-| DEV | Remediated deferred items of reviews 1.0/1.1/1.2/1.8 | Idle | 2026-10-23 | 2026-10-23 16:47 |
+| DEV | Remediated BUG-004 (bug-triage-2026-10-23.md) | Idle | 2026-10-23 | 2026-10-23 17:22 |
 | REVIEWER | Reviewed stories 1.0, 1.1, 1.8 v2 (approved) | Idle | 2026-10-23 | 2026-10-23 16:52 |
 | QA | Bug triage complete — 4 bugs, 1 go-live blocker (BUG-004) | Active | 2026-10-23 | 2026-10-23 17:09 |
 | DEVOPS | DevOps discovery complete (report approved) | Idle | 2026-10-23 | 2026-10-23 11:06 |

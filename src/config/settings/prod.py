@@ -29,3 +29,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Nginx sets X-Request-ID on every proxied request (nginx/conf.d/proxy_headers.inc), so the
 # id the app receives is the proxy's, never the client's (Story 1.1 review v1 ISS-004).
 TRUST_INCOMING_REQUEST_ID = env_bool("DJANGO_TRUST_INCOMING_REQUEST_ID", default=True)
+# BUG-004: Nginx overwrites X-Forwarded-For with the client address (proxy_headers.inc), so
+# lockouts and audit rows read it; with AXES_PROXY_COUNT=0 (base.py) for that header shape.
+if env_bool("DJANGO_TRUST_X_FORWARDED_FOR", default=True):
+    AXES_IPWARE_META_PRECEDENCE_ORDER = PROXIED_IP_HEADERS  # noqa: F405 — from base

@@ -1,6 +1,7 @@
 """Prod switches read from the environment (review hand-offs to DevOps, remediated 2026-10-23).
 
 - Story 1.1 review v1 ISS-004: the incoming `X-Request-ID` is trusted only behind the proxy.
+- BUG-004: axes reads X-Forwarded-For (overwritten by Nginx) only in prod, proxy count 0.
 - Story 1.0 review v1 ISS-004: HSTS `includeSubDomains`/`preload` stay off until the domain is
   final (owner decision); while off, Django's W005/W021 deploy warnings are silenced on purpose.
 """
@@ -18,12 +19,16 @@ PRINT_SETTINGS = (
     "import json; from django.conf import settings as s; print(json.dumps({"
     "'trust_request_id': s.TRUST_INCOMING_REQUEST_ID,"
     "'hsts_subdomains': s.SECURE_HSTS_INCLUDE_SUBDOMAINS, 'hsts_preload': s.SECURE_HSTS_PRELOAD,"
-    "'silenced': s.SILENCED_SYSTEM_CHECKS}))"
+    "'silenced': s.SILENCED_SYSTEM_CHECKS,"
+    "'ip_headers': list(s.AXES_IPWARE_META_PRECEDENCE_ORDER),"
+    "'proxy_count': s.AXES_IPWARE_PROXY_COUNT}))"
 )
 SWITCHES = (
     "DJANGO_TRUST_INCOMING_REQUEST_ID",
     "DJANGO_HSTS_INCLUDE_SUBDOMAINS",
     "DJANGO_HSTS_PRELOAD",
+    "DJANGO_TRUST_X_FORWARDED_FOR",
+    "AXES_PROXY_COUNT",
 )
 
 
@@ -117,3 +122,25 @@ def test_prod_rejects_an_unreadable_switch(tmp_path):
 
     assert result.returncode != 0
     assert "DJANGO_HSTS_PRELOAD" in result.stderr
+
+
+@pytest.mark.slow
+def test_prod_reads_the_client_ip_from_the_proxy_header_by_default(tmp_path):
+    settings = _settings(tmp_path)
+
+    assert settings["ip_headers"] == ["HTTP_X_FORWARDED_FOR", "REMOTE_ADDR"]
+    assert settings["proxy_count"] == 0
+
+
+@pytest.mark.slow
+def test_prod_proxy_header_trust_can_be_switched_off(tmp_path):
+    settings = _settings(tmp_path, DJANGO_TRUST_X_FORWARDED_FOR="false")
+
+    assert settings["ip_headers"] == ["REMOTE_ADDR"]
+
+
+@pytest.mark.slow
+def test_dev_never_reads_the_forwarded_for_header(tmp_path):
+    settings = _settings(tmp_path, "config.settings.dev", DJANGO_TRUST_X_FORWARDED_FOR="true")
+
+    assert settings["ip_headers"] == ["REMOTE_ADDR"]
