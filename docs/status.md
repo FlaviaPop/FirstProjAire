@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated**: 2026-10-23 17:29
-**Updated By**: QA
+**Last Updated**: 2026-10-23 17:41
+**Updated By**: Project owner (CYCLE-1 sign-off)
 **Overall Status**: 🟡 IN PROGRESS
 
 ---
@@ -12,7 +12,7 @@
 **Type**: Greenfield
 **Start Date**: 2026-10-19
 **Target Completion**: 2026-11-19
-**Active Cycle**: CYCLE-1
+**Active Cycle**: CYCLE-2 (CYCLE-1 signed off 2026-10-23)
 
 ---
 
@@ -73,6 +73,7 @@
 - [x] Bug triage #2: BUG-002 🟡 P2 (`/healthz` 500 with session cookie when DB unusable), BUG-003 🟡 P2 (CSRF failures show Django's default page), BUG-001 🟢 P3 still open; all reproduced by QA; 0 blockers (`docs/testing/bug-triage-2026-10-21-2.md`)
 - [x] Remediation from `bug-triage-2026-10-21-2.md` + Story 1.0 review ISS-005: BUG-002, BUG-003, BUG-001, ISS-005 fixed (+ test language-leak isolation fix); 605/605 tests; verified on a real server
 - [x] QA regression vs Story 1.0 baseline: 🟢 NO REGRESSIONS — 605/605 ×4 runs (incl. reverse order), 30/30 surviving baseline cases, 15/15 manual scenarios (`docs/testing/regression-report-2026-10-21.md`)
+- [x] **CYCLE-1 signed off** by the project owner after the headed e2e demo (17/17) — 13/13 stories built and reviewed, 0 regressions. Production go-live stays conditional on BUG-004 (PR #1 `AXES_PROXY_COUNT=0`). Active cycle → CYCLE-2
 - [x] Story 1.4 Internationalization (Dev 2, one-by-one): 659/659 tests, coverage 100%, all gates green; GNU gettext installed (user-space micromamba); branch `feature/story-1.4-i18n` → **wave 2 complete (7/7)**
 - [x] Story 1.2 code review v1: ⚠️ APPROVED WITH COMMENTS — 0 🔴 · 0 🟠 · 1 🟡 · 4 🟢 (`docs/reviews/story-1.2-code-review-v1.md`)
 - [x] Story 1.4 merged into `feature/wave-2-dev-1` (`a5ce928`): wave 2 fully integrated
@@ -138,7 +139,7 @@
 
 | Cycle | BUILDID | Scope | Stories | Status | Start | End | Recorded |
 |-------|---------|-------|---------|--------|-------|-----|----------|
-| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 13/13 | 🟡 Built — awaiting 1.10 review + sign-off | 2026-10-21 | — | 2026-10-23 16:21 |
+| Cycle 1 | CYCLE-1 | Foundation & Access (Epics 1–2) | 13/13 | ✅ Signed off (production go-live conditional on BUG-004 / PR #1 `AXES_PROXY_COUNT=0`) | 2026-10-21 | 2026-10-23 | 2026-10-23 17:41 |
 | Cycle 2 | CYCLE-2 | Content Authoring & Learning (Epics 3–4, 5 part 1) | 0/14 | ⏸️ Not Started | — | — | 2026-10-19 18:44 |
 | Cycle 3 | CYCLE-3 | Assessment, Moderation & Visibility (Epics 6–8, 5 part 2) | 0/18 | ⏸️ Not Started | — | — | 2026-10-19 19:23 |
 
@@ -316,11 +317,13 @@ _Stories `X/N` column is advisory after parallel merges; compute from Story Trac
   - Evidence: `docs/testing/bug-triage-2026-10-23.md` (banner, resolution, Remediation Section) — red: 5 failed; green: 1541/1541 ×3, e2e 17/17, coverage 100%, every gate read from its own line; real server on `config.settings.prod`: student 302 /en/, attacker 429, axes/audit record 203.0.113.10 / 198.51.100.20, 0 ERROR lines
 - [x] **QA Regression — 2026-10-23**: 🟢 NO REGRESSIONS
   - Evidence: `docs/testing/regression-report-2026-10-23.md` — clean `uv sync --frozen`; 1541/1541 ×3 + reversed, e2e 17/17 ×2, 100% (1416 stmts), domain/application 100%; baseline survival 28/28; manual TC-001…TC-030 on a real server; BUG-004 prod re-validation
+- [x] **CYCLE-1 Sign-off**: ✅ Signed off by the project owner — 2026-10-23
+  - Evidence: 13/13 stories built and reviewed (`docs/reviews/`); `docs/testing/regression-report-2026-10-23.md` (🟢 no regressions, 1541/1541, 100% coverage); demo = `uv run pytest -m e2e --headed --slowmo=400` watched by the owner (17/17 in 1:11). Condition carried forward: production go-live needs BUG-004's deployment value (`AXES_PROXY_COUNT=0` in PR #1)
 ---
 
 ## Upcoming
 
-1. **CYCLE-1 demo and sign-off** (`uv run pytest -m e2e --headed` as the demo script)
+1. **CYCLE-2 Wave 6** (`aire-dev-implement`): Stories 3.1 Content Domain Rules, 3.2 Content Data Model, 3.3 Markdown Rendering (each requires only 1.10)
 2. **CI pipeline** — PR #1 (`feature/devops-pipeline`) open; add there: **`AXES_PROXY_COUNT=0` (not 1) + `DJANGO_TRUST_X_FORWARDED_FOR` (BUG-004 go-live condition)**, the e2e job (Chromium install), the env names `DJANGO_TRUST_INCOMING_REQUEST_ID` / `DJANGO_HSTS_INCLUDE_SUBDOMAINS` / `DJANGO_HSTS_PRELOAD` (pipeline-secrets.md, compose env), and a daily timer for `manage.py purge_audit_log` (DEV hand-offs 2026-10-23)
 3. Manual browser pass of the styleguide, admin pages, app shell and catalogue (both themes, keyboard/VoiceOver, console CSP)
 4. **DevOps deploy** (`aire-devops-deploy`, before CYCLE-2 content entry): needs domains, alert e-mail, operator SSH IPs; Terraform + Nginx (rate limit, X-Request-ID) + backups + monitoring. DEV hand-offs done 2026-10-23 (HSTS env flags, request-id trust, purge command); BUG-004 app side fixed 2026-10-23 (PR #1 must deploy `AXES_PROXY_COUNT=0`), WhiteNoise in `MIDDLEWARE`; switch HSTS flags on once the domain is final
